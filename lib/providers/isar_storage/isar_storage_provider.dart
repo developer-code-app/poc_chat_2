@@ -2,6 +2,7 @@ import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_entity
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_member_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_confirmed_message_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_failed_message_entity.dart';
+import 'package:poc_chat_2/providers/isar_storage/entities/isar_rue_jai_user_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_sending_message_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_unconfirmed_message_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/services/isar_chat_service.dart';
@@ -25,6 +26,7 @@ class IsarStorageProvider {
           IsarUnconfirmedMessageEntitySchema,
           IsarSendingMessageEntitySchema,
           IsarFailedMessageEntitySchema,
+          IsarRueJaiUserEntitySchema
         ],
         inspector: true,
         directory: dir.path,
