@@ -12,6 +12,6 @@ class ChatRoomLister {
   final ServerChatRepository serverChatRepository;
 
   Future<List<ChatRoom>> getAllChatRooms() async {
-    return [];
+    return localChatRepository.getChatRooms();
   }
 }

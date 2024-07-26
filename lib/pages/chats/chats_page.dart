@@ -1,3 +1,4 @@
+import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -51,7 +52,11 @@ class ChatsPage extends StatelessWidget {
 
     return shouldShowPlaceholder
         ? const Center(child: Text('Rooms not found.'))
-        : Column(children: presenter.chatRooms.map(_buildChatRoom).toList());
+        : Column(
+            children: presenter.chatRooms
+                .map(_buildChatRoom)
+                .intersperse(const Divider())
+                .toList());
   }
 
   Widget _buildChatRoom(ChatRoomPresenter chatRoom) {
@@ -63,8 +68,15 @@ class ChatsPage extends StatelessWidget {
         children: [
           Column(
             children: [
-              Text(chatRoom.name),
-              if (latestMessage != null) Text(latestMessage.text),
+              Text(
+                chatRoom.name,
+                style: const TextStyle(color: Colors.black),
+              ),
+              if (latestMessage != null)
+                Text(
+                  latestMessage.text,
+                  style: const TextStyle(color: Colors.grey),
+                ),
             ],
           ),
         ],

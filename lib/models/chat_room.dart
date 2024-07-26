@@ -35,13 +35,17 @@ class ChatRoom {
 
   factory ChatRoom.fromEntity(IsarChatRoomEntity entity) {
     return ChatRoom(
-      id: 1,
-      name: '',
-      thumbnailUrl: '',
-      members: [],
-      confirmedMessages: [],
-      failedMessages: [],
-      sendingMessages: [],
+      id: entity.roomId,
+      name: entity.name,
+      thumbnailUrl: entity.thumbnail,
+      members: entity.members.map(ChatRoomMember.fromEntity).toList(),
+      confirmedMessages: entity.confirmedMessages
+          .map(Message.fromConfirmedMessageEntity)
+          .toList(),
+      failedMessages:
+          entity.failedMessages.map(Message.fromFailedMessageEntity).toList(),
+      sendingMessages:
+          entity.sendingMessages.map(Message.fromSendingMessageEntity).toList(),
     );
   }
 

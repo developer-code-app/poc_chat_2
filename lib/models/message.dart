@@ -3,6 +3,7 @@ import 'package:poc_chat_2/models/message_type.dart';
 import 'package:poc_chat_2/models/mini_app.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_confirmed_message_entity.dart';
+import 'package:poc_chat_2/providers/isar_storage/entities/isar_failed_message_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_sending_message_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_unconfirmed_message_entity.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
@@ -72,7 +73,7 @@ sealed class Message {
   }
 
   factory Message.fromFailedMessageEntity(
-    IsarConfirmedMessageEntity entity,
+    IsarFailedMessageEntity entity,
   ) {
     switch (entity.type) {
       case MessageType.text:
