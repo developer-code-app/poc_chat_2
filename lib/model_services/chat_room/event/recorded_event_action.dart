@@ -5,21 +5,18 @@ import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/models/events/room_management_event.dart';
-import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 
 class ChatRoomRecordedEventAction {
   ChatRoomRecordedEventAction({
     required this.chatRoomId,
     required this.recordedEvent,
+    required this.localChatRepository,
   });
 
   final int chatRoomId;
   final RecordedEvent recordedEvent;
-
-  final _localChatRepository = LocalChatRepository(
-    provider: IsarStorageProvider.basic(),
-  );
+  final LocalChatRepository localChatRepository;
 
   Future<void> processEvent() async {
     final recordedEvent = this.recordedEvent;
@@ -38,7 +35,10 @@ class ChatRoomRecordedEventAction {
   ChatRoomMessageFormCreator _getChatRoomMessageFormCreator({
     required int chatRoomId,
   }) {
-    return ChatRoomMessageFormCreator(chatRoomId: chatRoomId);
+    return ChatRoomMessageFormCreator(
+      chatRoomId: chatRoomId,
+      localChatRepository: localChatRepository,
+    );
   }
 }
 
@@ -73,7 +73,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
       final form = await _getChatRoomMessageFormCreator(chatRoomId: chatRoomId)
           .createMessageFormFromRecordedEvent(recordedEvent: recordedEvent);
 
-      final message = await _localChatRepository.createConfirmedMessage(
+      final message = await localChatRepository.createConfirmedMessage(
         targetChatRoomId: chatRoomId,
         form: form,
       );
@@ -85,7 +85,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
         ),
       );
     } else if (event is UpdateTextMessageEvent) {
-      final message = await _localChatRepository.updateConfirmedTextMessage(
+      final message = await localChatRepository.updateConfirmedTextMessage(
         targetMessageChatRoomId: chatRoomId,
         targetMessageCreatedByRecordNumber: event.updatedMessageRecordNumber,
         newText: event.text,
@@ -100,7 +100,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
         ),
       );
     } else if (event is DeleteMessageEvent) {
-      final messageId = await _localChatRepository.deleteConfirmedMessage(
+      final messageId = await localChatRepository.deleteConfirmedMessage(
         targetMessageCreatedByRecordNumber: event.deletedMessageRecordNumber,
       );
 
@@ -123,15 +123,15 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
       chatRoomId: chatRoomId,
       recordedEvent: recordedEvent,
     )) {
-      _localChatRepository.deleteUnconfirmedMessage(
+      localChatRepository.deleteUnconfirmedMessage(
         targetChatRoomId: chatRoomId,
         targetMessageCreatedByRecordNumber: recordedEvent.recordNumber,
       );
-      _localChatRepository.deleteSendingMessage(
+      localChatRepository.deleteSendingMessage(
         targetChatRoomId: chatRoomId,
         targetMessageCreatedByRecordNumber: recordedEvent.recordNumber,
       );
-      _localChatRepository.deleteFailedMessage(
+      localChatRepository.deleteFailedMessage(
         targetChatRoomId: chatRoomId,
         targetMessageCreatedByRecordNumber: recordedEvent.recordNumber,
       );
@@ -141,17 +141,17 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
                 chatRoomId: chatRoomId)
             .createMessageFormFromRecordedEvent(recordedEvent: recordedEvent);
 
-        _localChatRepository.createUnconfirmedMessage(
+        localChatRepository.createUnconfirmedMessage(
           targetChatRoomId: chatRoomId,
           form: form,
         );
       }
 
-      _localChatRepository.deleteSendingMessage(
+      localChatRepository.deleteSendingMessage(
         targetChatRoomId: chatRoomId,
         targetMessageCreatedByRecordNumber: recordedEvent.recordNumber,
       );
-      _localChatRepository.deleteFailedMessage(
+      localChatRepository.deleteFailedMessage(
         targetChatRoomId: chatRoomId,
         targetMessageCreatedByRecordNumber: recordedEvent.recordNumber,
       );
@@ -185,7 +185,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
   Future<int> _getFirstSuccessorOfLastSyncedMessageEventRecordNumber({
     required int chatRoomId,
   }) async {
-    return _localChatRepository.getLastSyncedMessageEventRecordNumber(
+    return localChatRepository.getLastSyncedMessageEventRecordNumber(
       chatRoomId: chatRoomId,
     );
   }
@@ -201,31 +201,31 @@ extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
     final event = recordedEvent.event;
 
     if (event is CreateRoomEvent) {
-      await _localChatRepository.updateChatRoom(
+      await localChatRepository.updateChatRoom(
         targetChatRoomId: chatRoomId,
         newName: event.name,
         newThumbnailUrl: event.thumbnailUrl,
       );
 
       for (var member in event.members) {
-        _localChatRepository.createMember(
+        localChatRepository.createMember(
           targetChatRoomId: chatRoomId,
           member: member,
         );
       }
     } else if (event is InviteMemberEvent) {
-      await _localChatRepository.createMember(
+      await localChatRepository.createMember(
         targetChatRoomId: chatRoomId,
         member: event.member,
       );
     } else if (event is UpdateMemberRoleEvent) {
-      await _localChatRepository.updateMemberRole(
+      await localChatRepository.updateMemberRole(
         targetChatRoomId: chatRoomId,
         targetMemberAddedByRecordNumber: event.updatedMemberRecordNumber,
         newRole: event.memberRole,
       );
     } else if (event is RemoveMemberEvent) {
-      await _localChatRepository.deleteMember(
+      await localChatRepository.deleteMember(
         targetChatRoomId: chatRoomId,
         targetMemberAddedByRecordNumber: event.removedMemberRecordNumber,
       );
@@ -262,7 +262,7 @@ extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
   Future<int> _getFirstSuccessorOfLastSyncedRoomManagementEventRecordNumber({
     required int chatRoomId,
   }) async {
-    return _localChatRepository.getLastSyncedRoomManagementEventRecordNumber(
+    return localChatRepository.getLastSyncedRoomManagementEventRecordNumber(
       chatRoomId: chatRoomId,
     );
   }
@@ -278,7 +278,7 @@ extension RecordedReadMessageEventAction on ChatRoomRecordedEventAction {
     final event = recordedEvent.event;
 
     if (event is ReadMessageEvent) {
-      _localChatRepository.updateMemberLastReadMessage(
+      localChatRepository.updateMemberLastReadMessage(
         targetChatRoomId: chatRoomId,
         targetMemberRueJaiUserId: event.owner.rueJaiUserId,
         targetMemberRueJaiUserType: event.owner.rueJaiUserType,
@@ -296,8 +296,8 @@ extension RecordedReadMessageEventAction on ChatRoomRecordedEventAction {
     final event = recordedEvent.event;
 
     if (event is ReadMessageEvent) {
-      final lastReadMessageAddedByRecordNumber = await _localChatRepository
-          .getMemberLastReadMessageAddedByRecordNumber(
+      final lastReadMessageAddedByRecordNumber =
+          await localChatRepository.getMemberLastReadMessageAddedByRecordNumber(
         chatRoomId: chatRoomId,
         memberRueJaiUserId: event.owner.rueJaiUserId,
         memberRueJaiUserType: event.owner.rueJaiUserType,

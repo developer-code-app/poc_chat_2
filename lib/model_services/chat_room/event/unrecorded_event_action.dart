@@ -6,7 +6,6 @@ import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/room_management_event.dart';
 import 'package:poc_chat_2/models/forms/message_form.dart';
-import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 
@@ -14,15 +13,14 @@ class ChatRoomUnrecordedEventAction {
   ChatRoomUnrecordedEventAction({
     required this.chatRoomId,
     required this.event,
+    required this.serverChatRepository,
+    required this.localChatRepository,
   });
 
   final int chatRoomId;
   final Event event;
-
-  final _serverChatRepository = ServerChatRepository();
-  final _localChatRepository = LocalChatRepository(
-    provider: IsarStorageProvider.basic(),
-  );
+  final ServerChatRepository serverChatRepository;
+  final LocalChatRepository localChatRepository;
 
   Future<void> processEvent() async {
     final event = this.event;
@@ -41,7 +39,10 @@ class ChatRoomUnrecordedEventAction {
   ChatRoomMessageFormCreator _getChatRoomMessageFormCreator({
     required int chatRoomId,
   }) {
-    return ChatRoomMessageFormCreator(chatRoomId: chatRoomId);
+    return ChatRoomMessageFormCreator(
+      chatRoomId: chatRoomId,
+      localChatRepository: localChatRepository,
+    );
   }
 }
 
@@ -59,7 +60,7 @@ extension _UnrecordedMessageEventAction on ChatRoomUnrecordedEventAction {
     );
 
     if (messageForm != null) {
-      final message = await _localChatRepository.createSendingMessage(
+      final message = await localChatRepository.createSendingMessage(
         targetChatRoomId: chatRoomId,
         form: messageForm,
       );
@@ -72,7 +73,7 @@ extension _UnrecordedMessageEventAction on ChatRoomUnrecordedEventAction {
       );
     }
 
-    _serverChatRepository.publishMessageEvent(
+    serverChatRepository.publishMessageEvent(
       chatRoomId: chatRoomId,
       event: event,
     );
@@ -100,7 +101,7 @@ extension _UnrecordedRoomManagementEventAction
       throw UnprocessableEventError('Event is not a room management event');
     }
 
-    _serverChatRepository.publishRoomManagementEvent(
+    serverChatRepository.publishRoomManagementEvent(
       chatRoomId: chatRoomId,
       event: event,
     );
@@ -115,7 +116,7 @@ extension _UnrecordedReadMessageEventAction on ChatRoomUnrecordedEventAction {
       throw UnprocessableEventError('Event is not a read message event');
     }
 
-    _serverChatRepository.publishReadMessageEvent(
+    serverChatRepository.publishReadMessageEvent(
       chatRoomId: chatRoomId,
       event: event,
     );

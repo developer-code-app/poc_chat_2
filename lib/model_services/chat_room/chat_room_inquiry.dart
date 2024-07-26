@@ -1,24 +1,21 @@
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
-import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 
 class ChatRoomInquiry {
   ChatRoomInquiry({
     required this.chatRoomId,
+    required this.localChatRepository,
   });
 
   final int chatRoomId;
-
-  final _localChatRepository = LocalChatRepository(
-    provider: IsarStorageProvider.basic(),
-  );
+  final LocalChatRepository localChatRepository;
 
   Future<ChatRoom?> getChatRoom({
     required int chatRoomId,
   }) async {
-    return _localChatRepository.getChatRoom();
+    return localChatRepository.getChatRoom();
   }
 
   Future<ChatRoomMember> getMemberByRueJaiUser({
@@ -43,6 +40,6 @@ class ChatRoomInquiry {
   }
 
   Future<int> messageCount() {
-    return _localChatRepository.getMessageCount();
+    return localChatRepository.getMessageCount();
   }
 }

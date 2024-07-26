@@ -6,22 +6,21 @@ import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/models/forms/message_form.dart';
 import 'package:poc_chat_2/models/mini_app.dart';
-import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 
 class ChatRoomMessageFormCreator {
   ChatRoomMessageFormCreator({
     required this.chatRoomId,
+    required this.localChatRepository,
   }) : _chatRoomInquiry = ChatRoomInquiry(
           chatRoomId: chatRoomId,
+          localChatRepository: localChatRepository,
         );
 
   final int chatRoomId;
+  final LocalChatRepository localChatRepository;
 
   final ChatRoomInquiry _chatRoomInquiry;
-  final _localChatRepository = LocalChatRepository(
-    provider: IsarStorageProvider.basic(),
-  );
 
   Future<MessageForm> createMessageFormFromUnrecordedEvent({
     required Event event,
@@ -147,7 +146,7 @@ class ChatRoomMessageFormCreator {
     int? recordNumber,
     DateTime? recordedAt,
   }) async {
-    final repliedMessage = await _localChatRepository.getMessage(
+    final repliedMessage = await localChatRepository.getMessage(
       chatRoomId: chatRoomId,
       recordNumber: event.repliedMessageAddedByEventRecordNumber,
     );

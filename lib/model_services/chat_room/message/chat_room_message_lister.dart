@@ -1,18 +1,14 @@
-import 'package:poc_chat_2/model_services/chat_room/member/inquiry.dart';
 import 'package:poc_chat_2/models/message.dart';
-import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 
 class ChatRoomMessageLister {
   ChatRoomMessageLister({
     required this.chatRoomId,
+    required this.localChatRepository,
   });
 
   final int chatRoomId;
-
-  final _localChatRepository = LocalChatRepository(
-    provider: IsarStorageProvider.basic(),
-  );
+  final LocalChatRepository localChatRepository;
 
   Future<List<Message>> loadNewerMessages({
     required int chatRoomId,
@@ -42,7 +38,7 @@ class ChatRoomMessageLister {
     required int chatRoomId,
     required String query,
   }) async {
-    return _localChatRepository.searchMessages(chatRoomId, query);
+    return localChatRepository.searchMessages(chatRoomId, query);
   }
 
   Future<List<Message>> _loadMessages({
@@ -51,12 +47,5 @@ class ChatRoomMessageLister {
     required int end,
   }) async {
     return List.empty();
-  }
-
-  ChatRoomMemberInquiry _getChatRoomMemberInquiry({required int memberId}) {
-    return ChatRoomMemberInquiry(
-      chatRoomId: chatRoomId,
-      memberId: memberId,
-    );
   }
 }

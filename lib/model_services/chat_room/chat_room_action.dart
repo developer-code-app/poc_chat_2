@@ -4,16 +4,19 @@ import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_latest_event_record_info.dart';
 import 'package:poc_chat_2/models/events/event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
+import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 
 class ChatRoomAction {
   ChatRoomAction({
     required this.chatRoomId,
+    required this.localChatRepository,
+    required this.serverChatRepository,
   });
 
   final int chatRoomId;
-
-  final _serverChatRepository = ServerChatRepository();
+  final LocalChatRepository localChatRepository;
+  final ServerChatRepository serverChatRepository;
 
   Future<void> processUnrecordedEvent({
     required Event event,
@@ -21,6 +24,8 @@ class ChatRoomAction {
     return ChatRoomUnrecordedEventAction(
       event: event,
       chatRoomId: chatRoomId,
+      localChatRepository: localChatRepository,
+      serverChatRepository: serverChatRepository,
     ).processEvent();
   }
 
@@ -30,6 +35,7 @@ class ChatRoomAction {
     return ChatRoomRecordedEventAction(
       recordedEvent: recordedEvent,
       chatRoomId: chatRoomId,
+      localChatRepository: localChatRepository,
     ).processEvent();
   }
 
@@ -70,7 +76,7 @@ class ChatRoomAction {
 
   Future<ChatRoomLatestEventRecordInfo>
       getServerChatRoomLatestEventRecordInfo() async {
-    return _serverChatRepository.getServerChatRoomLatestEventRecordInfo(
+    return serverChatRepository.getServerChatRoomLatestEventRecordInfo(
       chatRoomId: chatRoomId,
     );
   }
