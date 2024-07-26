@@ -22,7 +22,7 @@ class CreateRoomEvent extends RoomManagementEvent {
 
   final String name;
   final String thumbnailUrl;
-  final List<Member> members;
+  final List<ChatRoomMember> members;
 }
 
 class InviteMemberEvent extends RoomManagementEvent {
@@ -33,7 +33,7 @@ class InviteMemberEvent extends RoomManagementEvent {
     required this.member,
   });
 
-  final Member member;
+  final ChatRoomMember member;
 }
 
 class UpdateMemberRoleEvent extends RoomManagementEvent {
@@ -60,8 +60,8 @@ class RemoveMemberEvent extends RoomManagementEvent {
   final int removedMemberRecordNumber;
 }
 
-class Member {
-  Member({
+class ChatRoomMember {
+  ChatRoomMember({
     required this.role,
     required this.rueJaiUserId,
     required this.rueJaiUserType,

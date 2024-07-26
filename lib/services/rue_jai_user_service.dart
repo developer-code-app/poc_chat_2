@@ -1,5 +1,6 @@
 import 'package:poc_chat_2/model_services/chat_room/chat_room_lister.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
+import 'package:poc_chat_2/models/forms/chat_room_form.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
@@ -22,5 +23,9 @@ class RueJaiUserService {
 
   Future<List<ChatRoom>> getChatRooms() async {
     return _chatRoomLister.getAllChatRooms();
+  }
+
+  Future<void> createChatRoom({required ChatRoomForm form}) async {
+    serverChatRepository.createChatRoom(form: form);
   }
 }

@@ -21,3 +21,11 @@ class ErrorOccurredEvent extends _Event {
 class DataLoadingRetriedEvent extends _Event {}
 
 class RefreshStartedEvent extends _Event {}
+
+class CreateRoomRequestedEvent extends _Event {
+  CreateRoomRequestedEvent({
+    required this.name,
+  });
+
+  final String name;
+}

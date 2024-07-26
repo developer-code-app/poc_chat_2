@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
+import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/pages/chats/bloc/chats_page_bloc.dart';
 import 'package:poc_chat_2/pages/chats/chats_page.dart';
@@ -8,6 +10,7 @@ import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 import 'package:poc_chat_2/services/member/member_service.dart';
 import 'package:poc_chat_2/services/rue_jai_user_service.dart';
+import 'package:poc_chat_2/widgets/action_sheet.dart' as action_sheet;
 
 void main() {
   runApp(const MyApp());
@@ -51,23 +54,120 @@ class MyApp extends StatelessWidget {
             create: (context) => ServerChatRepository(),
           ),
         ],
-        child: BlocProvider(
-          create: (context) => ChatsPageBloc(
-            rueJaiUserService: RueJaiUserService(
-              rueJaiUser: MockData.rueJaiUser,
-              localChatRepository: context.read<LocalChatRepository>(),
-              serverChatRepository: context.read<ServerChatRepository>(),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<AlertDialogCubit>(
+              create: (context) => AlertDialogCubit(),
             ),
-            memberService: MemberService(
-              chatRoomId: 1,
-              rueJaiUser: MockData.rueJaiUser,
-              memberId: 1,
-              localChatRepository: context.read<LocalChatRepository>(),
+            BlocProvider<ChatsPageBloc>(
+              create: (context) => ChatsPageBloc(
+                alertDialogCubit: context.read<AlertDialogCubit>(),
+                rueJaiUserService: RueJaiUserService(
+                  rueJaiUser: MockData.rueJaiUser,
+                  localChatRepository: context.read<LocalChatRepository>(),
+                  serverChatRepository: context.read<ServerChatRepository>(),
+                ),
+                memberService: MemberService(
+                  chatRoomId: 1,
+                  memberId: 1,
+                  localChatRepository: context.read<LocalChatRepository>(),
+                  serverChatRepository: context.read<ServerChatRepository>(),
+                ),
+              )..add(StartedEvent()),
             ),
-          )..add(StartedEvent()),
-          child: const ChatsPage(),
+          ],
+          child: MultiBlocListener(
+            listeners: [
+              BlocListener<AlertDialogCubit, AlertData?>(
+                listener: (context, state) {
+                  if (state == null) return;
+                  _showAlertFromData(context, data: state);
+                },
+              ),
+            ],
+            child: const ChatsPage(),
+          ),
         ),
       ),
     );
+  }
+
+  void _showAlertFromData(
+    BuildContext context, {
+    required AlertData data,
+  }) {
+    if (data is DialogData) {
+      AlertDialogConvenienceShowing.showAlertDialog(
+        context: context,
+        title: data.title,
+        message: data.message,
+        remark: data.remark,
+        actions: data.actions,
+        onDismissed: data.onDismissed,
+        dismissible: data.dismissible,
+      );
+    } else if (data is ActionSheetData) {
+      action_sheet.ActionSheet(
+        title: data.title,
+        message: data.message,
+        actions: data.actions
+            .map(
+              (action) => action_sheet.Action(
+                action.title,
+                () => action.onPressed?.call(),
+              ),
+            )
+            .toList(),
+        cancel: action_sheet.Action(
+          data.cancelAction.title,
+          () => data.cancelAction.onPressed?.call(),
+        ),
+      ).show(context);
+    } else if (data is SnackBarData) {
+      _showSnackBar(context, data: data);
+    }
+  }
+
+  void _showSnackBar(
+    BuildContext context, {
+    required SnackBarData data,
+  }) {
+    final prefixIcon = data.prefixIcon;
+
+    final snackBar = SnackBar(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (prefixIcon != null) ...[
+            prefixIcon,
+            const SizedBox(width: 8),
+          ],
+          Flexible(
+            child: Text(
+              data.title,
+              maxLines: 3,
+            ),
+          ),
+          Visibility(
+            visible: data.action != null,
+            child: Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                  data.action?.onPressed?.call();
+                },
+                child: Text(
+                  data.action?.title ?? '',
+                  textAlign: TextAlign.right,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

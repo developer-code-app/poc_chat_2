@@ -17,10 +17,10 @@ class MockData {
 
   static final rueJaiUser = RueJaiUser(
     id: 1,
-    rueJaiUserId: '',
+    rueJaiUserId: '69',
     rueJaiUserType: RueJaiUserType.rueJaiAppUser,
     rueJaiUserRole: RueJaiUserRole.renter,
-    name: '',
+    name: 'MongATI',
     thumbnailUrl: '',
   );
 
