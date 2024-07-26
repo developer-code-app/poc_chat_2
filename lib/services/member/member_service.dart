@@ -3,22 +3,35 @@ import 'package:poc_chat_2/model_services/chat_room/member/chat_room_member_list
 import 'package:poc_chat_2/model_services/chat_room/member/inquiry.dart';
 import 'package:poc_chat_2/model_services/chat_room/message/chat_room_message_lister.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
+import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 
 class MemberService {
   MemberService({
     required this.memberId,
     required this.chatRoomId,
+    required this.localChatRepository,
     required RueJaiUser rueJaiUser,
-  })  : chatRoomMemberLister = ChatRoomMemberLister(chatRoomId: chatRoomId),
-        chatRoomMessageLister = ChatRoomMessageLister(chatRoomId: chatRoomId),
+  })  : chatRoomMemberLister = ChatRoomMemberLister(
+          chatRoomId: chatRoomId,
+          localChatRepository: localChatRepository,
+        ),
+        chatRoomMessageLister = ChatRoomMessageLister(
+          chatRoomId: chatRoomId,
+          localChatRepository: localChatRepository,
+        ),
         chatRoomMemberInquiry = ChatRoomMemberInquiry(
           chatRoomId: chatRoomId,
           memberId: memberId,
+          localChatRepository: localChatRepository,
         ),
-        chatRoomInquiry = ChatRoomInquiry(chatRoomId: chatRoomId);
+        chatRoomInquiry = ChatRoomInquiry(
+          chatRoomId: chatRoomId,
+          localChatRepository: localChatRepository,
+        );
 
   final int memberId;
   final int chatRoomId;
+  final LocalChatRepository localChatRepository;
 
   final ChatRoomMemberLister chatRoomMemberLister;
   final ChatRoomMessageLister chatRoomMessageLister;
