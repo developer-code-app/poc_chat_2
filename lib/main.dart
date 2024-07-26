@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/pages/chats/bloc/chats_page_bloc.dart';
 import 'package:poc_chat_2/pages/chats/chats_page.dart';
+import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
+import 'package:poc_chat_2/repositories/local_chat_repository.dart';
+import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 import 'package:poc_chat_2/services/member/member_service.dart';
 import 'package:poc_chat_2/services/rue_jai_user_service.dart';
 
@@ -17,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'RueJai Chat PoC',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -37,16 +40,33 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: BlocProvider(
-        create: (context) => ChatsPageBloc(
-          rueJaiUserService: RueJaiUserService(rueJaiUser: MockData.rueJaiUser),
-          memberService: MemberService(
-            chatRoomId: 1,
-            rueJaiUser: MockData.rueJaiUser,
-            memberId: 1,
+      home: MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<LocalChatRepository>(
+            create: (context) => LocalChatRepository(
+              provider: IsarStorageProvider.basic(),
+            ),
           ),
+          RepositoryProvider<ServerChatRepository>(
+            create: (context) => ServerChatRepository(),
+          ),
+        ],
+        child: BlocProvider(
+          create: (context) => ChatsPageBloc(
+            rueJaiUserService: RueJaiUserService(
+              rueJaiUser: MockData.rueJaiUser,
+              localChatRepository: context.read<LocalChatRepository>(),
+              serverChatRepository: context.read<ServerChatRepository>(),
+            ),
+            memberService: MemberService(
+              chatRoomId: 1,
+              rueJaiUser: MockData.rueJaiUser,
+              memberId: 1,
+              localChatRepository: context.read<LocalChatRepository>(),
+            ),
+          )..add(StartedEvent()),
+          child: const ChatsPage(),
         ),
-        child: const ChatsPage(),
       ),
     );
   }

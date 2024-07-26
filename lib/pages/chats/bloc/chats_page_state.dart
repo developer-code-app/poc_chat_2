@@ -16,4 +16,8 @@ final class LoadSuccessState extends _State {
   final ChatsPagePresenter presenter;
 }
 
-final class LoadFailureState extends _State {}
+final class LoadFailureState extends _State {
+  LoadFailureState({required this.error});
+
+  final Exception error;
+}

@@ -12,6 +12,12 @@ class DataLoadedEvent extends _Event {
   final List<(ChatRoom, int)> chatRoomWithUnreadMessageCounts;
 }
 
-class ErrorOccurredEvent extends _Event {}
+class ErrorOccurredEvent extends _Event {
+  ErrorOccurredEvent({required this.error});
+
+  final Exception error;
+}
 
 class DataLoadingRetriedEvent extends _Event {}
+
+class RefreshStartedEvent extends _Event {}

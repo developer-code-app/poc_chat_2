@@ -1,3 +1,5 @@
+import 'package:dfunc/dfunc.dart';
+
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/message.dart';
 
@@ -33,15 +35,16 @@ class ChatRoomPresenter {
     return ChatRoomPresenter(
       name: chatRoom.name,
       thumbnailUrl: chatRoom.thumbnailUrl,
-      latestMessage:
-          MessagePresenter.fromModel(chatRoom.confirmedMessages.last),
+      latestMessage: chatRoom.confirmedMessages.lastOrNull?.let(
+        (message) => MessagePresenter.fromModel(message),
+      ),
       unreadMessageCount: unreadMessageCount,
     );
   }
 
   final String name;
   final String thumbnailUrl;
-  final MessagePresenter latestMessage;
+  final MessagePresenter? latestMessage;
   final int unreadMessageCount;
 }
 

@@ -9,6 +9,8 @@ import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:poc_chat_2/repositories/local_chat_repository.dart';
+import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 
 part 'chat_room_page_event.dart';
 part 'chat_room_page_state.dart';
@@ -17,7 +19,11 @@ typedef _Event = ChatRoomPageEvent;
 typedef _State = ChatRoomPageState;
 
 class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
-  ChatRoomPageBloc({required this.chatRoom}) : super(InitialState()) {
+  ChatRoomPageBloc({
+    required this.serverChatRepository,
+    required this.localChatRepository,
+    required this.chatRoom,
+  }) : super(InitialState()) {
     on<StartedEvent>(_onStartedEvent);
     on<MessageSentEvent>(_onMessageSentEvent);
     on<ChatRoomBasicInfoUpdatedEvent>(_onChatRoomBasicInfoUpdatedEvent);
@@ -43,6 +49,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     );
   }
 
+  final ServerChatRepository serverChatRepository;
+  final LocalChatRepository localChatRepository;
   final ChatRoom chatRoom;
 
   StreamSubscription? _broadcasterSubscription;
@@ -310,6 +318,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
       await ChatRoomUnrecordedEventAction(
         chatRoomId: chatRoom.id,
         event: event,
+        serverChatRepository: serverChatRepository,
+        localChatRepository: localChatRepository,
       ).processEvent();
     } catch (error) {
       print(error);

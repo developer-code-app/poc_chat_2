@@ -22,6 +22,7 @@ class ChatsPageBloc extends Bloc<_Event, _State> {
     on<DataLoadedEvent>(_onDataLoaded);
     on<ErrorOccurredEvent>(_onErrorOccurred);
     on<DataLoadingRetriedEvent>(_onDataLoadingRetried);
+    on<RefreshStartedEvent>(_onRefreshStartedEvent);
   }
 
   final RueJaiUserService rueJaiUserService;
@@ -55,6 +56,15 @@ class ChatsPageBloc extends Bloc<_Event, _State> {
     Emitter<_State> emit,
   ) async {}
 
+  Future<void> _onRefreshStartedEvent(
+    RefreshStartedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    emit(LoadInProgressState());
+
+    unawaited(_fetchChatsRoom());
+  }
+
   Future<void> _fetchChatsRoom() async {
     try {
       final chatRooms = await rueJaiUserService.getChatRooms();
@@ -70,8 +80,8 @@ class ChatsPageBloc extends Bloc<_Event, _State> {
       add(DataLoadedEvent(
         chatRoomWithUnreadMessageCounts: chatRoomWithUnreadMessageCounts,
       ));
-    } catch (error) {
-      add(ErrorOccurredEvent());
+    } on Exception catch (error) {
+      add(ErrorOccurredEvent(error: error));
     }
   }
 }
