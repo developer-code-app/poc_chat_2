@@ -20,6 +20,7 @@ class ChatsPagePresenter {
 
 class ChatRoomPresenter {
   ChatRoomPresenter({
+    required this.id,
     required this.name,
     required this.thumbnailUrl,
     required this.latestMessage,
@@ -33,6 +34,7 @@ class ChatRoomPresenter {
     final unreadMessageCount = chatRoomWithUnreadMessageCount.$2;
 
     return ChatRoomPresenter(
+      id: chatRoom.id,
       name: chatRoom.name,
       thumbnailUrl: chatRoom.thumbnailUrl,
       latestMessage: chatRoom.confirmedMessages.lastOrNull?.let(
@@ -42,6 +44,7 @@ class ChatRoomPresenter {
     );
   }
 
+  final int id;
   final String name;
   final String thumbnailUrl;
   final MessagePresenter? latestMessage;

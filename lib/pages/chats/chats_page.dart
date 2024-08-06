@@ -2,13 +2,24 @@ import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
-
+import 'package:poc_chat_2/models/chat_room.dart';
+import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart'
+    as chat_room_bloc;
+import 'package:poc_chat_2/pages/chat_room/chat_room_page.dart';
 import 'package:poc_chat_2/pages/chats/bloc/chats_page_bloc.dart';
 import 'package:poc_chat_2/pages/chats/chats_page_presenter.dart';
+import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
+import 'package:poc_chat_2/repositories/local_chat_repository.dart';
+import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 
-class ChatsPage extends StatelessWidget {
+class ChatsPage extends StatefulWidget {
   const ChatsPage({super.key});
 
+  @override
+  State<ChatsPage> createState() => _ChatsPageState();
+}
+
+class _ChatsPageState extends State<ChatsPage> {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<ChatsPageBloc>();
@@ -56,7 +67,7 @@ class ChatsPage extends StatelessWidget {
                 case LoadInProgressState():
                   return const Center(child: CircularProgressIndicator());
                 case LoadSuccessState():
-                  return _buildLoadSuccess(context, state.presenter);
+                  return _buildLoadSuccess(context, state);
                 case LoadFailureState():
                   return Text(state.error.toString());
               }
@@ -69,40 +80,90 @@ class ChatsPage extends StatelessWidget {
 
   Widget _buildLoadSuccess(
     BuildContext context,
-    ChatsPagePresenter presenter,
+    LoadSuccessState state,
   ) {
-    final shouldShowPlaceholder = presenter.chatRooms.isEmpty;
+    final shouldShowPlaceholder = state.presenter.chatRooms.isEmpty;
 
-    return shouldShowPlaceholder
-        ? const Center(child: Text('Rooms not found.'))
-        : Column(
-            children: presenter.chatRooms
-                .map(_buildChatRoom)
-                .intersperse(const Divider())
-                .toList());
+    if (shouldShowPlaceholder) {
+      return const Center(child: Text('Rooms not found.'));
+    } else {
+      return Column(
+        children: state.presenter.chatRooms
+            .map(
+              (presenter) {
+                final chatRoom = state.chatRoomWithUnreadMessageCounts
+                    .firstWhere((element) => element.$1.id == presenter.id)
+                    .$1;
+
+                return _buildChatRoom(presenter, chatRoom);
+              },
+            )
+            .intersperse(const Divider())
+            .toList(),
+      );
+    }
   }
 
-  Widget _buildChatRoom(ChatRoomPresenter chatRoom) {
-    final latestMessage = chatRoom.latestMessage;
+  Widget _buildChatRoom(
+    ChatRoomPresenter presenter,
+    ChatRoom chatRoom,
+  ) {
+    final latestMessage = presenter.latestMessage;
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        children: [
-          Column(
-            children: [
-              Text(
-                chatRoom.name,
-                style: const TextStyle(color: Colors.black),
-              ),
-              if (latestMessage != null)
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => _navigationToChatRoomPage(chatRoom),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Column(
+              children: [
                 Text(
-                  latestMessage.text,
-                  style: const TextStyle(color: Colors.grey),
+                  presenter.name,
+                  style: const TextStyle(color: Colors.black),
                 ),
+                if (latestMessage != null)
+                  Text(
+                    latestMessage.text,
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _navigationToChatRoomPage(ChatRoom chatRoom) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider<ServerChatRepository>(
+              create: (context) => ServerChatRepository(),
+            ),
+            RepositoryProvider<LocalChatRepository>(
+              create: (context) => LocalChatRepository(
+                provider: IsarStorageProvider.basic(),
+              ),
+            ),
+          ],
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider<chat_room_bloc.ChatRoomPageBloc>(
+                create: (context) => chat_room_bloc.ChatRoomPageBloc(
+                  serverChatRepository: context.read<ServerChatRepository>(),
+                  localChatRepository: context.read<LocalChatRepository>(),
+                  chatRoom: chatRoom,
+                )..add(chat_room_bloc.StartedEvent()),
+              ),
             ],
+            child: const ChatRoomPage(),
           ),
-        ],
+        ),
       ),
     );
   }
