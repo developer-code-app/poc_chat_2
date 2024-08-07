@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
+import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/forms/chat_room_form.dart';
 import 'package:poc_chat_2/pages/chats/chats_page_presenter.dart';
 import 'package:poc_chat_2/services/member/member_service.dart';
@@ -78,8 +79,9 @@ class ChatsPageBloc extends Bloc<_Event, _State> {
     try {
       final form = ChatRoomForm(
         name: event.name,
-        member: [
+        members: [
           ChatRoomMemberForm(
+            role: ChatRoomMemberRole.member,
             rueJaiUserId: MockData.rueJaiUser.rueJaiUserId,
             rueJaiUserType: MockData.rueJaiUser.rueJaiUserType,
           ),

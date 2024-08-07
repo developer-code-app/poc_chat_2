@@ -129,13 +129,17 @@ class ChatRoomMessageFormCreator {
     int? recordNumber,
     DateTime? recordedAt,
   }) {
+    final text = event.text;
+
+    if (text == null) throw Exception();
+
     return TextMessageForm(
       owner: member,
       createdAt: recordedAt ?? event.createdAt,
       updatedAt: recordedAt ?? event.createdAt,
       addedByEventRecordNumber: recordNumber,
       updatedByEventRecordNumber: recordNumber,
-      text: event.text,
+      text: text,
     );
   }
 
@@ -146,6 +150,10 @@ class ChatRoomMessageFormCreator {
     int? recordNumber,
     DateTime? recordedAt,
   }) async {
+    final text = event.text;
+
+    if (text == null) throw Exception();
+
     final repliedMessage = await localChatRepository.getMessage(
       chatRoomId: chatRoomId,
       recordNumber: event.repliedMessageAddedByEventRecordNumber,
@@ -160,7 +168,7 @@ class ChatRoomMessageFormCreator {
       repliedMessage: repliedMessage,
       addedByEventRecordNumber: recordNumber,
       updatedByEventRecordNumber: recordNumber,
-      text: event.text,
+      text: text,
     );
   }
 
@@ -170,13 +178,17 @@ class ChatRoomMessageFormCreator {
     int? recordNumber,
     DateTime? recordedAt,
   }) {
+    final urls = event.urls;
+
+    if (urls == null) throw Exception();
+
     return PhotoMessageForm(
       owner: member,
       createdAt: recordedAt ?? event.createdAt,
       updatedAt: recordedAt ?? event.createdAt,
       addedByEventRecordNumber: recordNumber,
       updatedByEventRecordNumber: recordNumber,
-      urls: event.urls,
+      urls: urls,
     );
   }
 
@@ -186,13 +198,17 @@ class ChatRoomMessageFormCreator {
     int? recordNumber,
     DateTime? recordedAt,
   }) {
+    final url = event.url;
+
+    if (url == null) throw Exception();
+
     return VideoMessageForm(
       owner: member,
       createdAt: recordedAt ?? event.createdAt,
       updatedAt: recordedAt ?? event.createdAt,
       addedByEventRecordNumber: recordNumber,
       updatedByEventRecordNumber: recordNumber,
-      url: event.url,
+      url: url,
     );
   }
 
@@ -202,13 +218,17 @@ class ChatRoomMessageFormCreator {
     int? recordNumber,
     DateTime? recordedAt,
   }) {
+    final url = event.url;
+
+    if (url == null) throw Exception();
+
     return FileMessageForm(
       owner: member,
       createdAt: recordedAt ?? event.createdAt,
       updatedAt: recordedAt ?? event.createdAt,
       addedByEventRecordNumber: recordNumber,
       updatedByEventRecordNumber: recordNumber,
-      url: event.url,
+      url: url,
     );
   }
 

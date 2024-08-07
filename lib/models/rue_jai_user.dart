@@ -1,11 +1,14 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_rue_jai_user_entity.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 
 part 'rue_jai_user.g.dart';
 
 enum RueJaiUserType {
+  @JsonValue('RUE_JAI_ADMIN')
   rueJaiAdmin,
-  rueJaiAppUser;
+  @JsonValue('RUE_JAI_APP_USER')
+  rueJaiAppUser,
 }
 
 enum RueJaiUserRole {

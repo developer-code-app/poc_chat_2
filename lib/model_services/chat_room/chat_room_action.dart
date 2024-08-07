@@ -1,5 +1,5 @@
-import 'package:poc_chat_2/model_services/chat_room/event/recorded_event_action.dart';
-import 'package:poc_chat_2/model_services/chat_room/event/unrecorded_event_action.dart';
+import 'package:poc_chat_2/model_services/chat_room/event/chat_room_recorded_event_action.dart';
+import 'package:poc_chat_2/model_services/chat_room/event/chat_room_unrecorded_event_action.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_latest_event_record_info.dart';
 import 'package:poc_chat_2/models/events/event.dart';

@@ -1,5 +1,8 @@
 {
   "cSpell.words": [
     "unawaited"
+  ],
+  "java.project.sourcePaths": [
+    "lib/models"
   ]
 }

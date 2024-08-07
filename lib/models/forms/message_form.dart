@@ -25,13 +25,13 @@ class TextMessageForm extends MessageForm {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
+    required this.text,
     super.deletedAt,
     super.addedByEventRecordNumber,
     super.updatedByEventRecordNumber,
-    this.text,
   });
 
-  final String? text;
+  final String text;
 }
 
 class TextReplyMessageForm extends MessageForm {
@@ -40,14 +40,14 @@ class TextReplyMessageForm extends MessageForm {
     required super.createdAt,
     required super.updatedAt,
     required this.repliedMessage,
+    required this.text,
     super.deletedAt,
     super.addedByEventRecordNumber,
     super.updatedByEventRecordNumber,
-    this.text,
   });
 
   final Message repliedMessage;
-  final String? text;
+  final String text;
 }
 
 class PhotoMessageForm extends MessageForm {
