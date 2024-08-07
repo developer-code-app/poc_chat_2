@@ -1,11 +1,18 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/mock_data.dart';
+import 'package:poc_chat_2/model_services/event/creator.dart';
+import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/pages/chats/bloc/chats_page_bloc.dart';
 import 'package:poc_chat_2/pages/chats/chats_page.dart';
 import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
+import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_recorded_event_entity.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 import 'package:poc_chat_2/services/member/member_service.dart';
@@ -16,10 +23,74 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  static String webSocketUrl = 'ws://10.0.0.35:8081';
+  final rueJaiUser = MockData.rueJaiUser;
+
+  WebSocket? webSocket;
+
+  Future<void> connect() async {
+    if (webSocket?.readyState == WebSocket.open) return;
+
+    try {
+      webSocket = await WebSocket.connect(webSocketUrl, headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Authorization': 'Bearer ${rueJaiUser.rueJaiUserId}'
+      });
+      webSocket?.listen(
+        (jsonString) {
+          final json = jsonDecode(jsonString) as Map<String, dynamic>;
+          final entity = RueJaiChatRecordedEventEntity.fromJson(json);
+          final recordedEvent = RecordedEvent.fromEntity(entity: entity);
+        },
+        onError: (_) => reconnected(),
+        onDone: () {
+          reconnected().then((_) => syncEvent());
+        },
+      );
+
+      unawaited(syncEvent());
+    } catch (error) {
+      print('Error: ${error.toString()}');
+    }
+  }
+
+  Future<void> reconnected() async {
+    await disconnect().then((_) => connect());
+  }
+
+  Future<void> disconnect() async {
+    if (webSocket?.readyState == WebSocket.open) {
+      await webSocket?.close();
+      webSocket = null;
+    }
+  }
+
+  Future<void> syncEvent() async {
+    // TODO: implement sync event.
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    connect();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    disconnect();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -63,7 +134,7 @@ class MyApp extends StatelessWidget {
               create: (context) => ChatsPageBloc(
                 alertDialogCubit: context.read<AlertDialogCubit>(),
                 rueJaiUserService: RueJaiUserService(
-                  rueJaiUser: MockData.rueJaiUser,
+                  rueJaiUser: rueJaiUser,
                   localChatRepository: context.read<LocalChatRepository>(),
                   serverChatRepository: context.read<ServerChatRepository>(),
                 ),

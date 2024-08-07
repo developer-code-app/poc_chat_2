@@ -1,4 +1,5 @@
 import 'package:poc_chat_2/model_services/chat_room/chat_room_lister.dart';
+import 'package:poc_chat_2/model_services/event/creator.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/forms/chat_room_form.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
@@ -10,14 +11,16 @@ class RueJaiUserService {
     required this.rueJaiUser,
     required this.localChatRepository,
     required this.serverChatRepository,
-  }) : _chatRoomLister = ChatRoomLister(
+  })  : _chatRoomLister = ChatRoomLister(
           localChatRepository: localChatRepository,
           serverChatRepository: serverChatRepository,
-        );
+        ),
+        _eventCreator = EventCreator(rueJaiUser: rueJaiUser);
 
   final RueJaiUser rueJaiUser;
   final LocalChatRepository localChatRepository;
   final ServerChatRepository serverChatRepository;
+  final EventCreator _eventCreator;
 
   final ChatRoomLister _chatRoomLister;
 
@@ -26,6 +29,8 @@ class RueJaiUserService {
   }
 
   Future<void> createChatRoom({required ChatRoomForm form}) async {
-    serverChatRepository.createChatRoom(form: form);
+    final event = _eventCreator.createCreateRoomEventFromForm(form: form);
+
+    serverChatRepository.publishCreateChatRoomEvent(event: event);
   }
 }
