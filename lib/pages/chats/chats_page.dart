@@ -142,9 +142,6 @@ class _ChatsPageState extends State<ChatsPage> {
       MaterialPageRoute(
         builder: (context) => MultiRepositoryProvider(
           providers: [
-            RepositoryProvider<ServerChatRepository>(
-              create: (context) => ServerChatRepository(),
-            ),
             RepositoryProvider<LocalChatRepository>(
               create: (context) => LocalChatRepository(
                 provider: IsarStorageProvider.basic(),

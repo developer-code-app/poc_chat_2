@@ -31,6 +31,7 @@ class ChatRoomPagePresenter {
 
 class MemberPresenter {
   MemberPresenter({
+    required this.id,
     required this.name,
     required this.thumbnail,
     required this.userRole,
@@ -38,6 +39,7 @@ class MemberPresenter {
 
   factory MemberPresenter.fromModel(ChatRoomMember owner) {
     return MemberPresenter(
+      id: owner.id,
       name: owner.rueJaiUser.name,
       thumbnail: owner.rueJaiUser.thumbnailUrl,
       userRole: _getUserRoleValue(owner.rueJaiUser.rueJaiUserRole),
@@ -47,16 +49,17 @@ class MemberPresenter {
   static String _getUserRoleValue(RueJaiUserRole userRole) {
     switch (userRole) {
       case RueJaiUserRole.homeOwner:
-        return 'home owner';
+        return 'Home Owner';
       case RueJaiUserRole.resident:
-        return 'resident';
+        return 'Resident';
       case RueJaiUserRole.renter:
-        return 'renter';
+        return 'Renter';
       case RueJaiUserRole.customerService:
-        return 'customer service';
+        return 'Customer Service';
     }
   }
 
+  final int id;
   final String name;
   final String thumbnail;
   final String userRole;

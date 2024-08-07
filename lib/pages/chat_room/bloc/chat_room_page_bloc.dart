@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:poc_chat_2/broadcaster/broadcaster.dart' as broadcaster;
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_unrecorded_event_action.dart';
+import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/events/message_event.dart';
@@ -52,6 +53,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   final ServerChatRepository serverChatRepository;
   final LocalChatRepository localChatRepository;
   final ChatRoom chatRoom;
+  final currentUser = MockData.khunPatPong;
 
   StreamSubscription? _broadcasterSubscription;
 
@@ -66,6 +68,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     StartedEvent event,
     Emitter<_State> emit,
   ) async {
+    final chatRoom = MockData.chatRoom2;
+    
     emit(LoadSuccessState(chatRoom: chatRoom));
   }
 
