@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
+import 'package:poc_chat_2/pages/photo_view_gallery_page.dart';
 
 class ChatRoomPage extends StatefulWidget {
   const ChatRoomPage({super.key});
@@ -320,11 +321,18 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     if (photoMessage.urls.length > 1) {
       return _buildPhotoGallery(context, urls: photoMessage.urls);
     } else {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Image.network(
-          photoMessage.urls.first,
-          fit: BoxFit.cover,
+      return GestureDetector(
+        onTap: () => _viewPhotoGallery(
+          context,
+          urls: photoMessage.urls,
+          index: 0,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Image.network(
+            photoMessage.urls.first,
+            fit: BoxFit.cover,
+          ),
         ),
       );
     }
@@ -414,20 +422,48 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     BuildContext context, {
     required List<String> urls,
   }) {
+    final gridViewImageUrls = urls.sublist(0, urls.length - 1);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: Column(
         children: [
-          _buildGridView(
-            context,
-            urls: urls.sublist(0, urls.length - 1),
+          GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              crossAxisCount: 2,
+            ),
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: gridViewImageUrls.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () => _viewPhotoGallery(
+                  context,
+                  urls: urls,
+                  index: index,
+                ),
+                child: Image.network(
+                  urls[index],
+                  fit: BoxFit.cover,
+                ),
+              );
+            },
           ),
           const SizedBox(height: 8),
-          AspectRatio(
-            aspectRatio: 2,
-            child: Image.network(
-              urls.last,
-              fit: BoxFit.cover,
+          GestureDetector(
+            onTap: () => _viewPhotoGallery(
+              context,
+              urls: urls,
+              index: urls.length - 1,
+            ),
+            child: AspectRatio(
+              aspectRatio: 2,
+              child: Image.network(
+                urls.last,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ],
@@ -457,31 +493,54 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         final shouldShowSeeMore =
             isLastImageUrl && urls.length > limitDisplayImage;
 
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.network(
-              urls[index],
-              fit: BoxFit.cover,
-            ),
-            Visibility(
-              visible: shouldShowSeeMore,
-              child: Container(
-                color: Colors.black.withAlpha(150),
-                child: Center(
-                  child: Text(
-                    '+ ${urls.length - limitDisplayImage + 1}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+        return GestureDetector(
+          onTap: () => _viewPhotoGallery(
+            context,
+            urls: urls,
+            index: index,
+          ),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.network(
+                urls[index],
+                fit: BoxFit.cover,
+              ),
+              Visibility(
+                visible: shouldShowSeeMore,
+                child: Container(
+                  color: Colors.black.withAlpha(150),
+                  child: Center(
+                    child: Text(
+                      '+ ${urls.length - limitDisplayImage + 1}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
+    );
+  }
+
+  void _viewPhotoGallery(
+    BuildContext context, {
+    required List<String> urls,
+    required int index,
+  }) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PhotoViewGalleryPage(
+          imageUrls: urls,
+          initialIndex: index,
+        ),
+      ),
     );
   }
 }
