@@ -137,19 +137,47 @@ class MockData {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-    ],
-    failedMessages: [
-      TextMessage(
+      PhotoMessage(
         id: 4,
-        text: 'ทดสอบ',
         owner: khunPatPong,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        urls: [
+          'https://picsum.photos/800/800.jpg',
+        ],
       ),
+      PhotoMessage(
+        id: 5,
+        owner: khunPatPong,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        urls: [
+          'https://picsum.photos/600/600.jpg',
+          'https://picsum.photos/700/700.jpg',
+          'https://picsum.photos/800/800.jpg',
+        ],
+      ),
+      PhotoMessage(
+        id: 6,
+        owner: khunPatPong,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        urls: [
+          'https://picsum.photos/800/800.jpg',
+          'https://picsum.photos/600/600.jpg',
+          'https://picsum.photos/600/600.jpg',
+          'https://picsum.photos/600/600.jpg',
+          'https://picsum.photos/600/600.jpg',
+          'https://picsum.photos/800/800.jpg',
+          'https://picsum.photos/800/800.jpg',
+          'https://www.girlsallaround.com/wp-content/uploads/2015/02/Francis-Co-launches-Samsung-professional-laundry-range.jpg',
+        ],
+      ),
+    ],
+    failedMessages: [
       TextMessage(
-        id: 4,
-        text:
-            'ทดสอบ Failed Message MessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessage',
+        id: 7,
+        text: 'ทดสอบ',
         owner: khunPatPong,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
@@ -157,7 +185,7 @@ class MockData {
     ],
     sendingMessages: [
       TextMessage(
-        id: 5,
+        id: 8,
         text:
             'ทดสอบ Sending Message MessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessage',
         owner: khunPatPong,

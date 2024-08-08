@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -190,7 +192,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             if (isOwner) const Spacer(),
             Flexible(
               flex: 4,
-              child: _buildMessageBubble(context, message: message),
+              child: _buildMessage(context, message: message),
             ),
             if (!isOwner) const Spacer(),
           ],
@@ -210,7 +212,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         const Spacer(),
         Flexible(
           flex: 4,
-          child: _buildMessageBubble(context, message: message),
+          child: _buildMessage(context, message: message),
         ),
       ],
     );
@@ -227,7 +229,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         const Spacer(),
         Flexible(
           flex: 4,
-          child: _buildMessageBubble(context, message: message),
+          child: _buildMessage(context, message: message),
         ),
       ],
     );
@@ -235,13 +237,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildMessageBubble(
     BuildContext context, {
-    required MessagePresenter message,
+    required AlignmentGeometry alignment,
+    required Widget child,
   }) {
-    final bloc = context.read<ChatRoomPageBloc>();
-    final isOwner = bloc.currentUser.id == message.owner.id;
-
     return Align(
-      alignment: isOwner ? Alignment.topRight : Alignment.topLeft,
+      alignment: alignment,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.grey.shade200,
@@ -249,16 +249,13 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: _buildMessageContent(
-            context,
-            message: message,
-          ),
+          child: child,
         ),
       ),
     );
   }
 
-  Widget _buildMessageContent(
+  Widget _buildMessage(
     BuildContext context, {
     required MessagePresenter message,
   }) {
@@ -282,12 +279,18 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     BuildContext context, {
     required TextMessagePresenter textMessage,
   }) {
+    final bloc = context.read<ChatRoomPageBloc>();
+    final isOwner = bloc.currentUser.id == textMessage.owner.id;
     final text = textMessage.text;
 
     if (text != null) {
-      return Text(
-        text,
-        style: const TextStyle(fontSize: 16),
+      return _buildMessageBubble(
+        context,
+        alignment: isOwner ? Alignment.topRight : Alignment.topLeft,
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 16),
+        ),
       );
     } else {
       return Container();
@@ -314,7 +317,17 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     BuildContext context, {
     required PhotoMessagePresenter photoMessage,
   }) {
-    return Container();
+    if (photoMessage.urls.length > 1) {
+      return _buildPhotoGallery(context, urls: photoMessage.urls);
+    } else {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Image.network(
+          photoMessage.urls.first,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
   }
 
   Widget _buildVideoMessage(
@@ -378,6 +391,97 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPhotoGallery(
+    BuildContext context, {
+    required List<String> urls,
+  }) {
+    const limitDisplayImage = 6;
+    final shouldShowStaggeredGrid =
+        urls.length < limitDisplayImage && urls.length.isOdd;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(15),
+      child: shouldShowStaggeredGrid
+          ? _buildStaggeredGridView(context, urls: urls)
+          : _buildGridView(context, urls: urls),
+    );
+  }
+
+  Widget _buildStaggeredGridView(
+    BuildContext context, {
+    required List<String> urls,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(15),
+      child: Column(
+        children: [
+          _buildGridView(
+            context,
+            urls: urls.sublist(0, urls.length - 1),
+          ),
+          const SizedBox(height: 8),
+          AspectRatio(
+            aspectRatio: 2,
+            child: Image.network(
+              urls.last,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGridView(
+    BuildContext context, {
+    required List<String> urls,
+  }) {
+    const limitDisplayImage = 6;
+    final limitDisplayImageUrls =
+        urls.sublist(0, min(urls.length, limitDisplayImage));
+
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        crossAxisCount: 2,
+      ),
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: limitDisplayImageUrls.length,
+      itemBuilder: (context, index) {
+        final isLastImageUrl = index == limitDisplayImage - 1;
+        final shouldShowSeeMore =
+            isLastImageUrl && urls.length > limitDisplayImage;
+
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.network(
+              urls[index],
+              fit: BoxFit.cover,
+            ),
+            Visibility(
+              visible: shouldShowSeeMore,
+              child: Container(
+                color: Colors.black.withAlpha(150),
+                child: Center(
+                  child: Text(
+                    '+ ${urls.length - limitDisplayImage + 1}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
