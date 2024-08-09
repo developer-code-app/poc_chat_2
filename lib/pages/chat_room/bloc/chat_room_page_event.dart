@@ -139,3 +139,19 @@ class ChatRoomFailedMessageRemovedEvent extends _Event {
   final int chatRoomId;
   final int messageId;
 }
+
+class AssetsPickerRequestedEvent extends _Event {
+  AssetsPickerRequestedEvent({
+    required this.context,
+  });
+
+  final BuildContext context;
+}
+
+class RemoveAssetRequestedEvent extends _Event {
+  RemoveAssetRequestedEvent({
+    required this.asset,
+  });
+
+  final AssetEntity asset;
+}

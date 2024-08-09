@@ -1,7 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:poc_chat_2/app/image_picker/image_picker.dart';
+import 'package:poc_chat_2/app/image_picker/ruejai_camera_picker_text_delegate.dart';
+
 import 'package:poc_chat_2/broadcaster/broadcaster.dart' as broadcaster;
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_unrecorded_event_action.dart';
+import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
@@ -9,9 +15,9 @@ import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
+import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 
 part 'chat_room_page_event.dart';
 part 'chat_room_page_state.dart';
@@ -24,6 +30,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     required this.serverChatRepository,
     required this.localChatRepository,
     required this.chatRoom,
+    required this.assetsPickerCubit,
   }) : super(InitialState()) {
     on<StartedEvent>(_onStartedEvent);
     on<MessageSentEvent>(_onMessageSentEvent);
@@ -44,6 +51,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         _onChatRoomSendingMessageTimeOutEvent);
     on<ChatRoomFailedMessageRetriedEvent>(_onChatRoomFailedMessageRetriedEvent);
     on<ChatRoomFailedMessageRemovedEvent>(_onChatRoomFailedMessageRemovedEvent);
+    on<AssetsPickerRequestedEvent>(_onAssetsPickerRequestedEvent);
+    on<RemoveAssetRequestedEvent>(_onRemoveAssetRequestedEvent);
 
     broadcaster.Broadcaster.instance.stream.listen(
       onBroadcasterMessageReceived,
@@ -53,6 +62,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   final ServerChatRepository serverChatRepository;
   final LocalChatRepository localChatRepository;
   final ChatRoom chatRoom;
+  final AssetsPickerCubit assetsPickerCubit;
   final currentUser = MockData.khunPatPong;
 
   StreamSubscription? _broadcasterSubscription;
@@ -69,7 +79,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     Emitter<_State> emit,
   ) async {
     final chatRoom = MockData.chatRoom2;
-    
+
     emit(LoadSuccessState(chatRoom: chatRoom));
   }
 
@@ -315,6 +325,42 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         ),
       ),
     );
+  }
+
+  Future<void> _onAssetsPickerRequestedEvent(
+    AssetsPickerRequestedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final selectedAssets = assetsPickerCubit.state;
+    final assets = await ImagePicker.show(
+      event.context,
+      maxAssets: 10,
+      selectedAssets: selectedAssets,
+      onPressedCameraPicker: (context) async {
+        final result = await CameraPicker.pickFromCamera(
+          context,
+          pickerConfig: CameraPickerConfig(
+            textDelegate: RuejaiCameraPickerTextDelegate(context),
+          ),
+        );
+
+        if (result != null) {
+          Navigator.of(context).pop();
+          assetsPickerCubit.addAssets([result] + selectedAssets);
+        }
+      },
+    );
+
+    if (assets != null) {
+      assetsPickerCubit.addAssets(assets);
+    }
+  }
+
+  Future<void> _onRemoveAssetRequestedEvent(
+    RemoveAssetRequestedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    assetsPickerCubit.remove(event.asset);
   }
 
   Future<void> _processEvent(MessageEvent event) async {

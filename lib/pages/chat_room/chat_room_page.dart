@@ -3,9 +3,11 @@ import 'dart:math';
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
 import 'package:poc_chat_2/pages/photo_view_gallery_page.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class ChatRoomPage extends StatefulWidget {
   const ChatRoomPage({super.key});
@@ -125,54 +127,132 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   }
 
   Widget _buildChatMessageInput(BuildContext context) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
+    return Column(
+      children: [
+        BlocBuilder<AssetsPickerCubit, List<AssetEntity>>(
+          builder: (context, assets) {
+            return Visibility(
+              visible: assets.isNotEmpty,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: _buildPhotosSelectedInput(
+                  context,
+                  assets: assets,
+                ),
+              ),
+            );
+          },
+        ),
+        SizedBox(
+          height: 60,
+          width: double.maxFinite,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 50,
+                height: 50,
+                child: GestureDetector(
+                  onTap: () => bloc.add(
+                    AssetsPickerRequestedEvent(context: context),
+                  ),
+                  child: Icon(
+                    Icons.photo_outlined,
+                    color: Colors.grey.shade700,
+                    size: 32,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: textEditingController,
+                  decoration: const InputDecoration(hintText: 'Aa'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 80,
+                height: 80,
+                child: GestureDetector(
+                  onTap: _onMessageSubmitted,
+                  child: Icon(
+                    Icons.send,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhotosSelectedInput(
+    BuildContext context, {
+    required List<AssetEntity> assets,
+  }) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
     return SizedBox(
-      height: 60,
-      width: double.maxFinite,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 50,
-            height: 50,
-            child: GestureDetector(
-              onTap: () {},
-              child: Icon(
-                Icons.camera_alt_outlined,
-                color: Colors.grey.shade700,
+      child: GridView.count(
+        crossAxisCount: 4,
+        crossAxisSpacing: 4,
+        mainAxisSpacing: 4,
+        shrinkWrap: true,
+        physics: const ScrollPhysics(),
+        children: List.generate(assets.length, (index) {
+          return Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Image(
+                    image: AssetEntityImageProvider(
+                      assets[index],
+                      isOriginal: false,
+                    ),
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
-            ),
-          ),
-          SizedBox(
-            width: 50,
-            height: 50,
-            child: GestureDetector(
-              onTap: () {},
-              child: Icon(
-                Icons.photo_outlined,
-                color: Colors.grey.shade700,
+              Positioned(
+                top: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () => bloc.add(
+                    RemoveAssetRequestedEvent(
+                      asset: assets[index],
+                    ),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.cancel,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: TextField(
-              controller: textEditingController,
-              decoration: const InputDecoration(hintText: 'Aa'),
-            ),
-          ),
-          const SizedBox(width: 8),
-          SizedBox(
-            width: 80,
-            height: 80,
-            child: GestureDetector(
-              onTap: _onMessageSubmitted,
-              child: Icon(
-                Icons.send,
-                color: Colors.grey.shade700,
-              ),
-            ),
-          ),
-        ],
+            ],
+          );
+        }),
       ),
     );
   }
