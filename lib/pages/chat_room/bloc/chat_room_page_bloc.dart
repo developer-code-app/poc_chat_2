@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
+import 'package:wechat_camera_picker/wechat_camera_picker.dart';
+
 import 'package:poc_chat_2/app/image_picker/image_picker.dart';
 import 'package:poc_chat_2/app/image_picker/ruejai_camera_picker_text_delegate.dart';
-
 import 'package:poc_chat_2/broadcaster/broadcaster.dart' as broadcaster;
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_unrecorded_event_action.dart';
+import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
@@ -17,7 +20,6 @@ import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
-import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 
 part 'chat_room_page_event.dart';
 part 'chat_room_page_state.dart';
@@ -31,6 +33,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     required this.localChatRepository,
     required this.chatRoom,
     required this.assetsPickerCubit,
+    required this.alertDialogCubit,
   }) : super(InitialState()) {
     on<StartedEvent>(_onStartedEvent);
     on<MessageSentEvent>(_onMessageSentEvent);
@@ -53,6 +56,9 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     on<ChatRoomFailedMessageRemovedEvent>(_onChatRoomFailedMessageRemovedEvent);
     on<AssetsPickerRequestedEvent>(_onAssetsPickerRequestedEvent);
     on<RemoveAssetRequestedEvent>(_onRemoveAssetRequestedEvent);
+    on<ConfirmedMessageActionRequestedEvent>(
+        _onConfirmedMessageActionRequestedEvent);
+    on<FailedMessageActionRequestedEvent>(_onFailedMessageActionRequestedEvent);
 
     broadcaster.Broadcaster.instance.stream.listen(
       onBroadcasterMessageReceived,
@@ -63,6 +69,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   final LocalChatRepository localChatRepository;
   final ChatRoom chatRoom;
   final AssetsPickerCubit assetsPickerCubit;
+  final AlertDialogCubit alertDialogCubit;
   final currentUser = MockData.khunPatPong;
 
   StreamSubscription? _broadcasterSubscription;
@@ -361,6 +368,49 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     Emitter<_State> emit,
   ) async {
     assetsPickerCubit.remove(event.asset);
+  }
+
+  Future<void> _onConfirmedMessageActionRequestedEvent(
+    ConfirmedMessageActionRequestedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final state = this.state;
+
+    if (state is LoadSuccessState) {
+      final message = state.chatRoom.confirmedMessages
+          .firstWhere((element) => element.id == event.messageId);
+      final isOwner = currentUser.id == message.owner.id;
+
+      alertDialogCubit.alertActionSheet(
+        actions: [
+          AlertAction('Reply'),
+          if (message is PhotoMessage) AlertAction('Save All'),
+          AlertAction('Copy'),
+          if (isOwner) AlertAction('Unsend'),
+        ],
+      );
+    }
+  }
+
+  Future<void> _onFailedMessageActionRequestedEvent(
+    FailedMessageActionRequestedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final state = this.state;
+
+    if (state is LoadSuccessState) {
+      final message = state.chatRoom.failedMessages
+          .firstWhere((element) => element.id == event.messageId);
+
+      alertDialogCubit.alertActionSheet(
+        actions: [
+          AlertAction('Resend'),
+          if (message is PhotoMessage) AlertAction('Save All'),
+          AlertAction('Copy'),
+          AlertAction('Unsend'),
+        ],
+      );
+    }
   }
 
   Future<void> _processEvent(MessageEvent event) async {

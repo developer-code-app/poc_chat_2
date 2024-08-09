@@ -140,6 +140,8 @@ class _ChatsPageState extends State<ChatsPage> {
   }
 
   void _navigationToChatRoomPage(ChatRoom chatRoom) {
+    final bloc = context.read<ChatsPageBloc>();
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -161,6 +163,7 @@ class _ChatsPageState extends State<ChatsPage> {
                   serverChatRepository: context.read<ServerChatRepository>(),
                   localChatRepository: context.read<LocalChatRepository>(),
                   assetsPickerCubit: context.read<AssetsPickerCubit>(),
+                  alertDialogCubit: bloc.alertDialogCubit,
                   chatRoom: chatRoom,
                 )..add(chat_room_bloc.StartedEvent()),
               ),

@@ -273,7 +273,12 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             if (isOwner) const Spacer(),
             Flexible(
               flex: 4,
-              child: _buildMessage(context, message: message),
+              child: GestureDetector(
+                onLongPress: () => bloc.add(
+                  ConfirmedMessageActionRequestedEvent(messageId: message.id),
+                ),
+                child: _buildMessage(context, message: message),
+              ),
             ),
             if (!isOwner) const Spacer(),
           ],
@@ -286,6 +291,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     BuildContext context, {
     required MessagePresenter message,
   }) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -293,7 +300,12 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         const Spacer(),
         Flexible(
           flex: 4,
-          child: _buildMessage(context, message: message),
+          child: GestureDetector(
+            onLongPress: () => bloc.add(
+              FailedMessageActionRequestedEvent(messageId: message.id),
+            ),
+            child: _buildMessage(context, message: message),
+          ),
         ),
       ],
     );

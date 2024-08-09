@@ -155,3 +155,19 @@ class RemoveAssetRequestedEvent extends _Event {
 
   final AssetEntity asset;
 }
+
+class ConfirmedMessageActionRequestedEvent extends _Event {
+  ConfirmedMessageActionRequestedEvent({
+    required this.messageId,
+  });
+
+  final int messageId;
+}
+
+class FailedMessageActionRequestedEvent extends _Event {
+  FailedMessageActionRequestedEvent({
+    required this.messageId,
+  });
+
+  final int messageId;
+}
