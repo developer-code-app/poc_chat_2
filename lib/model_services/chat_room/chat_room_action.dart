@@ -76,7 +76,7 @@ class ChatRoomAction {
 
   Future<ChatRoomLatestEventRecordInfo>
       getServerChatRoomLatestEventRecordInfo() async {
-    return serverChatRepository.getServerChatRoomLatestEventRecordInfo(
+    return serverChatRepository.getChatRoomLatestEventRecordInfo(
       chatRoomId: chatRoomId,
     );
   }

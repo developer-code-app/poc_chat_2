@@ -5,7 +5,7 @@ import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/room_management_event.dart';
 
 class ServerChatRepository {
-  Future<ChatRoomLatestEventRecordInfo> getServerChatRoomLatestEventRecordInfo({
+  Future<ChatRoomLatestEventRecordInfo> getChatRoomLatestEventRecordInfo({
     required int chatRoomId,
   }) async {
     return ChatRoomLatestEventRecordInfo(
