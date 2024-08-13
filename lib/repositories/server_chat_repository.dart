@@ -14,6 +14,10 @@ class ServerChatRepository {
     );
   }
 
+  Future<List<int>> getAllChatRoomIds() async {
+    return [];
+  }
+
   Future<void> publishMessageEvent({
     required int chatRoomId,
     required MessageEvent event,
