@@ -5,6 +5,7 @@ import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/room_management_event.dart';
 
 class ServerChatRepository {
+  // GET /chats/chat-rooms/{chatRoomId}/latest-event-record-info
   Future<ChatRoomLatestEventRecordInfo> getChatRoomLatestEventRecordInfo({
     required int chatRoomId,
   }) async {
@@ -14,25 +15,30 @@ class ServerChatRepository {
     );
   }
 
+  // GET /chats/chat-rooms
   Future<List<int>> getAllChatRoomIds() async {
     return [];
   }
 
+  //  WS /chats
   Future<void> publishMessageEvent({
     required int chatRoomId,
     required MessageEvent event,
   }) async {}
 
+  //  WS /chats
   Future<void> publishReadMessageEvent({
     required int chatRoomId,
     required ReadMessageEvent event,
   }) async {}
 
+  //  WS /chats
   Future<void> publishRoomManagementEvent({
     required int chatRoomId,
     required RoomManagementEvent event,
   }) async {}
 
+  //  WS /chats
   Future<void> publishCreateChatRoomEvent({
     required CreateRoomEvent event,
   }) async {}
