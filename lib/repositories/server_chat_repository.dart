@@ -20,9 +20,10 @@ class ServerChatRepository {
     );
   }
 
-  // GET /chats/chat-rooms
   Future<List<int>> getAllChatRoomIds() async {
-    return [];
+    return provider.chat.getChatRooms().then((response) {
+      return response.result;
+    });
   }
 
   //  WS /chats

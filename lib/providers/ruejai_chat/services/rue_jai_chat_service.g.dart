@@ -22,19 +22,19 @@ class _RueJaiChatService implements RueJaiChatService {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<List<int>> getChatRooms() async {
+  Future<RuejaiResultListResponse<int>> getChatRooms() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<List<int>>(Options(
+    final _options = _setStreamType<RuejaiResultListResponse<int>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
         .compose(
           _dio.options,
-          'api/main_feed',
+          'api/chat-rooms',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -43,10 +43,13 @@ class _RueJaiChatService implements RueJaiChatService {
           _dio.options.baseUrl,
           baseUrl,
         )));
-    final _result = await _dio.fetch<List<dynamic>>(_options);
-    late List<int> _value;
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late RuejaiResultListResponse<int> _value;
     try {
-      _value = _result.data!.cast<int>();
+      _value = RuejaiResultListResponse<int>.fromJson(
+        _result.data!,
+        (json) => json as int,
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

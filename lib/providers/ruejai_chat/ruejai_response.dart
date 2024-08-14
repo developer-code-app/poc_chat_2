@@ -34,3 +34,19 @@ class RuejaiListResponse<T extends Equatable> extends Equatable {
   @override
   List<Object> get props => [result];
 }
+
+@JsonSerializable(createToJson: false, genericArgumentFactories: true)
+class RuejaiResultListResponse<T> extends Equatable {
+  const RuejaiResultListResponse(this.result);
+
+  factory RuejaiResultListResponse.fromJson(
+    Map<String, dynamic> json,
+    T Function(Object? json) fromJson,
+  ) =>
+      _$RuejaiResultListResponseFromJson(json, fromJson);
+
+  final List<T> result;
+
+  @override
+  List<Object> get props => [result];
+}
