@@ -1,6 +1,7 @@
 import 'package:poc_chat_2/model_services/chat_room/chat_room_action.dart';
 import 'package:poc_chat_2/model_services/chat_room/chat_room_creator.dart';
 import 'package:poc_chat_2/model_services/chat_room/chat_room_lister.dart';
+import 'package:poc_chat_2/model_services/user_profile/inquiry.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/models/notification.dart';
@@ -17,6 +18,9 @@ class SystemService {
         ),
         _chatRoomCreator = ChatRoomCreator(
           localChatRepository: localChatRepository,
+        ),
+        _userProfileInquiry = UserProfileInquiry(
+          serverChatRepository: serverChatRepository,
         );
 
   final LocalChatRepository localChatRepository;
@@ -31,6 +35,7 @@ class SystemService {
 
   final ChatRoomLister _chatRoomLister;
   final ChatRoomCreator _chatRoomCreator;
+  final UserProfileInquiry _userProfileInquiry;
 
   Future<void> syncChatRooms() async {
     _updateExistingChatRooms();
@@ -67,7 +72,8 @@ class SystemService {
   }
 
   Future<void> _createAndSyncNewChatRoomsIfExists() async {
-    final serverChatRoomIds = [1];
+    final serverChatRoomIds =
+        await _userProfileInquiry.getServerAllChatRoomIds();
     final existingChatRoomIds = await _chatRoomLister.getAllChatRooms().then(
           (chatRooms) => chatRooms.map((chatRoom) => chatRoom.id),
         );
