@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 
@@ -34,6 +35,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     required this.chatRoom,
     required this.assetsPickerCubit,
     required this.alertDialogCubit,
+    required this.replyMessageCubit,
   }) : super(InitialState()) {
     on<StartedEvent>(_onStartedEvent);
     on<MessageSentEvent>(_onMessageSentEvent);
@@ -56,6 +58,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     on<ChatRoomFailedMessageRemovedEvent>(_onChatRoomFailedMessageRemovedEvent);
     on<AssetsPickerRequestedEvent>(_onAssetsPickerRequestedEvent);
     on<RemoveAssetRequestedEvent>(_onRemoveAssetRequestedEvent);
+    on<RemoveReplyRequestedEvent>(_onRemoveReplyRequestedEvent);
     on<ConfirmedMessageActionRequestedEvent>(
         _onConfirmedMessageActionRequestedEvent);
     on<FailedMessageActionRequestedEvent>(_onFailedMessageActionRequestedEvent);
@@ -70,6 +73,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   final ChatRoom chatRoom;
   final AssetsPickerCubit assetsPickerCubit;
   final AlertDialogCubit alertDialogCubit;
+  final ReplyMessageCubit replyMessageCubit;
   final currentUser = MockData.khunPatPong;
 
   StreamSubscription? _broadcasterSubscription;
@@ -383,7 +387,10 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
 
       alertDialogCubit.alertActionSheet(
         actions: [
-          AlertAction('Reply'),
+          AlertAction(
+            'Reply',
+            onPressed: () => _replyMessage(message: message),
+          ),
           if (message is PhotoMessage) AlertAction('Save All'),
           AlertAction('Copy'),
           if (isOwner) AlertAction('Unsend'),
@@ -413,6 +420,13 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     }
   }
 
+  Future<void> _onRemoveReplyRequestedEvent(
+    RemoveReplyRequestedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    replyMessageCubit.clear();
+  }
+
   Future<void> _processEvent(MessageEvent event) async {
     try {
       await ChatRoomUnrecordedEventAction(
@@ -424,6 +438,10 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     } catch (error) {
       print(error);
     }
+  }
+
+  void _replyMessage({required Message message}) {
+    replyMessageCubit.reply(message);
   }
 
   void onBroadcasterMessageReceived(broadcaster.BroadcasterMessage message) {

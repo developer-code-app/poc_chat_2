@@ -108,6 +108,20 @@ class MockData {
     lastReadMessageId: 5,
   );
 
+  static final siteEngineer = ChatRoomMember(
+    id: 4,
+    role: ChatRoomMemberRole.member,
+    rueJaiUser: RueJaiUser(
+      id: 4,
+      rueJaiUserId: '4',
+      rueJaiUserType: RueJaiUserType.rueJaiAdmin,
+      rueJaiUserRole: RueJaiUserRole.customerService,
+      name: 'พีระ',
+      thumbnailUrl: 'https://picsum.photos/800/800.jpg',
+    ),
+    lastReadMessageId: 5,
+  );
+
   static final chatRoom2 = ChatRoom(
     id: 2,
     name: "ผู้ดูแลโครงการ",
@@ -189,25 +203,74 @@ class MockData {
         updatedAt: DateTime.now(),
         deletedAt: DateTime.now(),
       ),
+      TextMessage(
+        id: 9,
+        text:
+            'สวัสดีครับคุณพัฒพงษ์ ผมพีระช่างประจำโครงการนะครับ กำแพงห้องครัวฝั่งที่ติดกับห้องโถงสามารถทุบได้ครับเพราะไม่ได้อยู่ติดกับเสาบ้านครับผม',
+        owner: siteEngineer,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      TextMessage(
+        id: 10,
+        text: 'ขอบคุณครับผม',
+        owner: khunPatPong,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      TextMessage(
+        id: 11,
+        text: 'ยินดีครับ คุณพัฒพงษ์ มีอะไรสอบถาม เพิ่มเติมอีกไหมครับ',
+        owner: siteEngineer,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      TextReplyMessage(
+        id: 12,
+        text: 'ไม่มีครับ',
+        owner: khunPatPong,
+        repliedMessage: TextMessage(
+          id: 11,
+          text: 'ยินดีครับ คุณพัฒพงษ์ มีอะไรสอบถาม เพิ่มเติมอีกไหมครับ',
+          owner: siteEngineer,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+       TextReplyMessage(
+        id: 13,
+        text: 'ขอบคุณครับ',
+        owner: siteEngineer,
+        repliedMessage: TextMessage(
+          id: 12,
+          text: 'ไม่มีครับ',
+          owner: khunPatPong,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
     ],
     failedMessages: [
-      TextMessage(
-        id: 7,
-        text: 'ทดสอบ',
-        owner: khunPatPong,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      ),
+      // TextMessage(
+      //   id: 13,
+      //   text: 'ทดสอบ',
+      //   owner: khunPatPong,
+      //   createdAt: DateTime.now(),
+      //   updatedAt: DateTime.now(),
+      // ),
     ],
     sendingMessages: [
-      TextMessage(
-        id: 8,
-        text:
-            'ทดสอบ Sending Message MessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessageMessage',
-        owner: khunPatPong,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      ),
+      // TextMessage(
+      //   id: 14,
+      //   text: 'ทดสอบ Sending Message',
+      //   owner: khunPatPong,
+      //   createdAt: DateTime.now(),
+      //   updatedAt: DateTime.now(),
+      // ),
     ],
   );
 }

@@ -156,6 +156,8 @@ class RemoveAssetRequestedEvent extends _Event {
   final AssetEntity asset;
 }
 
+class RemoveReplyRequestedEvent extends _Event {}
+
 class ConfirmedMessageActionRequestedEvent extends _Event {
   ConfirmedMessageActionRequestedEvent({
     required this.messageId,

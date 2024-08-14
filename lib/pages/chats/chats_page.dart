@@ -2,6 +2,7 @@ import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
+import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart'
@@ -155,6 +156,9 @@ class _ChatsPageState extends State<ChatsPage> {
             BlocProvider<AssetsPickerCubit>(
               create: (context) => AssetsPickerCubit(),
             ),
+            BlocProvider<ReplyMessageCubit>(
+              create: (context) => ReplyMessageCubit(),
+            ),
           ],
           child: MultiBlocProvider(
             providers: [
@@ -164,6 +168,7 @@ class _ChatsPageState extends State<ChatsPage> {
                   localChatRepository: context.read<LocalChatRepository>(),
                   assetsPickerCubit: context.read<AssetsPickerCubit>(),
                   alertDialogCubit: bloc.alertDialogCubit,
+                  replyMessageCubit: context.read<ReplyMessageCubit>(),
                   chatRoom: chatRoom,
                 )..add(chat_room_bloc.StartedEvent()),
               ),

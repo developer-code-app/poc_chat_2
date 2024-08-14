@@ -4,6 +4,8 @@ import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
+import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
+import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
 import 'package:poc_chat_2/pages/photo_view_gallery_page.dart';
@@ -21,6 +23,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   final scrollController = ScrollController();
 
   void _onMessageSubmitted() {
+    final bloc = context.read<ChatRoomPageBloc>();
+
     scrollController.animateTo(
       0,
       duration: const Duration(milliseconds: 300),
@@ -29,6 +33,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
     FocusScope.of(context).unfocus();
     textEditingController.clear();
+    bloc.replyMessageCubit.clear();
   }
 
   bool _shouldShowUser({
@@ -71,7 +76,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       appBar: AppBar(title: Text(appBarTitle ?? '')),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: child,
         ),
       ),
@@ -143,6 +148,23 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 ),
               ),
             );
+          },
+        ),
+        BlocBuilder<ReplyMessageCubit, Message?>(
+          builder: (context, message) {
+            if (message != null) {
+              final messagePresenter = MessagePresenter.fromModel(message);
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: _buildReplyMessageInput(
+                  context,
+                  message: messagePresenter,
+                ),
+              );
+            } else {
+              return Container();
+            }
           },
         ),
         SizedBox(
@@ -277,7 +299,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 onLongPress: () => bloc.add(
                   ConfirmedMessageActionRequestedEvent(messageId: message.id),
                 ),
-                child: _buildMessage(context, message: message),
+                child: Align(
+                  alignment: isOwner ? Alignment.topRight : Alignment.topLeft,
+                  child: _buildMessage(context, message: message),
+                ),
               ),
             ),
             if (!isOwner) const Spacer(),
@@ -304,7 +329,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             onLongPress: () => bloc.add(
               FailedMessageActionRequestedEvent(messageId: message.id),
             ),
-            child: _buildMessage(context, message: message),
+            child: Align(
+              alignment: Alignment.topRight,
+              child: _buildMessage(context, message: message),
+            ),
           ),
         ),
       ],
@@ -322,7 +350,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         const Spacer(),
         Flexible(
           flex: 4,
-          child: _buildMessage(context, message: message),
+          child: Align(
+            alignment: Alignment.topRight,
+            child: _buildMessage(context, message: message),
+          ),
         ),
       ],
     );
@@ -330,20 +361,21 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildMessageBubble(
     BuildContext context, {
-    required AlignmentGeometry alignment,
+    required bool isOwner,
     required Widget child,
+    bool isRepliedMessage = false,
   }) {
-    return Align(
-      alignment: alignment,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(8),
+    return Container(
+      decoration: BoxDecoration(
+        color: _bubbleMessageColor(
+          isOwner: isOwner,
+          isRepliedMessage: isRepliedMessage,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: child,
-        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: child,
       ),
     );
   }
@@ -351,13 +383,18 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   Widget _buildMessage(
     BuildContext context, {
     required MessagePresenter message,
+    bool isRepliedMessage = false,
   }) {
     if (message.deletedAt != null) {
       return _buildUnsendMessage(context, message: message);
     } else {
       switch (message) {
         case TextMessagePresenter():
-          return _buildTextMessage(context, textMessage: message);
+          return _buildTextMessage(
+            context,
+            textMessage: message,
+            isRepliedMessage: isRepliedMessage,
+          );
         case TextReplyMessagePresenter():
           return _buildTextReplyMessage(context, textReplyMessage: message);
         case PhotoMessagePresenter():
@@ -375,6 +412,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   Widget _buildTextMessage(
     BuildContext context, {
     required TextMessagePresenter textMessage,
+    bool isRepliedMessage = false,
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
     final isOwner = bloc.currentUser.id == textMessage.owner.id;
@@ -383,10 +421,17 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     if (text != null) {
       return _buildMessageBubble(
         context,
-        alignment: isOwner ? Alignment.topRight : Alignment.topLeft,
+        isOwner: isOwner,
+        isRepliedMessage: isRepliedMessage,
         child: Text(
           text,
-          style: const TextStyle(fontSize: 16),
+          style: TextStyle(
+            fontSize: 16,
+            color: _textMessageColor(
+              isOwner: isOwner,
+              isRepliedMessage: isRepliedMessage,
+            ),
+          ),
         ),
       );
     } else {
@@ -398,12 +443,34 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     BuildContext context, {
     required TextReplyMessagePresenter textReplyMessage,
   }) {
+    final bloc = context.read<ChatRoomPageBloc>();
     final text = textReplyMessage.text;
+    final isOwner = bloc.currentUser.id == textReplyMessage.owner.id;
 
     if (text != null) {
-      return Text(
-        text,
-        style: const TextStyle(fontSize: 16),
+      return Column(
+        crossAxisAlignment:
+            isOwner ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Text('Replied to ${textReplyMessage.repliedMessage.owner.name}'),
+          const SizedBox(height: 8),
+          _buildMessage(
+            context,
+            message: textReplyMessage.repliedMessage,
+            isRepliedMessage: true,
+          ),
+          _buildMessageBubble(
+            context,
+            isOwner: isOwner,
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 16,
+                color: isOwner ? Colors.white : null,
+              ),
+            ),
+          ),
+        ],
       );
     } else {
       return Container();
@@ -663,5 +730,104 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildReplyMessageInput(
+    BuildContext context, {
+    required MessagePresenter message,
+  }) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
+    return SizedBox(
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Replying to ${message.owner.name}'),
+                const SizedBox(height: 8),
+                _buildReplyMessage(context, message: message),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            onPressed: () => bloc.add(RemoveReplyRequestedEvent()),
+            icon: const Icon(
+              Icons.cancel,
+              color: Colors.grey,
+              size: 28,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReplyMessage(
+    BuildContext context, {
+    required MessagePresenter message,
+  }) {
+    if (message is TextMessagePresenter) {
+      final text = message.text;
+
+      if (text != null) {
+        return Text(text);
+      } else {
+        return Container();
+      }
+    } else if (message is PhotoMessagePresenter) {
+      return SizedBox(
+        height: 60,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Image'),
+            const Spacer(),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Image.network(
+                  message.urls.first,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else if (message is MiniAppMessagePresenter) {
+      return const Text('Package');
+    } else {
+      return Container();
+    }
+  }
+
+  Color? _textMessageColor({
+    required bool isOwner,
+    bool isRepliedMessage = false,
+  }) {
+    if (isRepliedMessage) {
+      return Colors.grey;
+    } else if (isOwner) {
+      return Colors.white;
+    } else {
+      return null;
+    }
+  }
+
+  Color _bubbleMessageColor({
+    required bool isOwner,
+    bool isRepliedMessage = false,
+  }) {
+    if (isRepliedMessage) {
+      return Colors.grey.shade100;
+    } else if (isOwner) {
+      return Colors.deepOrangeAccent;
+    } else {
+      return Colors.grey.shade200;
+    }
   }
 }
