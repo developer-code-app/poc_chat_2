@@ -398,7 +398,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         case TextReplyMessagePresenter():
           return _buildTextReplyMessage(context, textReplyMessage: message);
         case PhotoMessagePresenter():
-          return _buildPhotoMessage(context, photoMessage: message);
+          return _buildPhotoMessage(
+            context,
+            photoMessage: message,
+            isRepliedMessage: isRepliedMessage,
+          );
         case VideoMessagePresenter():
           return _buildVideoMessage(context, videoMessage: message);
         case FileMessagePresenter():
@@ -480,9 +484,13 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   Widget _buildPhotoMessage(
     BuildContext context, {
     required PhotoMessagePresenter photoMessage,
+    bool isRepliedMessage = false,
   }) {
     if (photoMessage.urls.length > 1) {
-      return _buildPhotoGallery(context, urls: photoMessage.urls);
+      return Opacity(
+        opacity: isRepliedMessage ? 0.6 : 1.0,
+        child: _buildPhotoGallery(context, urls: photoMessage.urls),
+      );
     } else {
       return GestureDetector(
         onTap: () => _viewPhotoGallery(
@@ -492,9 +500,12 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(15),
-          child: Image.network(
-            photoMessage.urls.first,
-            fit: BoxFit.cover,
+          child: Opacity(
+            opacity: isRepliedMessage ? 0.6 : 1.0,
+            child: Image.network(
+              photoMessage.urls.first,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       );

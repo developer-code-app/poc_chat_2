@@ -239,7 +239,7 @@ class MockData {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-       TextReplyMessage(
+      TextReplyMessage(
         id: 13,
         text: 'ขอบคุณครับ',
         owner: siteEngineer,
@@ -249,6 +249,38 @@ class MockData {
           owner: khunPatPong,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
+        ),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      PhotoMessage(
+        id: 14,
+        owner: siteEngineer,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        urls: [
+          'https://picsum.photos/800/800.jpg',
+        ],
+      ),
+      TextMessage(
+        id: 15,
+        text: 'สวัสดีครับสามารถตัวทุบตัวผนังได้ครับ แต่ต้องเก็บเสาไว้นะครับ',
+        owner: siteEngineer,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      TextReplyMessage(
+        id: 16,
+        text: 'รับทราบครับ',
+        owner: khunPatPong,
+        repliedMessage: PhotoMessage(
+          id: 14,
+          owner: siteEngineer,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          urls: [
+            'https://picsum.photos/800/800.jpg',
+          ],
         ),
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
