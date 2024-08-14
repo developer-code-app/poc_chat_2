@@ -4,23 +4,62 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
+import 'package:poc_chat_2/flavor_constants.dart';
 import 'package:poc_chat_2/mock_data.dart';
-import 'package:poc_chat_2/model_services/event/creator.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/pages/chats/bloc/chats_page_bloc.dart';
 import 'package:poc_chat_2/pages/chats/chats_page.dart';
+import 'package:poc_chat_2/preference_keys.dart';
 import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_recorded_event_entity.dart';
+import 'package:poc_chat_2/providers/ruejai_chat/ruejai_chat_provider.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 import 'package:poc_chat_2/services/member/member_service.dart';
 import 'package:poc_chat_2/services/rue_jai_user_service.dart';
 import 'package:poc_chat_2/widgets/action_sheet.dart' as action_sheet;
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  FlavorConfig(
+    variables: {
+      FlavorVariableKeys.ruejaiChatApiBaseUrl: 'https://baanruejai.com/',
+      FlavorVariableKeys.webSocketBaseUrl: 'https://baanruejai.com/',
+    },
+  );
+
+  final prefs = await SharedPreferences.getInstance();
+
+  prefs.setString(
+    AuthPreferenceKeys.accessToken,
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbklkIjoiTU9DS19CUkpfVVNFUl9BQ0NFU1NfVE9LRU5fSUQiLCJpZCI6IjI2NDEzIiwidHlwZSI6IkJSSl9VU0VSX0FDQ0VTU19UT0tFTiIsImlhdCI6MTcyMzYxMDc5MywiZXhwIjoxNzIzNjE0MzkzfQ.cvuPBranlznMKbSa3LVJBFXyv6_AJT6Yh5NVLqCw1ZM',
+  );
+
+  final ruejaiChatApiProvider = RuejaiChatApiProvider.basic(
+    prefs: prefs,
+  );
+  final isarProvider = IsarStorageProvider.basic();
+
+  runApp(MultiRepositoryProvider(
+    providers: [
+      RepositoryProvider<LocalChatRepository>(
+        create: (context) => LocalChatRepository(
+          provider: isarProvider,
+        ),
+      ),
+      RepositoryProvider<ServerChatRepository>(
+        create: (context) => ServerChatRepository(
+          provider: ruejaiChatApiProvider,
+        ),
+      ),
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -31,7 +70,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  static String webSocketUrl = 'ws://10.0.0.35:8081';
   final rueJaiUser = MockData.rueJaiUser;
 
   WebSocket? webSocket;
@@ -40,10 +78,9 @@ class _MyAppState extends State<MyApp> {
     if (webSocket?.readyState == WebSocket.open) return;
 
     try {
-      webSocket = await WebSocket.connect(webSocketUrl, headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Authorization': 'Bearer ${rueJaiUser.rueJaiUserId}'
-      });
+      webSocket = await WebSocket.connect(
+        FlavorConfig.instance.variables[FlavorVariableKeys.webSocketBaseUrl],
+      );
       webSocket?.listen(
         (jsonString) {
           final json = jsonDecode(jsonString) as Map<String, dynamic>;
@@ -114,50 +151,38 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MultiRepositoryProvider(
+      home: MultiBlocProvider(
         providers: [
-          RepositoryProvider<LocalChatRepository>(
-            create: (context) => LocalChatRepository(
-              provider: IsarStorageProvider.basic(),
-            ),
+          BlocProvider<AlertDialogCubit>(
+            create: (context) => AlertDialogCubit(),
           ),
-          RepositoryProvider<ServerChatRepository>(
-            create: (context) => ServerChatRepository(),
+          BlocProvider<ChatsPageBloc>(
+            create: (context) => ChatsPageBloc(
+              alertDialogCubit: context.read<AlertDialogCubit>(),
+              rueJaiUserService: RueJaiUserService(
+                rueJaiUser: rueJaiUser,
+                localChatRepository: context.read<LocalChatRepository>(),
+                serverChatRepository: context.read<ServerChatRepository>(),
+              ),
+              memberService: MemberService(
+                chatRoomId: 1,
+                memberId: 1,
+                localChatRepository: context.read<LocalChatRepository>(),
+                serverChatRepository: context.read<ServerChatRepository>(),
+              ),
+            )..add(StartedEvent()),
           ),
         ],
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider<AlertDialogCubit>(
-              create: (context) => AlertDialogCubit(),
-            ),
-            BlocProvider<ChatsPageBloc>(
-              create: (context) => ChatsPageBloc(
-                alertDialogCubit: context.read<AlertDialogCubit>(),
-                rueJaiUserService: RueJaiUserService(
-                  rueJaiUser: rueJaiUser,
-                  localChatRepository: context.read<LocalChatRepository>(),
-                  serverChatRepository: context.read<ServerChatRepository>(),
-                ),
-                memberService: MemberService(
-                  chatRoomId: 1,
-                  memberId: 1,
-                  localChatRepository: context.read<LocalChatRepository>(),
-                  serverChatRepository: context.read<ServerChatRepository>(),
-                ),
-              )..add(StartedEvent()),
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<AlertDialogCubit, AlertData?>(
+              listener: (context, state) {
+                if (state == null) return;
+                _showAlertFromData(context, data: state);
+              },
             ),
           ],
-          child: MultiBlocListener(
-            listeners: [
-              BlocListener<AlertDialogCubit, AlertData?>(
-                listener: (context, state) {
-                  if (state == null) return;
-                  _showAlertFromData(context, data: state);
-                },
-              ),
-            ],
-            child: const ChatsPage(),
-          ),
+          child: const ChatsPage(),
         ),
       ),
     );
