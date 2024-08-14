@@ -22,6 +22,7 @@ class IsarSendingMessageEntity {
 
   final owner = IsarLink<IsarChatRoomMemberEntity>();
 
+  @Index(type: IndexType.value)
   @Backlink(to: 'sendingMessages')
   final room = IsarLink<IsarChatRoomEntity>();
 }

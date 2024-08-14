@@ -24,6 +24,7 @@ class IsarConfirmedMessageEntity {
 
   final owner = IsarLink<IsarChatRoomMemberEntity>();
 
+  @Index()
   @Backlink(to: 'confirmedMessages')
   final room = IsarLink<IsarChatRoomEntity>();
 }
