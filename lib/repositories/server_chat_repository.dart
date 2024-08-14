@@ -10,20 +10,17 @@ class ServerChatRepository {
 
   final RuejaiChatApiProvider provider;
 
-  // GET /chats/chat-rooms/{chatRoomId}/latest-event-record-info
   Future<ChatRoomLatestEventRecordInfo> getChatRoomLatestEventRecordInfo({
     required int chatRoomId,
   }) async {
-    return ChatRoomLatestEventRecordInfo(
-      messageRecordNumber: 0,
-      roomManagementRecordNumber: 0,
-    );
+    return provider.chat
+        .getChatRoomLatestEventRecordInfo(chatRoomId)
+        .then((response) => response.result)
+        .then((entity) => ChatRoomLatestEventRecordInfo.fromEntity(entity));
   }
 
   Future<List<int>> getAllChatRoomIds() async {
-    return provider.chat.getChatRooms().then((response) {
-      return response.result;
-    });
+    return provider.chat.getChatRooms().then((response) => response.result);
   }
 
   //  WS /chats
