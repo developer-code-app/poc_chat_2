@@ -352,19 +352,23 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     BuildContext context, {
     required MessagePresenter message,
   }) {
-    switch (message) {
-      case TextMessagePresenter():
-        return _buildTextMessage(context, textMessage: message);
-      case TextReplyMessagePresenter():
-        return _buildTextReplyMessage(context, textReplyMessage: message);
-      case PhotoMessagePresenter():
-        return _buildPhotoMessage(context, photoMessage: message);
-      case VideoMessagePresenter():
-        return _buildVideoMessage(context, videoMessage: message);
-      case FileMessagePresenter():
-        return _buildFileMessage(context, fileMessage: message);
-      case MiniAppMessagePresenter():
-        return _buildMiniAppMessage(context, miniAppMessage: message);
+    if (message.deletedAt != null) {
+      return _buildUnsendMessage(context, message: message);
+    } else {
+      switch (message) {
+        case TextMessagePresenter():
+          return _buildTextMessage(context, textMessage: message);
+        case TextReplyMessagePresenter():
+          return _buildTextReplyMessage(context, textReplyMessage: message);
+        case PhotoMessagePresenter():
+          return _buildPhotoMessage(context, photoMessage: message);
+        case VideoMessagePresenter():
+          return _buildVideoMessage(context, videoMessage: message);
+        case FileMessagePresenter():
+          return _buildFileMessage(context, fileMessage: message);
+        case MiniAppMessagePresenter():
+          return _buildMiniAppMessage(context, miniAppMessage: message);
+      }
     }
   }
 
@@ -449,6 +453,31 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     required MiniAppMessagePresenter miniAppMessage,
   }) {
     return Container();
+  }
+
+  Widget _buildUnsendMessage(
+    BuildContext context, {
+    required MessagePresenter message,
+  }) {
+    final bloc = context.read<ChatRoomPageBloc>();
+    final isOwner = bloc.currentUser.id == message.owner.id;
+
+    return Align(
+      alignment: isOwner ? Alignment.topRight : Alignment.topLeft,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey),
+        ),
+        child: const Padding(
+          padding: EdgeInsets.all(8),
+          child: Text(
+            'Unsend a message',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildUserAvatar(

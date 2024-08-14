@@ -70,6 +70,7 @@ sealed class MessagePresenter {
     required this.id,
     required this.owner,
     required this.createdAt,
+    this.deletedAt,
   });
 
   factory MessagePresenter.fromModel(Message message) {
@@ -92,6 +93,7 @@ sealed class MessagePresenter {
   final int id;
   final MemberPresenter owner;
   final DateTime createdAt;
+  final DateTime? deletedAt;
 }
 
 class TextMessagePresenter extends MessagePresenter {
@@ -99,6 +101,7 @@ class TextMessagePresenter extends MessagePresenter {
     required super.id,
     required super.owner,
     required super.createdAt,
+    super.deletedAt,
     this.text,
   });
 
@@ -111,6 +114,7 @@ class TextMessagePresenter extends MessagePresenter {
       id: message.id,
       owner: MemberPresenter.fromModel(message.owner),
       createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
       text: message.text,
     );
   }
@@ -124,6 +128,7 @@ class TextReplyMessagePresenter extends MessagePresenter {
     required super.owner,
     required super.createdAt,
     required this.repliedMessage,
+    super.deletedAt,
     this.text,
   });
 
@@ -136,6 +141,7 @@ class TextReplyMessagePresenter extends MessagePresenter {
       id: message.id,
       owner: MemberPresenter.fromModel(message.owner),
       createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
       text: message.text,
       repliedMessage: MessagePresenter.fromModel(message.repliedMessage),
     );
@@ -151,6 +157,7 @@ class PhotoMessagePresenter extends MessagePresenter {
     required super.owner,
     required super.createdAt,
     required this.urls,
+    super.deletedAt,
   });
 
   factory PhotoMessagePresenter.fromModel(Message message) {
@@ -161,6 +168,7 @@ class PhotoMessagePresenter extends MessagePresenter {
       id: message.id,
       owner: MemberPresenter.fromModel(message.owner),
       createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
       urls: message.urls,
     );
   }
@@ -174,6 +182,7 @@ class VideoMessagePresenter extends MessagePresenter {
     required super.owner,
     required super.createdAt,
     required this.url,
+    super.deletedAt,
   });
 
   factory VideoMessagePresenter.fromModel(Message message) {
@@ -185,6 +194,7 @@ class VideoMessagePresenter extends MessagePresenter {
       id: message.id,
       owner: MemberPresenter.fromModel(message.owner),
       createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
       url: message.url,
     );
   }
@@ -198,6 +208,7 @@ class FileMessagePresenter extends MessagePresenter {
     required super.owner,
     required super.createdAt,
     required this.url,
+    super.deletedAt,
   });
 
   factory FileMessagePresenter.fromModel(Message message) {
@@ -209,6 +220,7 @@ class FileMessagePresenter extends MessagePresenter {
       id: message.id,
       owner: MemberPresenter.fromModel(message.owner),
       createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
       url: message.url,
     );
   }
@@ -221,6 +233,7 @@ class MiniAppMessagePresenter extends MessagePresenter {
     required super.id,
     required super.owner,
     required super.createdAt,
+    super.deletedAt,
   });
 
   factory MiniAppMessagePresenter.fromModel(Message message) {
@@ -232,6 +245,7 @@ class MiniAppMessagePresenter extends MessagePresenter {
       id: message.id,
       owner: MemberPresenter.fromModel(message.owner),
       createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
     );
   }
 }

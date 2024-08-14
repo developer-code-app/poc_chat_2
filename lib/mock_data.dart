@@ -173,6 +173,22 @@ class MockData {
           'https://www.girlsallaround.com/wp-content/uploads/2015/02/Francis-Co-launches-Samsung-professional-laundry-range.jpg',
         ],
       ),
+      TextMessage(
+        id: 7,
+        text: 'ยกเลิก',
+        owner: khunPatPong,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        deletedAt: DateTime.now(),
+      ),
+      TextMessage(
+        id: 8,
+        text: 'ยกเลิก',
+        owner: chatRoomAdmin,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        deletedAt: DateTime.now(),
+      ),
     ],
     failedMessages: [
       TextMessage(
