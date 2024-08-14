@@ -1,4 +1,5 @@
 import 'package:poc_chat_2/models/chat_room_latest_event_record_info.dart';
+import 'package:poc_chat_2/models/events/event.dart';
 
 import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
@@ -21,6 +22,20 @@ class ServerChatRepository {
 
   Future<List<int>> getAllChatRoomIds() async {
     return provider.chat.getChatRooms().then((response) => response.result);
+  }
+
+  Future<List<String>> getChatRoomEventFileUrls({
+    required int chatRoomId,
+    required ChatRoomEventType eventType,
+    required int startEventRecordNumber,
+  }) async {
+    return provider.chat
+        .getChatRoomEventFileUrls(
+          chatRoomId,
+          eventType.toString(),
+          startEventRecordNumber,
+        )
+        .then((response) => response.result);
   }
 
   //  WS /chats

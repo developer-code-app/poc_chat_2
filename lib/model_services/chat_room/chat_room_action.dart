@@ -99,15 +99,18 @@ class ChatRoomAction {
   Future<List<Event>> _getServerEventsAfter({
     String? eventId,
   }) async {
-    // TODO: Implement this
-
     return List.empty();
   }
 
-  List<String> _getServerEventFileURLs({
-    String? eventId,
-  }) {
-    return List.empty();
+  Future<List<String>> _getServerEventFileURLs({
+    required ChatRoomEventType eventType,
+    required int startEventRecordNumber,
+  }) async {
+    return serverChatRepository.getChatRoomEventFileUrls(
+      chatRoomId: chatRoomId,
+      eventType: eventType,
+      startEventRecordNumber: startEventRecordNumber,
+    );
   }
 
   SyncState _getSyncState({

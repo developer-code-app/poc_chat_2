@@ -18,4 +18,11 @@ abstract class RueJaiChatService {
       getChatRoomLatestEventRecordInfo(
     @Path('chatRoomId') int chatRoomId,
   );
+
+  @GET('api/ruejai-chat/chat-rooms/{chatRoomId}/events')
+  Future<RuejaiResultListResponse<String>> getChatRoomEventFileUrls(
+    @Path('chatRoomId') int chatRoomId,
+    @Query('type') String type,
+    @Query('start') int startEventRecordNumber,
+  );
 }

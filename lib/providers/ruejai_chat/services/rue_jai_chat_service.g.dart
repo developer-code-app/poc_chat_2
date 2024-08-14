@@ -97,6 +97,49 @@ class _RueJaiChatService implements RueJaiChatService {
     return _value;
   }
 
+  @override
+  Future<RuejaiResultListResponse<String>> getChatRoomEventFileUrls(
+    int chatRoomId,
+    String type,
+    int startEventRecordNumber,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'type': type,
+      r'start': startEventRecordNumber,
+    };
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<RuejaiResultListResponse<String>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          'api/ruejai-chat/chat-rooms/${chatRoomId}/events',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late RuejaiResultListResponse<String> _value;
+    try {
+      _value = RuejaiResultListResponse<String>.fromJson(
+        _result.data!,
+        (json) => json as String,
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||
