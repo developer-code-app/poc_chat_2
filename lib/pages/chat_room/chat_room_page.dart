@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
@@ -276,6 +277,50 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           );
         }),
       ),
+    );
+  }
+
+  Widget _buildMemberJoinedChatRoom({required MemberPresenter member}) {
+    return Row(
+      children: [
+        const Expanded(
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Divider(),
+          ),
+        ),
+        Text(
+          '${member.name} (${member.userRole}) Joined the Chat',
+        ),
+        const Expanded(
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Divider(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMemberLeaveChatRoom({required MemberPresenter member}) {
+    return Row(
+      children: [
+        const Expanded(
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Divider(),
+          ),
+        ),
+        Text(
+          '${member.name} (${member.userRole}) Leave the Chat',
+        ),
+        const Expanded(
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Divider(),
+          ),
+        ),
+      ],
     );
   }
 
