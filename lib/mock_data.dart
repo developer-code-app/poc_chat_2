@@ -331,22 +331,22 @@ class MockData {
       ),
     ],
     failedMessages: [
-      // TextMessage(
-      //   id: 13,
-      //   text: 'ทดสอบ',
-      //   owner: khunPatPong,
-      //   createdAt: DateTime.now(),
-      //   updatedAt: DateTime.now(),
-      // ),
+      TextMessage(
+        id: 13,
+        text: 'ทดสอบ Failed Messages',
+        owner: khunPatPong,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
     ],
     sendingMessages: [
-      // TextMessage(
-      //   id: 14,
-      //   text: 'ทดสอบ Sending Message',
-      //   owner: khunPatPong,
-      //   createdAt: DateTime.now(),
-      //   updatedAt: DateTime.now(),
-      // ),
+      TextMessage(
+        id: 14,
+        text: 'ทดสอบ Sending Message',
+        owner: khunPatPong,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
     ],
   );
 }
