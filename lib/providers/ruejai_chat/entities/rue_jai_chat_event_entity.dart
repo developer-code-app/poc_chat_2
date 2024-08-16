@@ -86,6 +86,7 @@ class RueJaiChatCreateTextMessageEventEntity extends RueJaiChatEventEntity {
           Map<String, dynamic> json) =>
       _$RueJaiChatCreateTextMessageEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatCreateTextMessageEventEntityToJson(this);
 }
@@ -105,6 +106,7 @@ class RueJaiChatCreateTextReplyMessageEventEntity
           Map<String, dynamic> json) =>
       _$RueJaiChatCreateTextReplyMessageEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatCreateTextReplyMessageEventEntityToJson(this);
 
@@ -124,6 +126,7 @@ class RueJaiChatCreatePhotoMessageEventEntity extends RueJaiChatEventEntity {
           Map<String, dynamic> json) =>
       _$RueJaiChatCreatePhotoMessageEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatCreatePhotoMessageEventEntityToJson(this);
 }
@@ -141,6 +144,7 @@ class RueJaiChatCreateVideoMessageEventEntity extends RueJaiChatEventEntity {
           Map<String, dynamic> json) =>
       _$RueJaiChatCreateVideoMessageEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatCreateVideoMessageEventEntityToJson(this);
 }
@@ -158,6 +162,7 @@ class RueJaiChatCreateFileMessageEventEntity extends RueJaiChatEventEntity {
           Map<String, dynamic> json) =>
       _$RueJaiChatCreateFileMessageEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatCreateFileMessageEventEntityToJson(this);
 }
@@ -175,6 +180,7 @@ class RueJaiChatCreateHomeCareMessageEventEntity extends RueJaiChatEventEntity {
           Map<String, dynamic> json) =>
       _$RueJaiChatCreateHomeCareMessageEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatCreateHomeCareMessageEventEntityToJson(this);
 }
@@ -192,6 +198,7 @@ class RueJaiChatTextEditedEventEntity extends RueJaiChatEventEntity {
   factory RueJaiChatTextEditedEventEntity.fromJson(Map<String, dynamic> json) =>
       _$RueJaiChatTextEditedEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatTextEditedEventEntityToJson(this);
 
@@ -212,6 +219,7 @@ class RueJaiChatDeleteMessageEventEntity extends RueJaiChatEventEntity {
           Map<String, dynamic> json) =>
       _$RueJaiChatDeleteMessageEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatDeleteMessageEventEntityToJson(this);
 
@@ -232,6 +240,7 @@ class RueJaiChatReadMessageEventEntity extends RueJaiChatEventEntity {
           Map<String, dynamic> json) =>
       _$RueJaiChatReadMessageEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatReadMessageEventEntityToJson(this);
 
@@ -254,6 +263,7 @@ class RueJaiChatCreateRoomEventEntity extends RueJaiChatEventEntity {
   factory RueJaiChatCreateRoomEventEntity.fromJson(Map<String, dynamic> json) =>
       _$RueJaiChatCreateRoomEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatCreateRoomEventEntityToJson(this);
 
@@ -277,6 +287,7 @@ class RueJaiChatRoleEditedEventEntity extends RueJaiChatEventEntity {
   factory RueJaiChatRoleEditedEventEntity.fromJson(Map<String, dynamic> json) =>
       _$RueJaiChatRoleEditedEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatRoleEditedEventEntityToJson(this);
 
@@ -297,6 +308,7 @@ class RueJaiChatInviteEventEntity extends RueJaiChatEventEntity {
   factory RueJaiChatInviteEventEntity.fromJson(Map<String, dynamic> json) =>
       _$RueJaiChatInviteEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$RueJaiChatInviteEventEntityToJson(this);
 
   final RueJaiChatMemberEventEntity member;
@@ -315,6 +327,7 @@ class RueJaiChatRejectEventEntity extends RueJaiChatEventEntity {
   factory RueJaiChatRejectEventEntity.fromJson(Map<String, dynamic> json) =>
       _$RueJaiChatRejectEventEntityFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$RueJaiChatRejectEventEntityToJson(this);
 
   final int removedMemberRecordNumber;

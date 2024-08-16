@@ -21,3 +21,11 @@ RuejaiListResponse<T> _$RuejaiListResponseFromJson<T extends Equatable>(
     RuejaiListResponse<T>(
       (json['result'] as List<dynamic>).map(fromJsonT).toList(),
     );
+
+RuejaiResultListResponse<T> _$RuejaiResultListResponseFromJson<T>(
+  Map<String, dynamic> json,
+  T Function(Object? json) fromJsonT,
+) =>
+    RuejaiResultListResponse<T>(
+      (json['result'] as List<dynamic>).map(fromJsonT).toList(),
+    );

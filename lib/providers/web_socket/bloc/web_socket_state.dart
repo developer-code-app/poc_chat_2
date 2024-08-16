@@ -8,7 +8,11 @@ class InitialState extends WebSocketState {}
 
 class ConnectingState extends WebSocketState {}
 
-class ConnectionSuccessState extends WebSocketState {}
+class ConnectionSuccessState extends WebSocketState {
+  ConnectionSuccessState(this.webSocket);
+
+  final WebSocket webSocket;
+}
 
 class ConnectionFailureState extends WebSocketState {
   ConnectionFailureState(this.error);

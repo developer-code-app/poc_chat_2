@@ -4,6 +4,12 @@ import 'package:poc_chat_2/models/events/room_management_event.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_event_entity.dart';
 
+enum ChatRoomEventType {
+  messaging,
+  messageReading,
+  roomManagement,
+}
+
 abstract class Event {
   Event({
     required this.id,

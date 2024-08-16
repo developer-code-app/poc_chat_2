@@ -22,19 +22,19 @@ class _RueJaiChatService implements RueJaiChatService {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<List<int>> getChatRooms() async {
+  Future<RuejaiResultListResponse<int>> getChatRooms() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<List<int>>(Options(
+    final _options = _setStreamType<RuejaiResultListResponse<int>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
         .compose(
           _dio.options,
-          'api/main_feed',
+          'api/ruejai-chat/chat-rooms',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -43,10 +43,96 @@ class _RueJaiChatService implements RueJaiChatService {
           _dio.options.baseUrl,
           baseUrl,
         )));
-    final _result = await _dio.fetch<List<dynamic>>(_options);
-    late List<int> _value;
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late RuejaiResultListResponse<int> _value;
     try {
-      _value = _result.data!.cast<int>();
+      _value = RuejaiResultListResponse<int>.fromJson(
+        _result.data!,
+        (json) => json as int,
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<RuejaiResponse<RueJaiChatRoomLatestEventRecordInfoEntity>>
+      getChatRoomLatestEventRecordInfo(int chatRoomId) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<
+        RuejaiResponse<RueJaiChatRoomLatestEventRecordInfoEntity>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          'api/ruejai-chat/chat-rooms/${chatRoomId}/latest-event-record-info',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late RuejaiResponse<RueJaiChatRoomLatestEventRecordInfoEntity> _value;
+    try {
+      _value =
+          RuejaiResponse<RueJaiChatRoomLatestEventRecordInfoEntity>.fromJson(
+        _result.data!,
+        (json) => RueJaiChatRoomLatestEventRecordInfoEntity.fromJson(
+            json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<RuejaiResultListResponse<String>> getChatRoomEventArchiveUrls(
+    int chatRoomId,
+    String type,
+    int startEventRecordNumber,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'type': type,
+      r'start': startEventRecordNumber,
+    };
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<RuejaiResultListResponse<String>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          'api/ruejai-chat/chat-rooms/${chatRoomId}/events',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late RuejaiResultListResponse<String> _value;
+    try {
+      _value = RuejaiResultListResponse<String>.fromJson(
+        _result.data!,
+        (json) => json as String,
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
