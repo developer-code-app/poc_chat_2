@@ -6,7 +6,7 @@ import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/models/events/room_management_event.dart';
 import 'package:poc_chat_2/providers/rue_jai_chat_archive/ruejai_chat_provider.dart';
-import 'package:poc_chat_2/providers/ruejai_chat/ruejai_chat_provider.dart';
+import 'package:poc_chat_2/providers/ruejai_chat/ruejai_chat_api_provider.dart';
 
 class ServerChatRepository {
   ServerChatRepository({
