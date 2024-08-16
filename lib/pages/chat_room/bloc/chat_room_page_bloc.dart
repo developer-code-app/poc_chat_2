@@ -9,6 +9,7 @@ import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:poc_chat_2/providers/web_socket/bloc/web_socket_bloc.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 
@@ -20,6 +21,7 @@ typedef _State = ChatRoomPageState;
 
 class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   ChatRoomPageBloc({
+    required this.webSocketBloc,
     required this.serverChatRepository,
     required this.localChatRepository,
     required this.chatRoom,
@@ -49,6 +51,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     );
   }
 
+  final WebSocketBloc webSocketBloc;
   final ServerChatRepository serverChatRepository;
   final LocalChatRepository localChatRepository;
   final ChatRoom chatRoom;

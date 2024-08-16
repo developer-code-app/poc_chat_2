@@ -3,12 +3,14 @@ import 'package:poc_chat_2/models/chat_room_latest_event_record_info.dart';
 import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/room_management_event.dart';
-import 'package:poc_chat_2/providers/ruejai_chat/ruejai_chat_provider.dart';
+import 'package:poc_chat_2/providers/ruejai_chat/ruejai_chat_api_provider.dart';
 
 class ServerChatRepository {
-  ServerChatRepository({required this.provider});
+  ServerChatRepository({
+    required this.apiProvider,
+  });
 
-  final RuejaiChatApiProvider provider;
+  final RuejaiChatApiProvider apiProvider;
 
   Future<ChatRoomLatestEventRecordInfo> getServerChatRoomLatestEventRecordInfo({
     required int chatRoomId,
