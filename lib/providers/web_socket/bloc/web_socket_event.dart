@@ -15,5 +15,3 @@ class ErrorOccurredEvent extends WebSocketEvent {
 
   final Exception error;
 }
-
-class ConnectingRetriedEvent extends WebSocketEvent {}
