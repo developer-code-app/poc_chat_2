@@ -101,8 +101,8 @@ class TextMessagePresenter extends MessagePresenter {
     required super.id,
     required super.owner,
     required super.createdAt,
-    super.deletedAt,
     this.text,
+    super.deletedAt,
   });
 
   factory TextMessagePresenter.fromModel(Message message) {
@@ -156,7 +156,7 @@ class PhotoMessagePresenter extends MessagePresenter {
     required super.id,
     required super.owner,
     required super.createdAt,
-    required this.urls,
+    this.urls,
     super.deletedAt,
   });
 
@@ -173,7 +173,7 @@ class PhotoMessagePresenter extends MessagePresenter {
     );
   }
 
-  final List<String> urls;
+  final List<String>? urls;
 }
 
 class VideoMessagePresenter extends MessagePresenter {
@@ -181,7 +181,7 @@ class VideoMessagePresenter extends MessagePresenter {
     required super.id,
     required super.owner,
     required super.createdAt,
-    required this.url,
+    this.url,
     super.deletedAt,
   });
 
@@ -199,7 +199,7 @@ class VideoMessagePresenter extends MessagePresenter {
     );
   }
 
-  final String url;
+  final String? url;
 }
 
 class FileMessagePresenter extends MessagePresenter {
@@ -207,7 +207,7 @@ class FileMessagePresenter extends MessagePresenter {
     required super.id,
     required super.owner,
     required super.createdAt,
-    required this.url,
+    this.url,
     super.deletedAt,
   });
 
@@ -225,7 +225,7 @@ class FileMessagePresenter extends MessagePresenter {
     );
   }
 
-  final String url;
+  final String? url;
 }
 
 class MiniAppMessagePresenter extends MessagePresenter {

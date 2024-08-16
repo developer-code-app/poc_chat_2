@@ -130,6 +130,37 @@ class MockData {
     confirmedMessages: [
       TextMessage(
         id: 1,
+        owner: chatRoomAdmin,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      TextMessage(
+        id: 1,
+        owner: khunPatPong,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      TextReplyMessage(
+        id: 1,
+        owner: chatRoomAdmin,
+        repliedMessage: TextMessage(
+          id: 1,
+          owner: chatRoomAdmin,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      PhotoMessage(
+        id: 1,
+        owner: khunPatPong,
+        urls: [],
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+      TextMessage(
+        id: 1,
         text:
             'สวัสดีค่ะ น้ำฝนนะคะ ตามที่เราเคยคุยกันไว้ เรื่องติดตั้งประตูไฟฟ้า คุณพัฒพงษ์ได้เลือกแบบสลิง ที่ราคา 33,000 บาท ใช่มั้ยคะ',
         owner: chatRoomAdmin,

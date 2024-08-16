@@ -46,6 +46,7 @@ dependencies:
   retrofit: ^4.1.0
   shared_preferences: ^2.2.3
   photo_view: ^0.15.0
+  shimmer: ^3.0.0
   wechat_assets_picker: ^9.2.0
   wechat_camera_picker: ^4.3.1
 

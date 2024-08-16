@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
@@ -10,6 +9,7 @@ import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
 import 'package:poc_chat_2/pages/photo_view_gallery_page.dart';
+import 'package:poc_chat_2/widgets/shimmer_loading_widget.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class ChatRoomPage extends StatefulWidget {
@@ -458,6 +458,48 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     }
   }
 
+  Widget _buildTextMessageSkeletonView(BuildContext context) {
+    return const AspectRatio(
+      aspectRatio: 6,
+      child: ShimmerLoadingWidget(borderRadius: 8),
+    );
+  }
+
+  Widget _buildTextReplyMessageSkeletonView(BuildContext context) {
+    return const AspectRatio(
+      aspectRatio: 6,
+      child: ShimmerLoadingWidget(borderRadius: 8),
+    );
+  }
+
+  Widget _buildPhotoMessageSkeletonView(BuildContext context) {
+    return const AspectRatio(
+      aspectRatio: 1,
+      child: ShimmerLoadingWidget(borderRadius: 8),
+    );
+  }
+
+  Widget _buildVideoMessageSkeletonView(BuildContext context) {
+    return const AspectRatio(
+      aspectRatio: 1,
+      child: ShimmerLoadingWidget(borderRadius: 8),
+    );
+  }
+
+  Widget _buildFileMessageSkeletonView(BuildContext context) {
+    return const AspectRatio(
+      aspectRatio: 3,
+      child: ShimmerLoadingWidget(borderRadius: 8),
+    );
+  }
+
+  Widget _buildMiniAppMessageSkeletonView(BuildContext context) {
+    return const AspectRatio(
+      aspectRatio: 1,
+      child: ShimmerLoadingWidget(borderRadius: 8),
+    );
+  }
+
   Widget _buildTextMessage(
     BuildContext context, {
     required TextMessagePresenter textMessage,
@@ -467,7 +509,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     final isOwner = bloc.currentUser.id == textMessage.owner.id;
     final text = textMessage.text;
 
-    if (text != null) {
+    if (text == null) {
+      return _buildTextMessageSkeletonView(context);
+    } else {
       return _buildMessageBubble(
         context,
         isOwner: isOwner,
@@ -483,8 +527,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           ),
         ),
       );
-    } else {
-      return Container();
     }
   }
 
@@ -496,7 +538,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     final text = textReplyMessage.text;
     final isOwner = bloc.currentUser.id == textReplyMessage.owner.id;
 
-    if (text != null) {
+    if (text == null) {
+      return _buildTextReplyMessageSkeletonView(context);
+    } else {
       return Column(
         crossAxisAlignment:
             isOwner ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -521,8 +565,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           ),
         ],
       );
-    } else {
-      return Container();
     }
   }
 
@@ -531,29 +573,35 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     required PhotoMessagePresenter photoMessage,
     bool isRepliedMessage = false,
   }) {
-    if (photoMessage.urls.length > 1) {
-      return Opacity(
-        opacity: isRepliedMessage ? 0.6 : 1.0,
-        child: _buildPhotoGallery(context, urls: photoMessage.urls),
-      );
+    final urls = photoMessage.urls;
+
+    if (urls == null) {
+      return _buildPhotoMessageSkeletonView(context);
     } else {
-      return GestureDetector(
-        onTap: () => _viewPhotoGallery(
-          context,
-          urls: photoMessage.urls,
-          index: 0,
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: Opacity(
-            opacity: isRepliedMessage ? 0.6 : 1.0,
-            child: Image.network(
-              photoMessage.urls.first,
-              fit: BoxFit.cover,
+      if (urls.length > 1) {
+        return Opacity(
+          opacity: isRepliedMessage ? 0.6 : 1.0,
+          child: _buildPhotoGallery(context, urls: urls),
+        );
+      } else {
+        return GestureDetector(
+          onTap: () => _viewPhotoGallery(
+            context,
+            urls: urls,
+            index: 0,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Opacity(
+              opacity: isRepliedMessage ? 0.6 : 1.0,
+              child: Image.network(
+                urls.first,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
     }
   }
 
@@ -561,21 +609,29 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     BuildContext context, {
     required VideoMessagePresenter videoMessage,
   }) {
-    return Container();
+    if (videoMessage.url == null) {
+      return _buildVideoMessageSkeletonView(context);
+    } else {
+      return Container();
+    }
   }
 
   Widget _buildFileMessage(
     BuildContext context, {
     required FileMessagePresenter fileMessage,
   }) {
-    return Container();
+    if (fileMessage.url == null) {
+      return _buildFileMessageSkeletonView(context);
+    } else {
+      return Container();
+    }
   }
 
   Widget _buildMiniAppMessage(
     BuildContext context, {
     required MiniAppMessagePresenter miniAppMessage,
   }) {
-    return Container();
+    return _buildMiniAppMessageSkeletonView(context);
   }
 
   Widget _buildUnsendMessage(
@@ -846,7 +902,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               child: AspectRatio(
                 aspectRatio: 1,
                 child: Image.network(
-                  message.urls.first,
+                  message.urls!.first,
                   fit: BoxFit.cover,
                 ),
               ),
