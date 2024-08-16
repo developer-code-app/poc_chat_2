@@ -96,10 +96,25 @@ class ChatRoomAction {
     return 0;
   }
 
-  Future<List<Event>> _getServerEventsAfter({
-    String? eventId,
-  }) async {
-    return List.empty();
+  Stream<Event> _getServerEventsAfter({
+    required int eventRecordNumber,
+    required ChatRoomEventType eventType,
+  }) async* {
+    final eventUrls = await _getServerEventFileURLs(
+      eventType: eventType,
+      startEventRecordNumber: eventRecordNumber,
+    );
+
+    eventUrls.forEach((eventUrl) async* {
+      final events = await serverChatRepository.getChatRoomEvents(
+        chatRoomId: chatRoomId,
+        eventUrl: eventUrl,
+      );
+
+      events.forEach((event) async* {
+        yield event;
+      });
+    });
   }
 
   Future<List<String>> _getServerEventFileURLs({

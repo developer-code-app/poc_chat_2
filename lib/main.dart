@@ -14,6 +14,7 @@ import 'package:poc_chat_2/pages/chats/bloc/chats_page_bloc.dart';
 import 'package:poc_chat_2/pages/chats/chats_page.dart';
 import 'package:poc_chat_2/preference_keys.dart';
 import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
+import 'package:poc_chat_2/providers/rue_jai_chat_archive/ruejai_chat_provider.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_recorded_event_entity.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/ruejai_chat_provider.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
@@ -43,6 +44,9 @@ void main() async {
   final ruejaiChatApiProvider = RuejaiChatApiProvider.basic(
     prefs: prefs,
   );
+  final ruejaiChatArchiveProvider = RuejaiChatArchiveProvider.basic(
+    prefs: prefs,
+  );
   final isarProvider = IsarStorageProvider.basic();
 
   runApp(MultiRepositoryProvider(
@@ -54,7 +58,8 @@ void main() async {
       ),
       RepositoryProvider<ServerChatRepository>(
         create: (context) => ServerChatRepository(
-          provider: ruejaiChatApiProvider,
+          chatApiProvider: ruejaiChatApiProvider,
+          chatArchiveProvider: ruejaiChatArchiveProvider,
         ),
       ),
     ],
