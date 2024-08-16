@@ -152,6 +152,15 @@ class __BaseAppState extends State<_BaseApp> {
     super.initState();
 
     saveAccessToken();
+    connectWebSocketIfNeeded();
+  }
+
+  void connectWebSocketIfNeeded() {
+    final webSocketBloc = context.read<WebSocketBloc>();
+
+    if (!webSocketBloc.isConnected) {
+      webSocketBloc.add(ConnectingRequestedEvent());
+    }
   }
 
   @override
@@ -160,7 +169,6 @@ class __BaseAppState extends State<_BaseApp> {
       providers: [
         BlocProvider<ChatsPageBloc>(
           create: (context) => ChatsPageBloc(
-            webSocketBloc: context.read<WebSocketBloc>(),
             alertDialogCubit: context.read<AlertDialogCubit>(),
             rueJaiUserService: RueJaiUserService(
               rueJaiUser: MockData.rueJaiUser,

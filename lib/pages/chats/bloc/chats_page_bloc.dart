@@ -20,7 +20,6 @@ typedef _State = ChatsPageState;
 
 class ChatsPageBloc extends Bloc<_Event, _State> {
   ChatsPageBloc({
-    required this.webSocketBloc,
     required this.alertDialogCubit,
     required this.rueJaiUserService,
     required this.memberService,
@@ -31,29 +30,11 @@ class ChatsPageBloc extends Bloc<_Event, _State> {
     on<DataLoadingRetriedEvent>(_onDataLoadingRetried);
     on<RefreshStartedEvent>(_onRefreshStartedEvent);
     on<CreateRoomRequestedEvent>(_onRoomCreatedEvent);
-
-    _webSocketSubscription = webSocketBloc.messageStream.listen((event) {});
-
-    _connectingWebSocket();
   }
 
-  final WebSocketBloc webSocketBloc;
   final AlertDialogCubit alertDialogCubit;
   final RueJaiUserService rueJaiUserService;
   final MemberService memberService;
-
-  StreamSubscription? _webSocketSubscription;
-
-  void _connectingWebSocket() {
-    webSocketBloc.add(ConnectingRequestedEvent());
-  }
-
-  @override
-  Future<void> close() {
-    _webSocketSubscription?.cancel();
-
-    return super.close();
-  }
 
   Future<void> _onStartedEvent(
     StartedEvent event,
