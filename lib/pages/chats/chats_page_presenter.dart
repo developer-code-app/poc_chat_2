@@ -89,6 +89,16 @@ class MessagePresenter {
           text: getDefaultMessageText(message),
           createdAt: message.createdAt,
         );
+      case InviteMemberMessage():
+        return MessagePresenter(
+          text: getDefaultMessageText(message),
+          createdAt: message.createdAt,
+        );
+      case RemoveMemberMessage():
+        return MessagePresenter(
+          text: getDefaultMessageText(message),
+          createdAt: message.createdAt,
+        );
     }
   }
 
@@ -108,6 +118,10 @@ class MessagePresenter {
         return "$messageOwnerName sent a file";
       case MiniAppMessage():
         return "$messageOwnerName sent a mini app";
+      case InviteMemberMessage():
+        return "$messageOwnerName invite member";
+      case RemoveMemberMessage():
+        return "$messageOwnerName remove member";
     }
   }
 

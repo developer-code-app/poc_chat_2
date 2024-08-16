@@ -214,3 +214,33 @@ class MiniAppMessage extends Message {
 
   final MiniApp? miniApp;
 }
+
+class InviteMemberMessage extends Message {
+  InviteMemberMessage({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required super.updatedAt,
+    required this.member,
+    super.deletedAt,
+    super.addedByEventRecordNumber,
+    super.updatedByEventRecordNumber,
+  });
+
+  final ChatRoomMember member;
+}
+
+class RemoveMemberMessage extends Message {
+  RemoveMemberMessage({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required super.updatedAt,
+    required this.member,
+    super.deletedAt,
+    super.addedByEventRecordNumber,
+    super.updatedByEventRecordNumber,
+  });
+
+  final ChatRoomMember member;
+}

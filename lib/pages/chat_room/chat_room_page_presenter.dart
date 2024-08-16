@@ -87,6 +87,10 @@ sealed class MessagePresenter {
         return FileMessagePresenter.fromModel(message);
       case MiniAppMessage():
         return MiniAppMessagePresenter.fromModel(message);
+      case InviteMemberMessage():
+        return InviteMemberMessagePresenter.fromModel(message);
+      case RemoveMemberMessage():
+        return RemoveMemberMessagePresenter.fromModel(message);
     }
   }
 
@@ -248,4 +252,56 @@ class MiniAppMessagePresenter extends MessagePresenter {
       deletedAt: message.deletedAt,
     );
   }
+}
+
+class InviteMemberMessagePresenter extends MessagePresenter {
+  InviteMemberMessagePresenter({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required this.member,
+    super.deletedAt,
+  });
+
+  factory InviteMemberMessagePresenter.fromModel(Message message) {
+    if (message is! InviteMemberMessage) {
+      throw ArgumentError('The message is not a invite member message');
+    }
+
+    return InviteMemberMessagePresenter(
+      id: message.id,
+      owner: MemberPresenter.fromModel(message.owner),
+      createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
+      member: MemberPresenter.fromModel(message.member),
+    );
+  }
+
+  final MemberPresenter member;
+}
+
+class RemoveMemberMessagePresenter extends MessagePresenter {
+  RemoveMemberMessagePresenter({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required this.member,
+    super.deletedAt,
+  });
+
+  factory RemoveMemberMessagePresenter.fromModel(Message message) {
+    if (message is! RemoveMemberMessage) {
+      throw ArgumentError('The message is not a remove member message');
+    }
+
+    return RemoveMemberMessagePresenter(
+      id: message.id,
+      owner: MemberPresenter.fromModel(message.owner),
+      createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
+      member: MemberPresenter.fromModel(message.member),
+    );
+  }
+
+  final MemberPresenter member;
 }

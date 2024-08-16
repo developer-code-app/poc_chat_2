@@ -280,7 +280,12 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     );
   }
 
-  Widget _buildMemberJoinedChatRoom({required MemberPresenter member}) {
+  Widget _buildMemberJoinedChatRoom(
+    BuildContext context, {
+    required InviteMemberMessagePresenter inviteMemberMessage,
+  }) {
+    final member = inviteMemberMessage.member;
+
     return Row(
       children: [
         const Expanded(
@@ -290,7 +295,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           ),
         ),
         Text(
-          '${member.name} (${member.userRole}) Joined the Chat',
+          '${member.name} Joined the Chat',
         ),
         const Expanded(
           child: Padding(
@@ -302,8 +307,14 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     );
   }
 
-  Widget _buildMemberLeaveChatRoom({required MemberPresenter member}) {
+  Widget _buildMemberLeaveChatRoom(
+    BuildContext context, {
+    required RemoveMemberMessagePresenter removeMemberMessage,
+  }) {
+    final member = removeMemberMessage.member;
+
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Expanded(
           child: Padding(
@@ -312,7 +323,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           ),
         ),
         Text(
-          '${member.name} (${member.userRole}) Leave the Chat',
+          '${member.name} Leave the Chat',
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         const Expanded(
           child: Padding(
@@ -454,6 +467,16 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           return _buildFileMessage(context, fileMessage: message);
         case MiniAppMessagePresenter():
           return _buildMiniAppMessage(context, miniAppMessage: message);
+        case InviteMemberMessagePresenter():
+          return _buildMemberJoinedChatRoom(
+            context,
+            inviteMemberMessage: message,
+          );
+        case RemoveMemberMessagePresenter():
+          return _buildMemberLeaveChatRoom(
+            context,
+            removeMemberMessage: message,
+          );
       }
     }
   }

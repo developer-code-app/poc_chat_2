@@ -155,7 +155,6 @@ class MockData {
       PhotoMessage(
         id: 1,
         owner: khunPatPong,
-        urls: [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
@@ -234,6 +233,13 @@ class MockData {
         updatedAt: DateTime.now(),
         deletedAt: DateTime.now(),
       ),
+      InviteMemberMessage(
+        id: 9,
+        owner: chatRoomAdmin,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        member: siteEngineer,
+      ),
       TextMessage(
         id: 9,
         text:
@@ -283,6 +289,13 @@ class MockData {
         ),
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+      ),
+      RemoveMemberMessage(
+        id: 9,
+        owner: chatRoomAdmin,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        member: siteEngineer,
       ),
       PhotoMessage(
         id: 14,
