@@ -32,13 +32,13 @@ class ServerChatRepository {
         .then((response) => response.result);
   }
 
-  Future<List<String>> getChatRoomEventFileUrls({
+  Future<List<String>> getChatRoomEventArchiveUrls({
     required int chatRoomId,
     required ChatRoomEventType eventType,
     required int startEventRecordNumber,
   }) async {
     return chatApiProvider.chat
-        .getChatRoomEventFileUrls(
+        .getChatRoomEventArchiveUrls(
           chatRoomId,
           eventType.toString(),
           startEventRecordNumber,

@@ -43,12 +43,18 @@ class ChatRoomAction {
     final chatRoomSyncState = await _getChatRoomSyncState();
 
     _updateChatRoomState(
-      currentSyncState: chatRoomSyncState.chatRoomManagementSyncState,
-      onUnsynced: () => _syncChatRoomManagementEvent(),
+      currentSyncState: chatRoomSyncState.roomManagementEventSyncState,
+      onUnsynced: () => _syncChatRoomManagementEvent(
+        lastSyncedEventRecordNumber:
+            chatRoomSyncState.latestRoomManagementEventRecordNumber,
+      ),
     );
     _updateChatRoomState(
-      currentSyncState: chatRoomSyncState.messageSyncState,
-      onUnsynced: () => _syncChatRoomMessageEvent(),
+      currentSyncState: chatRoomSyncState.messageEventSyncState,
+      onUnsynced: () => _syncChatRoomMessageEvent(
+        lastSyncedEventRecordNumber:
+            chatRoomSyncState.latestMessageEventRecordNumber,
+      ),
     );
     _syncChatRoomReadEvent();
   }
@@ -60,17 +66,28 @@ class ChatRoomAction {
         await getServerChatRoomLatestEventRecordInfo();
 
     return ChatRoomSyncState(
-      messageSyncState: _getSyncState(
+      messageEventSyncState: _getSyncState(
         latestRecordNumber: lastSyncedEventRecordInfo.messageRecordNumber,
         serverLatestRecordNumber:
             serverLatestEventRecordInfo.messageRecordNumber,
       ),
-      chatRoomManagementSyncState: _getSyncState(
+      latestMessageEventRecordNumber:
+          lastSyncedEventRecordInfo.messageRecordNumber,
+      roomManagementEventSyncState: _getSyncState(
         latestRecordNumber:
             lastSyncedEventRecordInfo.roomManagementRecordNumber,
         serverLatestRecordNumber:
             serverLatestEventRecordInfo.roomManagementRecordNumber,
       ),
+      latestRoomManagementEventRecordNumber:
+          lastSyncedEventRecordInfo.roomManagementRecordNumber,
+    );
+  }
+
+  Future<ChatRoomLatestEventRecordInfo>
+      getChatRoomLastSyncedEventRecordInfo() async {
+    return localChatRepository.getChatRoomLatestEventRecordInfo(
+      chatRoomId: chatRoomId,
     );
   }
 
@@ -78,53 +95,6 @@ class ChatRoomAction {
       getServerChatRoomLatestEventRecordInfo() async {
     return serverChatRepository.getChatRoomLatestEventRecordInfo(
       chatRoomId: chatRoomId,
-    );
-  }
-
-  Future<ChatRoomLatestEventRecordInfo>
-      getChatRoomLastSyncedEventRecordInfo() async {
-    // TODO: Implement this
-    return ChatRoomLatestEventRecordInfo(
-      messageRecordNumber: 0,
-      // readRecordNumber: 0,
-      roomManagementRecordNumber: 0,
-    );
-  }
-
-  Future<int> _getChatRoomNextLastSyncedEventRecordNumber() async {
-    // TODO: Implement this
-    return 0;
-  }
-
-  Stream<Event> _getServerEventsAfter({
-    required int eventRecordNumber,
-    required ChatRoomEventType eventType,
-  }) async* {
-    final eventUrls = await _getServerEventFileURLs(
-      eventType: eventType,
-      startEventRecordNumber: eventRecordNumber,
-    );
-
-    eventUrls.forEach((eventUrl) async* {
-      final events = await serverChatRepository.getChatRoomEvents(
-        chatRoomId: chatRoomId,
-        eventUrl: eventUrl,
-      );
-
-      events.forEach((event) async* {
-        yield event;
-      });
-    });
-  }
-
-  Future<List<String>> _getServerEventFileURLs({
-    required ChatRoomEventType eventType,
-    required int startEventRecordNumber,
-  }) async {
-    return serverChatRepository.getChatRoomEventFileUrls(
-      chatRoomId: chatRoomId,
-      eventType: eventType,
-      startEventRecordNumber: startEventRecordNumber,
     );
   }
 
@@ -141,11 +111,70 @@ class ChatRoomAction {
     }
   }
 
-  Future<void> _syncChatRoomManagementEvent() async {}
+  Future<void> _syncChatRoomManagementEvent({
+    required int lastSyncedEventRecordNumber,
+  }) async {
+    _syncChatRoomEvent(
+      eventType: ChatRoomEventType.roomManagement,
+      lastSyncedEventRecordNumber: lastSyncedEventRecordNumber,
+    );
+  }
 
-  Future<void> _syncChatRoomMessageEvent() async {}
+  Future<void> _syncChatRoomMessageEvent({
+    required int lastSyncedEventRecordNumber,
+  }) async {
+    _syncChatRoomEvent(
+      eventType: ChatRoomEventType.messaging,
+      lastSyncedEventRecordNumber: lastSyncedEventRecordNumber,
+    );
+  }
 
   Future<void> _syncChatRoomReadEvent() async {}
+
+  Future<void> _syncChatRoomEvent({
+    required ChatRoomEventType eventType,
+    required int lastSyncedEventRecordNumber,
+  }) async {
+    final eventsStream = _getServerEventsAfter(
+      eventRecordNumber: lastSyncedEventRecordNumber,
+      eventType: eventType,
+    );
+
+    eventsStream.listen((events) {
+      for (final event in events) {
+        processRecordedEvent(recordedEvent: event);
+      }
+    });
+  }
+
+  Stream<List<RecordedEvent>> _getServerEventsAfter({
+    required int eventRecordNumber,
+    required ChatRoomEventType eventType,
+  }) async* {
+    final eventUrls = await _getServerEventArchiveURLs(
+      eventType: eventType,
+      startEventRecordNumber: eventRecordNumber,
+    );
+
+    for (final eventUrl in eventUrls) {
+      final events = await serverChatRepository.getChatRoomEventsFromUrl(
+        url: eventUrl,
+      );
+
+      yield events;
+    }
+  }
+
+  Future<List<String>> _getServerEventArchiveURLs({
+    required ChatRoomEventType eventType,
+    required int startEventRecordNumber,
+  }) async {
+    return serverChatRepository.getChatRoomEventArchiveUrls(
+      chatRoomId: chatRoomId,
+      eventType: eventType,
+      startEventRecordNumber: startEventRecordNumber,
+    );
+  }
 
   Future<void> _updateChatRoomState({
     required SyncState currentSyncState,

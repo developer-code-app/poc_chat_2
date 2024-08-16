@@ -98,7 +98,7 @@ class _RueJaiChatService implements RueJaiChatService {
   }
 
   @override
-  Future<RuejaiResultListResponse<String>> getChatRoomEventFileUrls(
+  Future<RuejaiResultListResponse<String>> getChatRoomEventArchiveUrls(
     int chatRoomId,
     String type,
     int startEventRecordNumber,
