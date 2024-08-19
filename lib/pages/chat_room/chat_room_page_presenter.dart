@@ -31,6 +31,7 @@ class ChatRoomPagePresenter {
 
 class MemberPresenter {
   MemberPresenter({
+    required this.id,
     required this.name,
     required this.thumbnail,
     required this.userRole,
@@ -38,6 +39,7 @@ class MemberPresenter {
 
   factory MemberPresenter.fromModel(ChatRoomMember owner) {
     return MemberPresenter(
+      id: owner.id,
       name: owner.rueJaiUser.name,
       thumbnail: owner.rueJaiUser.thumbnailUrl,
       userRole: _getUserRoleValue(owner.rueJaiUser.rueJaiUserRole),
@@ -47,16 +49,17 @@ class MemberPresenter {
   static String _getUserRoleValue(RueJaiUserRole userRole) {
     switch (userRole) {
       case RueJaiUserRole.homeOwner:
-        return 'home owner';
+        return 'Home Owner';
       case RueJaiUserRole.resident:
-        return 'resident';
+        return 'Resident';
       case RueJaiUserRole.renter:
-        return 'renter';
+        return 'Renter';
       case RueJaiUserRole.customerService:
-        return 'customer service';
+        return 'Customer Service';
     }
   }
 
+  final int id;
   final String name;
   final String thumbnail;
   final String userRole;
@@ -67,6 +70,7 @@ sealed class MessagePresenter {
     required this.id,
     required this.owner,
     required this.createdAt,
+    this.deletedAt,
   });
 
   factory MessagePresenter.fromModel(Message message) {
@@ -83,12 +87,17 @@ sealed class MessagePresenter {
         return FileMessagePresenter.fromModel(message);
       case MiniAppMessage():
         return MiniAppMessagePresenter.fromModel(message);
+      case InviteMemberMessage():
+        return InviteMemberMessagePresenter.fromModel(message);
+      case RemoveMemberMessage():
+        return RemoveMemberMessagePresenter.fromModel(message);
     }
   }
 
   final int id;
   final MemberPresenter owner;
   final DateTime createdAt;
+  final DateTime? deletedAt;
 }
 
 class TextMessagePresenter extends MessagePresenter {
@@ -97,6 +106,7 @@ class TextMessagePresenter extends MessagePresenter {
     required super.owner,
     required super.createdAt,
     this.text,
+    super.deletedAt,
   });
 
   factory TextMessagePresenter.fromModel(Message message) {
@@ -108,6 +118,7 @@ class TextMessagePresenter extends MessagePresenter {
       id: message.id,
       owner: MemberPresenter.fromModel(message.owner),
       createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
       text: message.text,
     );
   }
@@ -121,6 +132,7 @@ class TextReplyMessagePresenter extends MessagePresenter {
     required super.owner,
     required super.createdAt,
     required this.repliedMessage,
+    super.deletedAt,
     this.text,
   });
 
@@ -133,6 +145,7 @@ class TextReplyMessagePresenter extends MessagePresenter {
       id: message.id,
       owner: MemberPresenter.fromModel(message.owner),
       createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
       text: message.text,
       repliedMessage: MessagePresenter.fromModel(message.repliedMessage),
     );
@@ -147,7 +160,8 @@ class PhotoMessagePresenter extends MessagePresenter {
     required super.id,
     required super.owner,
     required super.createdAt,
-    required this.urls,
+    this.urls,
+    super.deletedAt,
   });
 
   factory PhotoMessagePresenter.fromModel(Message message) {
@@ -158,11 +172,12 @@ class PhotoMessagePresenter extends MessagePresenter {
       id: message.id,
       owner: MemberPresenter.fromModel(message.owner),
       createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
       urls: message.urls,
     );
   }
 
-  final List<String> urls;
+  final List<String>? urls;
 }
 
 class VideoMessagePresenter extends MessagePresenter {
@@ -170,7 +185,8 @@ class VideoMessagePresenter extends MessagePresenter {
     required super.id,
     required super.owner,
     required super.createdAt,
-    required this.url,
+    this.url,
+    super.deletedAt,
   });
 
   factory VideoMessagePresenter.fromModel(Message message) {
@@ -182,11 +198,12 @@ class VideoMessagePresenter extends MessagePresenter {
       id: message.id,
       owner: MemberPresenter.fromModel(message.owner),
       createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
       url: message.url,
     );
   }
 
-  final String url;
+  final String? url;
 }
 
 class FileMessagePresenter extends MessagePresenter {
@@ -194,7 +211,8 @@ class FileMessagePresenter extends MessagePresenter {
     required super.id,
     required super.owner,
     required super.createdAt,
-    required this.url,
+    this.url,
+    super.deletedAt,
   });
 
   factory FileMessagePresenter.fromModel(Message message) {
@@ -206,11 +224,12 @@ class FileMessagePresenter extends MessagePresenter {
       id: message.id,
       owner: MemberPresenter.fromModel(message.owner),
       createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
       url: message.url,
     );
   }
 
-  final String url;
+  final String? url;
 }
 
 class MiniAppMessagePresenter extends MessagePresenter {
@@ -218,6 +237,7 @@ class MiniAppMessagePresenter extends MessagePresenter {
     required super.id,
     required super.owner,
     required super.createdAt,
+    super.deletedAt,
   });
 
   factory MiniAppMessagePresenter.fromModel(Message message) {
@@ -229,6 +249,59 @@ class MiniAppMessagePresenter extends MessagePresenter {
       id: message.id,
       owner: MemberPresenter.fromModel(message.owner),
       createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
     );
   }
+}
+
+class InviteMemberMessagePresenter extends MessagePresenter {
+  InviteMemberMessagePresenter({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required this.member,
+    super.deletedAt,
+  });
+
+  factory InviteMemberMessagePresenter.fromModel(Message message) {
+    if (message is! InviteMemberMessage) {
+      throw ArgumentError('The message is not a invite member message');
+    }
+
+    return InviteMemberMessagePresenter(
+      id: message.id,
+      owner: MemberPresenter.fromModel(message.owner),
+      createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
+      member: MemberPresenter.fromModel(message.member),
+    );
+  }
+
+  final MemberPresenter member;
+}
+
+class RemoveMemberMessagePresenter extends MessagePresenter {
+  RemoveMemberMessagePresenter({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required this.member,
+    super.deletedAt,
+  });
+
+  factory RemoveMemberMessagePresenter.fromModel(Message message) {
+    if (message is! RemoveMemberMessage) {
+      throw ArgumentError('The message is not a remove member message');
+    }
+
+    return RemoveMemberMessagePresenter(
+      id: message.id,
+      owner: MemberPresenter.fromModel(message.owner),
+      createdAt: message.createdAt,
+      deletedAt: message.deletedAt,
+      member: MemberPresenter.fromModel(message.member),
+    );
+  }
+
+  final MemberPresenter member;
 }
