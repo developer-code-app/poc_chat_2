@@ -39,14 +39,16 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     bloc.replyMessageCubit.clear();
   }
 
-  bool _shouldShowUser({
+  bool _shouldShowUserAvatar({
     required List<MessagePresenter> messages,
     required MessagePresenter message,
   }) {
     final index = messages.indexOf(message);
     final previousMessage = index > 0 ? messages[index - 1] : null;
 
-    return previousMessage?.owner.id != message.owner.id;
+    return previousMessage?.owner.id != message.owner.id &&
+        (message is! InviteMemberMessagePresenter &&
+            message is! RemoveMemberMessagePresenter);
   }
 
   MessageAlignment _messageAlignment({required MessagePresenter message}) {
@@ -135,7 +137,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               (index, message) => _buildConfirmedMessage(
                 context,
                 message: message,
-                shouldShowUser: _shouldShowUser(
+                shouldShowUser: _shouldShowUserAvatar(
                   messages: state.presenter.confirmedMessages.toList(),
                   message: message,
                 ),
