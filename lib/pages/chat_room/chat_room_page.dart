@@ -365,14 +365,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     BuildContext context, {
     required bool isOwner,
     required Widget child,
-    bool isRepliedMessage = false,
+    required Color color,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: _bubbleMessageColor(
-          isOwner: isOwner,
-          isRepliedMessage: isRepliedMessage,
-        ),
+        color: color,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Padding(
@@ -385,26 +382,17 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   Widget _buildMessage(
     BuildContext context, {
     required MessagePresenter message,
-    bool isRepliedMessage = false,
   }) {
     if (message.deletedAt != null) {
       return _buildUnsendMessage(context, message: message);
     } else {
       switch (message) {
         case TextMessagePresenter():
-          return _buildTextMessage(
-            context,
-            textMessage: message,
-            isRepliedMessage: isRepliedMessage,
-          );
+          return _buildTextMessage(context, textMessage: message);
         case TextReplyMessagePresenter():
           return _buildTextReplyMessage(context, textReplyMessage: message);
         case PhotoMessagePresenter():
-          return _buildPhotoMessage(
-            context,
-            photoMessage: message,
-            isRepliedMessage: isRepliedMessage,
-          );
+          return _buildPhotoMessage(context, photoMessage: message);
         case VideoMessagePresenter():
           return _buildVideoMessage(context, videoMessage: message);
         case FileMessagePresenter():
@@ -470,7 +458,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   Widget _buildTextMessage(
     BuildContext context, {
     required TextMessagePresenter textMessage,
-    bool isRepliedMessage = false,
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
     final isOwner = bloc.currentUser.id == textMessage.owner.id;
@@ -481,15 +468,12 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         : _buildMessageBubble(
             context,
             isOwner: isOwner,
-            isRepliedMessage: isRepliedMessage,
+            color: isOwner ? Colors.deepOrangeAccent : Colors.grey.shade200,
             child: Text(
               text,
               style: TextStyle(
                 fontSize: 16,
-                color: _textMessageColor(
-                  isOwner: isOwner,
-                  isRepliedMessage: isRepliedMessage,
-                ),
+                color: isOwner ? Colors.white : Colors.black,
               ),
             ),
           );
@@ -511,14 +495,17 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             children: [
               Text('Replied to ${textReplyMessage.repliedMessage.owner.name}'),
               const SizedBox(height: 8),
-              _buildMessage(
-                context,
-                message: textReplyMessage.repliedMessage,
-                isRepliedMessage: true,
+              Opacity(
+                opacity: 0.6,
+                child: _buildMessage(
+                  context,
+                  message: textReplyMessage.repliedMessage,
+                ),
               ),
               _buildMessageBubble(
                 context,
                 isOwner: isOwner,
+                color: isOwner ? Colors.deepOrangeAccent : Colors.grey.shade200,
                 child: Text(
                   text,
                   style: TextStyle(
@@ -534,17 +521,13 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   Widget _buildPhotoMessage(
     BuildContext context, {
     required PhotoMessagePresenter photoMessage,
-    bool isRepliedMessage = false,
   }) {
     final urls = photoMessage.urls;
 
     return urls == null
         ? _buildPhotoMessageSkeletonView(context)
         : urls.length > 1
-            ? Opacity(
-                opacity: isRepliedMessage ? 0.6 : 1.0,
-                child: _buildPhotoGallery(context, urls: urls),
-              )
+            ? _buildPhotoGallery(context, urls: urls)
             : GestureDetector(
                 onTap: () => _viewPhotoGallery(
                   context,
@@ -553,12 +536,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
-                  child: Opacity(
-                    opacity: isRepliedMessage ? 0.6 : 1.0,
-                    child: Image.network(
-                      urls.first,
-                      fit: BoxFit.cover,
-                    ),
+                  child: Image.network(
+                    urls.first,
+                    fit: BoxFit.cover,
                   ),
                 ),
               );
@@ -953,32 +933,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           Flexible(child: child),
         ],
       );
-    }
-  }
-
-  Color? _textMessageColor({
-    required bool isOwner,
-    bool isRepliedMessage = false,
-  }) {
-    if (isRepliedMessage) {
-      return Colors.grey;
-    } else if (isOwner) {
-      return Colors.white;
-    } else {
-      return null;
-    }
-  }
-
-  Color _bubbleMessageColor({
-    required bool isOwner,
-    bool isRepliedMessage = false,
-  }) {
-    if (isRepliedMessage) {
-      return Colors.grey.shade100;
-    } else if (isOwner) {
-      return Colors.deepOrangeAccent;
-    } else {
-      return Colors.grey.shade200;
     }
   }
 }
