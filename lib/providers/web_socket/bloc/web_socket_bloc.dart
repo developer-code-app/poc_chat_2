@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_recorded_event_entity.dart';
+import 'package:poc_chat_2/providers/web_socket/entites/web_socket_response.dart';
+import 'package:poc_chat_2/services/system_service.dart';
 
 part 'web_socket_event.dart';
 part 'web_socket_state.dart';
@@ -15,6 +17,7 @@ typedef _State = WebSocketState;
 class WebSocketBloc extends Bloc<_Event, _State> {
   WebSocketBloc({
     required this.setting,
+    required this.systemService,
   }) : super(InitialState()) {
     on<ConnectingRequestedEvent>(_onConnectingRequestedEvent);
     on<ConnectedEvent>(_onConnectedEvent);
@@ -22,6 +25,7 @@ class WebSocketBloc extends Bloc<_Event, _State> {
   }
 
   final WebSocketSetting setting;
+  final SystemService systemService;
 
   bool get isConnected {
     final state = this.state;
@@ -46,18 +50,12 @@ class WebSocketBloc extends Bloc<_Event, _State> {
     emit(ConnectionSuccessState(webSocket));
 
     webSocket.listen(
-      (jsonString) {
-        final json = jsonDecode(jsonString) as Map<String, dynamic>;
-        final entity = RueJaiChatRecordedEventEntity.fromJson(json);
-        final recordedEvent = RecordedEvent.fromEntity(entity: entity);
-
-        _handleWebSocketEvent(recordedEvent);
-      },
+      (data) => _handleWebSocketListener(data),
       onError: () => _reconnect(webSocket),
       onDone: () => _reconnect(webSocket),
     );
 
-    unawaited(_syncEvent());
+    unawaited(systemService.syncChatRooms());
   }
 
   Future<void> _onErrorOccurredEvent(
@@ -88,11 +86,19 @@ class WebSocketBloc extends Bloc<_Event, _State> {
     }
   }
 
-  Future<void> _syncEvent() async {
-    // TODO: implement sync event.
-  }
+  void _handleWebSocketListener(String data) {
+    final json = jsonDecode(data) as Json;
+    final response = WebSocketResponse.fromJson(
+      json,
+      (fromJson) => RueJaiChatRecordedEventEntity.fromJson(fromJson as Json),
+    );
+    final recordedEvent = RecordedEvent.fromEntity(entity: response.payload);
 
-  void _handleWebSocketEvent(RecordedEvent event) {}
+    systemService.processRecordedEvent(
+      chatRoomId: response.chatRoomId,
+      recordedEvent: recordedEvent,
+    );
+  }
 }
 
 class WebSocketSetting {

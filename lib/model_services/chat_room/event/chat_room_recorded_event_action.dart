@@ -19,13 +19,13 @@ class ChatRoomRecordedEventAction {
   final LocalChatRepository localChatRepository;
 
   Future<void> processEvent() async {
-    final recordedEvent = this.recordedEvent;
+    final event = recordedEvent.event;
 
-    if (recordedEvent is MessageEvent) {
+    if (event is MessageEvent) {
       processMessageEvent();
-    } else if (recordedEvent is RoomManagementEvent) {
+    } else if (event is RoomManagementEvent) {
       processRoomManagementEvent();
-    } else if (recordedEvent is ReadMessageEvent) {
+    } else if (event is ReadMessageEvent) {
       processReadMessageEvent();
     } else {
       throw UnprocessableEventError('Event is not support');
