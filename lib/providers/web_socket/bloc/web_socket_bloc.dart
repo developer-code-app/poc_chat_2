@@ -2,11 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dfunc/dfunc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
+import 'package:poc_chat_2/preference_keys.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_recorded_event_entity.dart';
+import 'package:poc_chat_2/providers/ruejai_chat/interceptors/authentication_interceptor.dart';
 import 'package:poc_chat_2/providers/web_socket/entites/web_socket_response.dart';
 import 'package:poc_chat_2/services/system_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'web_socket_event.dart';
 part 'web_socket_state.dart';
@@ -16,7 +20,7 @@ typedef _State = WebSocketState;
 
 class WebSocketBloc extends Bloc<_Event, _State> {
   WebSocketBloc({
-    required this.setting,
+    required this.url,
     required this.systemService,
   }) : super(InitialState()) {
     on<ConnectingRequestedEvent>(_onConnectingRequestedEvent);
@@ -24,7 +28,7 @@ class WebSocketBloc extends Bloc<_Event, _State> {
     on<ErrorOccurredEvent>(_onErrorOccurredEvent);
   }
 
-  final WebSocketSetting setting;
+  final String url;
   final SystemService systemService;
 
   bool get isConnected {
@@ -75,9 +79,16 @@ class WebSocketBloc extends Bloc<_Event, _State> {
 
   Future<void> _connect() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final headers = prefs
+          .getString(AuthPreferenceKeys.accessToken)
+          ?.let((token) => AuthorizationHeader(token: token))
+          .let((header) => [header.mapEntry])
+          .let(Map<String, dynamic>.fromIterable);
+
       final webSocket = await WebSocket.connect(
-        setting.url,
-        headers: setting.headers,
+        url,
+        headers: headers,
       );
 
       add(ConnectedEvent(webSocket));
@@ -99,14 +110,4 @@ class WebSocketBloc extends Bloc<_Event, _State> {
       recordedEvent: recordedEvent,
     );
   }
-}
-
-class WebSocketSetting {
-  WebSocketSetting({
-    required this.url,
-    this.headers,
-  });
-
-  final String url;
-  final Map<String, dynamic>? headers;
 }
