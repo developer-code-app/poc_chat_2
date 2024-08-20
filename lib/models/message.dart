@@ -145,7 +145,7 @@ class PhotoMessage extends Message {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
-    required this.urls,
+    this.urls,
     super.deletedAt,
     super.addedByEventRecordNumber,
     super.updatedByEventRecordNumber,
@@ -155,7 +155,7 @@ class PhotoMessage extends Message {
     return MockData.photoMessage;
   }
 
-  final List<String> urls;
+  final List<String>? urls;
 }
 
 class VideoMessage extends Message {
@@ -164,7 +164,7 @@ class VideoMessage extends Message {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
-    required this.url,
+    this.url,
     super.deletedAt,
     super.addedByEventRecordNumber,
     super.updatedByEventRecordNumber,
@@ -174,7 +174,7 @@ class VideoMessage extends Message {
     return MockData.videoMessage;
   }
 
-  final String url;
+  final String? url;
 }
 
 class FileMessage extends Message {
@@ -183,7 +183,7 @@ class FileMessage extends Message {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
-    required this.url,
+    this.url,
     super.deletedAt,
     super.addedByEventRecordNumber,
     super.updatedByEventRecordNumber,
@@ -193,7 +193,7 @@ class FileMessage extends Message {
     return MockData.fileMessage;
   }
 
-  final String url;
+  final String? url;
 }
 
 class MiniAppMessage extends Message {
@@ -202,7 +202,7 @@ class MiniAppMessage extends Message {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
-    required this.miniApp,
+    this.miniApp,
     super.deletedAt,
     super.addedByEventRecordNumber,
     super.updatedByEventRecordNumber,
@@ -212,5 +212,35 @@ class MiniAppMessage extends Message {
     return MockData.miniAppMessage;
   }
 
-  final MiniApp miniApp;
+  final MiniApp? miniApp;
+}
+
+class InviteMemberMessage extends Message {
+  InviteMemberMessage({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required super.updatedAt,
+    required this.member,
+    super.deletedAt,
+    super.addedByEventRecordNumber,
+    super.updatedByEventRecordNumber,
+  });
+
+  final ChatRoomMember member;
+}
+
+class RemoveMemberMessage extends Message {
+  RemoveMemberMessage({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required super.updatedAt,
+    required this.member,
+    super.deletedAt,
+    super.addedByEventRecordNumber,
+    super.updatedByEventRecordNumber,
+  });
+
+  final ChatRoomMember member;
 }
