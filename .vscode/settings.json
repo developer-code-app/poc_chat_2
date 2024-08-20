@@ -2,9 +2,13 @@
   "cSpell.words": [
     "prefs",
     "ruejai",
-    "unawaited"
+    "unawaited",
+    "unfocus",
+    "Unsend",
+    "unsynced"
   ],
   "java.project.sourcePaths": [
     "lib/models"
-  ]
+  ],
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

@@ -6,8 +6,7 @@ part 'rue_jai_chat_room_latest_event_record_info_entity.g.dart';
 @JsonSerializable()
 class RueJaiChatRoomLatestEventRecordInfoEntity extends Equatable {
   const RueJaiChatRoomLatestEventRecordInfoEntity({
-    required this.latestMessageEventRecordNumber,
-    required this.latestRoomManagementEventRecordNumber,
+    required this.latestRoomAndMessageEventRecordNumber,
   });
 
   factory RueJaiChatRoomLatestEventRecordInfoEntity.fromJson(
@@ -17,12 +16,10 @@ class RueJaiChatRoomLatestEventRecordInfoEntity extends Equatable {
   Map<String, dynamic> toJson() =>
       _$RueJaiChatRoomLatestEventRecordInfoEntityToJson(this);
 
-  final int latestMessageEventRecordNumber;
-  final int latestRoomManagementEventRecordNumber;
+  final int latestRoomAndMessageEventRecordNumber;
 
   @override
   List<Object?> get props => [
-        latestMessageEventRecordNumber,
-        latestRoomManagementEventRecordNumber,
+        latestRoomAndMessageEventRecordNumber,
       ];
 }

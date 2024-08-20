@@ -2,19 +2,16 @@ import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_room_late
 
 class ChatRoomLatestEventRecordInfo {
   ChatRoomLatestEventRecordInfo({
-    required this.messageRecordNumber,
-    required this.roomManagementRecordNumber,
+    required this.roomAndMessageRecordNumber,
   });
 
   factory ChatRoomLatestEventRecordInfo.fromEntity(
     RueJaiChatRoomLatestEventRecordInfoEntity entity,
   ) {
     return ChatRoomLatestEventRecordInfo(
-      messageRecordNumber: entity.latestMessageEventRecordNumber,
-      roomManagementRecordNumber: entity.latestRoomManagementEventRecordNumber,
+      roomAndMessageRecordNumber: entity.latestRoomAndMessageEventRecordNumber,
     );
   }
 
-  final int messageRecordNumber;
-  final int roomManagementRecordNumber;
+  final int roomAndMessageRecordNumber;
 }

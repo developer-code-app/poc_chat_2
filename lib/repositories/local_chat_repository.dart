@@ -2,7 +2,7 @@ import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_latest_event_record_info.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
-import 'package:poc_chat_2/models/events/room_management_event.dart'
+import 'package:poc_chat_2/models/events/room_event.dart'
     as room_management_event;
 import 'package:poc_chat_2/models/forms/message_form.dart';
 import 'package:poc_chat_2/models/message.dart';
@@ -24,8 +24,7 @@ class LocalChatRepository {
     required int chatRoomId,
   }) async {
     return ChatRoomLatestEventRecordInfo(
-      messageRecordNumber: 0,
-      roomManagementRecordNumber: 0,
+      roomAndMessageRecordNumber: 0,
     );
   }
 

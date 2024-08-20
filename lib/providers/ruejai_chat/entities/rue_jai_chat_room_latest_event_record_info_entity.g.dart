@@ -10,18 +10,14 @@ RueJaiChatRoomLatestEventRecordInfoEntity
     _$RueJaiChatRoomLatestEventRecordInfoEntityFromJson(
             Map<String, dynamic> json) =>
         RueJaiChatRoomLatestEventRecordInfoEntity(
-          latestMessageEventRecordNumber:
-              (json['latest_message_event_record_number'] as num).toInt(),
-          latestRoomManagementEventRecordNumber:
-              (json['latest_room_management_event_record_number'] as num)
+          latestRoomAndMessageEventRecordNumber:
+              (json['latest_room_and_message_event_record_number'] as num)
                   .toInt(),
         );
 
 Map<String, dynamic> _$RueJaiChatRoomLatestEventRecordInfoEntityToJson(
         RueJaiChatRoomLatestEventRecordInfoEntity instance) =>
     <String, dynamic>{
-      'latest_message_event_record_number':
-          instance.latestMessageEventRecordNumber,
-      'latest_room_management_event_record_number':
-          instance.latestRoomManagementEventRecordNumber,
+      'latest_room_and_message_event_record_number':
+          instance.latestRoomAndMessageEventRecordNumber,
     };

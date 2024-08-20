@@ -6,30 +6,30 @@ part of 'message.dart';
 // CopyWithGenerator
 // **************************************************************************
 
-abstract class _$TextMessageCWProxy {
-  TextMessage id(int id);
+abstract class _$MemberTextMessageCWProxy {
+  MemberTextMessage id(int id);
 
-  TextMessage owner(ChatRoomMember owner);
+  MemberTextMessage owner(ChatRoomMember owner);
 
-  TextMessage createdAt(DateTime createdAt);
+  MemberTextMessage createdAt(DateTime createdAt);
 
-  TextMessage updatedAt(DateTime updatedAt);
+  MemberTextMessage updatedAt(DateTime updatedAt);
 
-  TextMessage deletedAt(DateTime? deletedAt);
+  MemberTextMessage deletedAt(DateTime? deletedAt);
 
-  TextMessage addedByEventRecordNumber(int? addedByEventRecordNumber);
+  MemberTextMessage addedByEventRecordNumber(int? addedByEventRecordNumber);
 
-  TextMessage updatedByEventRecordNumber(int? updatedByEventRecordNumber);
+  MemberTextMessage updatedByEventRecordNumber(int? updatedByEventRecordNumber);
 
-  TextMessage text(String? text);
+  MemberTextMessage text(String? text);
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `TextMessage(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `MemberTextMessage(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
-  /// TextMessage(...).copyWith(id: 12, name: "My name")
+  /// MemberTextMessage(...).copyWith(id: 12, name: "My name")
   /// ````
-  TextMessage call({
+  MemberTextMessage call({
     int? id,
     ChatRoomMember? owner,
     DateTime? createdAt,
@@ -41,47 +41,49 @@ abstract class _$TextMessageCWProxy {
   });
 }
 
-/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfTextMessage.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfTextMessage.copyWith.fieldName(...)`
-class _$TextMessageCWProxyImpl implements _$TextMessageCWProxy {
-  const _$TextMessageCWProxyImpl(this._value);
+/// Proxy class for `copyWith` functionality. This is a callable class and can be used as follows: `instanceOfMemberTextMessage.copyWith(...)`. Additionally contains functions for specific fields e.g. `instanceOfMemberTextMessage.copyWith.fieldName(...)`
+class _$MemberTextMessageCWProxyImpl implements _$MemberTextMessageCWProxy {
+  const _$MemberTextMessageCWProxyImpl(this._value);
 
-  final TextMessage _value;
-
-  @override
-  TextMessage id(int id) => this(id: id);
+  final MemberTextMessage _value;
 
   @override
-  TextMessage owner(ChatRoomMember owner) => this(owner: owner);
+  MemberTextMessage id(int id) => this(id: id);
 
   @override
-  TextMessage createdAt(DateTime createdAt) => this(createdAt: createdAt);
+  MemberTextMessage owner(ChatRoomMember owner) => this(owner: owner);
 
   @override
-  TextMessage updatedAt(DateTime updatedAt) => this(updatedAt: updatedAt);
+  MemberTextMessage createdAt(DateTime createdAt) => this(createdAt: createdAt);
 
   @override
-  TextMessage deletedAt(DateTime? deletedAt) => this(deletedAt: deletedAt);
+  MemberTextMessage updatedAt(DateTime updatedAt) => this(updatedAt: updatedAt);
 
   @override
-  TextMessage addedByEventRecordNumber(int? addedByEventRecordNumber) =>
+  MemberTextMessage deletedAt(DateTime? deletedAt) =>
+      this(deletedAt: deletedAt);
+
+  @override
+  MemberTextMessage addedByEventRecordNumber(int? addedByEventRecordNumber) =>
       this(addedByEventRecordNumber: addedByEventRecordNumber);
 
   @override
-  TextMessage updatedByEventRecordNumber(int? updatedByEventRecordNumber) =>
+  MemberTextMessage updatedByEventRecordNumber(
+          int? updatedByEventRecordNumber) =>
       this(updatedByEventRecordNumber: updatedByEventRecordNumber);
 
   @override
-  TextMessage text(String? text) => this(text: text);
+  MemberTextMessage text(String? text) => this(text: text);
 
   @override
 
-  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `TextMessage(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
+  /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `MemberTextMessage(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
   /// ```dart
-  /// TextMessage(...).copyWith(id: 12, name: "My name")
+  /// MemberTextMessage(...).copyWith(id: 12, name: "My name")
   /// ````
-  TextMessage call({
+  MemberTextMessage call({
     Object? id = const $CopyWithPlaceholder(),
     Object? owner = const $CopyWithPlaceholder(),
     Object? createdAt = const $CopyWithPlaceholder(),
@@ -91,7 +93,7 @@ class _$TextMessageCWProxyImpl implements _$TextMessageCWProxy {
     Object? updatedByEventRecordNumber = const $CopyWithPlaceholder(),
     Object? text = const $CopyWithPlaceholder(),
   }) {
-    return TextMessage(
+    return MemberTextMessage(
       id: id == const $CopyWithPlaceholder() || id == null
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
@@ -130,8 +132,9 @@ class _$TextMessageCWProxyImpl implements _$TextMessageCWProxy {
   }
 }
 
-extension $TextMessageCopyWith on TextMessage {
-  /// Returns a callable class that can be used as follows: `instanceOfTextMessage.copyWith(...)` or like so:`instanceOfTextMessage.copyWith.fieldName(...)`.
+extension $MemberTextMessageCopyWith on MemberTextMessage {
+  /// Returns a callable class that can be used as follows: `instanceOfMemberTextMessage.copyWith(...)` or like so:`instanceOfMemberTextMessage.copyWith.fieldName(...)`.
   // ignore: library_private_types_in_public_api
-  _$TextMessageCWProxy get copyWith => _$TextMessageCWProxyImpl(this);
+  _$MemberTextMessageCWProxy get copyWith =>
+      _$MemberTextMessageCWProxyImpl(this);
 }

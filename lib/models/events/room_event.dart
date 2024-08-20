@@ -3,15 +3,15 @@ import 'package:poc_chat_2/models/events/event.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_event_entity.dart';
 
-abstract class RoomManagementEvent extends Event {
-  RoomManagementEvent({
+abstract class RoomEvent extends Event {
+  RoomEvent({
     required super.id,
     required super.owner,
     required super.createdAt,
   });
 }
 
-class CreateRoomEvent extends RoomManagementEvent {
+class CreateRoomEvent extends RoomEvent {
   CreateRoomEvent({
     required super.id,
     required super.owner,
@@ -40,7 +40,7 @@ class CreateRoomEvent extends RoomManagementEvent {
   final List<ChatRoomMember> members;
 }
 
-class InviteMemberEvent extends RoomManagementEvent {
+class InviteMemberEvent extends RoomEvent {
   InviteMemberEvent({
     required super.id,
     required super.owner,
@@ -62,7 +62,7 @@ class InviteMemberEvent extends RoomManagementEvent {
   final ChatRoomMember member;
 }
 
-class UpdateMemberRoleEvent extends RoomManagementEvent {
+class UpdateMemberRoleEvent extends RoomEvent {
   UpdateMemberRoleEvent({
     required super.id,
     required super.owner,
@@ -87,7 +87,7 @@ class UpdateMemberRoleEvent extends RoomManagementEvent {
   final ChatRoomMemberRole memberRole;
 }
 
-class RemoveMemberEvent extends RoomManagementEvent {
+class RemoveMemberEvent extends RoomEvent {
   RemoveMemberEvent({
     required super.id,
     required super.owner,

@@ -46,21 +46,24 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     final index = messages.indexOf(message);
     final previousMessage = index > 0 ? messages[index - 1] : null;
 
-    return previousMessage?.owner.id != message.owner.id &&
-        (message is! InviteMemberMessagePresenter &&
-            message is! RemoveMemberMessagePresenter);
+    if (previousMessage == null) return message is MemberMessagePresenter;
+
+    if (message is! MemberMessagePresenter) return false;
+
+    if (previousMessage is! MemberMessagePresenter) return true;
+
+    return previousMessage.owner.id != message.owner.id;
   }
 
   MessageAlignment _messageAlignment({required MessagePresenter message}) {
     final bloc = context.read<ChatRoomPageBloc>();
 
-    if (message is InviteMemberMessagePresenter ||
-        message is RemoveMemberMessagePresenter) {
-      return MessageAlignment.center;
-    } else {
+    if (message is MemberMessagePresenter) {
       return bloc.currentUser.id == message.owner.id
           ? MessageAlignment.right
           : MessageAlignment.left;
+    } else {
+      return MessageAlignment.center;
     }
   }
 
@@ -168,10 +171,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             );
           },
         ),
-        BlocBuilder<ReplyMessageCubit, Message?>(
+        BlocBuilder<ReplyMessageCubit, MemberMessage?>(
           builder: (context, message) {
             if (message != null) {
-              final messagePresenter = MessagePresenter.fromModel(message);
+              final messagePresenter =
+                  MemberMessagePresenter.fromModel(message);
 
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -304,7 +308,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   }) {
     return Column(
       children: [
-        if (shouldShowUser) _buildUserAvatar(context, member: message.owner),
+        if (shouldShowUser && message is MemberMessagePresenter)
+          _buildUserAvatar(
+            context,
+            member: message.owner,
+          ),
         _buildMessageAlignment(
           context,
           messageAlignment: _messageAlignment(message: message),
@@ -385,33 +393,25 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     BuildContext context, {
     required MessagePresenter message,
   }) {
-    if (message.deletedAt != null) {
+    if (message is MemberMessagePresenter && message.deletedAt != null) {
       return _buildUnsendMessage(context, message: message);
-    } else {
-      switch (message) {
-        case TextMessagePresenter():
-          return _buildTextMessage(context, textMessage: message);
-        case TextReplyMessagePresenter():
-          return _buildTextReplyMessage(context, textReplyMessage: message);
-        case PhotoMessagePresenter():
-          return _buildPhotoMessage(context, photoMessage: message);
-        case VideoMessagePresenter():
-          return _buildVideoMessage(context, videoMessage: message);
-        case FileMessagePresenter():
-          return _buildFileMessage(context, fileMessage: message);
-        case MiniAppMessagePresenter():
-          return _buildMiniAppMessage(context, miniAppMessage: message);
-        case InviteMemberMessagePresenter():
-          return _buildMemberJoinedChatRoom(
-            context,
-            inviteMemberMessage: message,
-          );
-        case RemoveMemberMessagePresenter():
-          return _buildMemberLeaveChatRoom(
-            context,
-            removeMemberMessage: message,
-          );
-      }
+    }
+
+    switch (message) {
+      case MemberTextMessagePresenter():
+        return _buildTextMessage(context, textMessage: message);
+      case MemberTextReplyMessagePresenter():
+        return _buildTextReplyMessage(context, textReplyMessage: message);
+      case MemberPhotoMessagePresenter():
+        return _buildPhotoMessage(context, photoMessage: message);
+      case MemberVideoMessagePresenter():
+        return _buildVideoMessage(context, videoMessage: message);
+      case MemberFileMessagePresenter():
+        return _buildFileMessage(context, fileMessage: message);
+      case MemberMiniAppMessagePresenter():
+        return _buildMiniAppMessage(context, miniAppMessage: message);
+      case ActivityLogMessagePresenter():
+        return _buildActivityLogMessage(context, activityLogMessage: message);
     }
   }
 
@@ -459,7 +459,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildTextMessage(
     BuildContext context, {
-    required TextMessagePresenter textMessage,
+    required MemberTextMessagePresenter textMessage,
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
     final isOwner = bloc.currentUser.id == textMessage.owner.id;
@@ -483,7 +483,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildTextReplyMessage(
     BuildContext context, {
-    required TextReplyMessagePresenter textReplyMessage,
+    required MemberTextReplyMessagePresenter textReplyMessage,
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
     final text = textReplyMessage.text;
@@ -522,7 +522,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildPhotoMessage(
     BuildContext context, {
-    required PhotoMessagePresenter photoMessage,
+    required MemberPhotoMessagePresenter photoMessage,
   }) {
     final urls = photoMessage.urls;
 
@@ -548,7 +548,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildVideoMessage(
     BuildContext context, {
-    required VideoMessagePresenter videoMessage,
+    required MemberVideoMessagePresenter videoMessage,
   }) {
     return videoMessage.url == null
         ? _buildVideoMessageSkeletonView(context)
@@ -557,7 +557,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildFileMessage(
     BuildContext context, {
-    required FileMessagePresenter fileMessage,
+    required MemberFileMessagePresenter fileMessage,
   }) {
     return fileMessage.url == null
         ? _buildFileMessageSkeletonView(context)
@@ -566,7 +566,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildMiniAppMessage(
     BuildContext context, {
-    required MiniAppMessagePresenter miniAppMessage,
+    required MemberMiniAppMessagePresenter miniAppMessage,
   }) {
     return _buildMiniAppMessageSkeletonView(context);
   }
@@ -777,7 +777,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildReplyMessageInput(
     BuildContext context, {
-    required MessagePresenter message,
+    required MemberMessagePresenter message,
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
 
@@ -810,9 +810,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildReplyMessage(
     BuildContext context, {
-    required MessagePresenter message,
+    required MemberMessagePresenter message,
   }) {
-    if (message is TextMessagePresenter) {
+    if (message is MemberTextMessagePresenter) {
       final text = message.text;
 
       if (text != null) {
@@ -820,7 +820,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       } else {
         return Container();
       }
-    } else if (message is PhotoMessagePresenter) {
+    } else if (message is MemberPhotoMessagePresenter) {
       return SizedBox(
         height: 60,
         child: Row(
@@ -841,19 +841,17 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           ],
         ),
       );
-    } else if (message is MiniAppMessagePresenter) {
+    } else if (message is MemberMiniAppMessagePresenter) {
       return const Text('Package');
     } else {
       return Container();
     }
   }
 
-  Widget _buildMemberJoinedChatRoom(
+  Widget _buildActivityLogMessage(
     BuildContext context, {
-    required InviteMemberMessagePresenter inviteMemberMessage,
+    required ActivityLogMessagePresenter activityLogMessage,
   }) {
-    final member = inviteMemberMessage.member;
-
     return Row(
       children: [
         const Expanded(
@@ -862,39 +860,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             child: Divider(),
           ),
         ),
-        Text(
-          '${member.name} Joined the Chat',
-        ),
-        const Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Divider(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMemberLeaveChatRoom(
-    BuildContext context, {
-    required RemoveMemberMessagePresenter removeMemberMessage,
-  }) {
-    final member = removeMemberMessage.member;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Divider(),
-          ),
-        ),
-        Text(
-          '${member.name} Leave the Chat',
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
+        Text(activityLogMessage.log),
         const Expanded(
           child: Padding(
             padding: EdgeInsets.all(8.0),
