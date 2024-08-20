@@ -43,17 +43,10 @@ class ChatRoomAction {
     final chatRoomSyncState = await _getChatRoomSyncState();
 
     _updateChatRoomState(
-      currentSyncState: chatRoomSyncState.roomManagementEventSyncState,
-      onUnsynced: () => _syncChatRoomManagementEvent(
-        lastSyncedEventRecordNumber:
-            chatRoomSyncState.latestRoomManagementEventRecordNumber,
-      ),
-    );
-    _updateChatRoomState(
-      currentSyncState: chatRoomSyncState.messageEventSyncState,
+      currentSyncState: chatRoomSyncState.roomAndMessageEventSyncState,
       onUnsynced: () => _syncChatRoomMessageEvent(
         lastSyncedEventRecordNumber:
-            chatRoomSyncState.latestMessageEventRecordNumber,
+            chatRoomSyncState.latestRoomAndMessageEventRecordNumber,
       ),
     );
     _syncChatRoomReadEvent();
@@ -66,21 +59,14 @@ class ChatRoomAction {
         await getServerChatRoomLatestEventRecordInfo();
 
     return ChatRoomSyncState(
-      messageEventSyncState: _getSyncState(
-        latestRecordNumber: lastSyncedEventRecordInfo.messageRecordNumber,
-        serverLatestRecordNumber:
-            serverLatestEventRecordInfo.messageRecordNumber,
-      ),
-      latestMessageEventRecordNumber:
-          lastSyncedEventRecordInfo.messageRecordNumber,
-      roomManagementEventSyncState: _getSyncState(
+      roomAndMessageEventSyncState: _getSyncState(
         latestRecordNumber:
-            lastSyncedEventRecordInfo.roomManagementRecordNumber,
+            lastSyncedEventRecordInfo.roomAndMessageRecordNumber,
         serverLatestRecordNumber:
-            serverLatestEventRecordInfo.roomManagementRecordNumber,
+            serverLatestEventRecordInfo.roomAndMessageRecordNumber,
       ),
-      latestRoomManagementEventRecordNumber:
-          lastSyncedEventRecordInfo.roomManagementRecordNumber,
+      latestRoomAndMessageEventRecordNumber:
+          lastSyncedEventRecordInfo.roomAndMessageRecordNumber,
     );
   }
 
@@ -111,20 +97,10 @@ class ChatRoomAction {
     }
   }
 
-  Future<void> _syncChatRoomManagementEvent({
-    required int lastSyncedEventRecordNumber,
-  }) async {
-    _syncChatRoomEvent(
-      eventType: ChatRoomEventType.roomManagement,
-      lastSyncedEventRecordNumber: lastSyncedEventRecordNumber,
-    );
-  }
-
   Future<void> _syncChatRoomMessageEvent({
     required int lastSyncedEventRecordNumber,
   }) async {
     _syncChatRoomEvent(
-      eventType: ChatRoomEventType.messaging,
       lastSyncedEventRecordNumber: lastSyncedEventRecordNumber,
     );
   }
@@ -132,12 +108,10 @@ class ChatRoomAction {
   Future<void> _syncChatRoomReadEvent() async {}
 
   Future<void> _syncChatRoomEvent({
-    required ChatRoomEventType eventType,
     required int lastSyncedEventRecordNumber,
   }) async {
     final eventsStream = _getServerEventsAfter(
       eventRecordNumber: lastSyncedEventRecordNumber,
-      eventType: eventType,
     );
 
     eventsStream.listen((events) {
@@ -149,10 +123,8 @@ class ChatRoomAction {
 
   Stream<List<RecordedEvent>> _getServerEventsAfter({
     required int eventRecordNumber,
-    required ChatRoomEventType eventType,
   }) async* {
     final eventUrls = await _getServerEventArchiveURLs(
-      eventType: eventType,
       startEventRecordNumber: eventRecordNumber,
     );
 
@@ -166,12 +138,10 @@ class ChatRoomAction {
   }
 
   Future<List<String>> _getServerEventArchiveURLs({
-    required ChatRoomEventType eventType,
     required int startEventRecordNumber,
   }) async {
     return serverChatRepository.getChatRoomEventArchiveUrls(
       chatRoomId: chatRoomId,
-      eventType: eventType,
       startEventRecordNumber: startEventRecordNumber,
     );
   }

@@ -8,10 +8,14 @@ import 'package:poc_chat_2/flavor_constants.dart';
 Future<void> main() async {
   FlavorConfig(
     variables: {
-      FlavorVariableKeys.ruejaiChatApiBaseUrl: 'https://baanruejai.com/',
-      FlavorVariableKeys.webSocketBaseUrl: 'https://baanruejai.com/',
+      FlavorVariableKeys.ruejaiChatApiBaseUrl: 'http://10.0.0.4:8081',
+      FlavorVariableKeys.webSocketBaseUrl: 'ws://10.0.0.4:8081',
     },
   );
 
-  await setupApp(const App());
+  await setupApp(
+    const FlavorBanner(
+      child: App(),
+    ),
+  );
 }

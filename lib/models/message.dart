@@ -26,15 +26,15 @@ sealed class Message {
   ) {
     switch (entity.type) {
       case MessageType.text:
-        return TextMessage.fromEntity();
+        return MemberTextMessage.fromEntity();
       case MessageType.photo:
-        return PhotoMessage.fromEntity();
+        return MemberPhotoMessage.fromEntity();
       case MessageType.video:
-        return VideoMessage.fromEntity();
+        return MemberVideoMessage.fromEntity();
       case MessageType.file:
-        return FileMessage.fromEntity();
+        return MemberFileMessage.fromEntity();
       case MessageType.miniApp:
-        return MiniAppMessage.fromEntity();
+        return MemberMiniAppMessage.fromEntity();
     }
   }
 
@@ -43,15 +43,15 @@ sealed class Message {
   ) {
     switch (entity.type) {
       case MessageType.text:
-        return TextMessage.fromEntity();
+        return MemberTextMessage.fromEntity();
       case MessageType.photo:
-        return PhotoMessage.fromEntity();
+        return MemberPhotoMessage.fromEntity();
       case MessageType.video:
-        return VideoMessage.fromEntity();
+        return MemberVideoMessage.fromEntity();
       case MessageType.file:
-        return FileMessage.fromEntity();
+        return MemberFileMessage.fromEntity();
       case MessageType.miniApp:
-        return MiniAppMessage.fromEntity();
+        return MemberMiniAppMessage.fromEntity();
     }
   }
 
@@ -60,15 +60,15 @@ sealed class Message {
   ) {
     switch (entity.type) {
       case MessageType.text:
-        return TextMessage.fromEntity();
+        return MemberTextMessage.fromEntity();
       case MessageType.photo:
-        return PhotoMessage.fromEntity();
+        return MemberPhotoMessage.fromEntity();
       case MessageType.video:
-        return VideoMessage.fromEntity();
+        return MemberVideoMessage.fromEntity();
       case MessageType.file:
-        return FileMessage.fromEntity();
+        return MemberFileMessage.fromEntity();
       case MessageType.miniApp:
-        return MiniAppMessage.fromEntity();
+        return MemberMiniAppMessage.fromEntity();
     }
   }
 
@@ -77,15 +77,15 @@ sealed class Message {
   ) {
     switch (entity.type) {
       case MessageType.text:
-        return TextMessage.fromEntity();
+        return MemberTextMessage.fromEntity();
       case MessageType.photo:
-        return PhotoMessage.fromEntity();
+        return MemberPhotoMessage.fromEntity();
       case MessageType.video:
-        return VideoMessage.fromEntity();
+        return MemberVideoMessage.fromEntity();
       case MessageType.file:
-        return FileMessage.fromEntity();
+        return MemberFileMessage.fromEntity();
       case MessageType.miniApp:
-        return MiniAppMessage.fromEntity();
+        return MemberMiniAppMessage.fromEntity();
     }
   }
 
@@ -98,9 +98,33 @@ sealed class Message {
   final int? updatedByEventRecordNumber;
 }
 
+sealed class MemberMessage extends Message {
+  MemberMessage({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required super.updatedAt,
+    super.deletedAt,
+    super.addedByEventRecordNumber,
+    super.updatedByEventRecordNumber,
+  });
+}
+
+sealed class ActivityLogMessage extends Message {
+  ActivityLogMessage({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required super.updatedAt,
+    super.deletedAt,
+    super.addedByEventRecordNumber,
+    super.updatedByEventRecordNumber,
+  });
+}
+
 @CopyWith()
-class TextMessage extends Message {
-  TextMessage({
+class MemberTextMessage extends MemberMessage {
+  MemberTextMessage({
     required super.id,
     required super.owner,
     required super.createdAt,
@@ -111,15 +135,15 @@ class TextMessage extends Message {
     this.text,
   });
 
-  factory TextMessage.fromEntity() {
+  factory MemberTextMessage.fromEntity() {
     return MockData.textMessage;
   }
 
   final String? text;
 }
 
-class TextReplyMessage extends Message {
-  TextReplyMessage({
+class MemberTextReplyMessage extends MemberMessage {
+  MemberTextReplyMessage({
     required super.id,
     required super.owner,
     required super.createdAt,
@@ -131,16 +155,16 @@ class TextReplyMessage extends Message {
     this.text,
   });
 
-  factory TextReplyMessage.fromEntity() {
+  factory MemberTextReplyMessage.fromEntity() {
     return MockData.textReplyMessage;
   }
 
-  final Message repliedMessage;
+  final MemberMessage repliedMessage;
   final String? text;
 }
 
-class PhotoMessage extends Message {
-  PhotoMessage({
+class MemberPhotoMessage extends MemberMessage {
+  MemberPhotoMessage({
     required super.id,
     required super.owner,
     required super.createdAt,
@@ -151,15 +175,15 @@ class PhotoMessage extends Message {
     super.updatedByEventRecordNumber,
   });
 
-  factory PhotoMessage.fromEntity() {
+  factory MemberPhotoMessage.fromEntity() {
     return MockData.photoMessage;
   }
 
   final List<String>? urls;
 }
 
-class VideoMessage extends Message {
-  VideoMessage({
+class MemberVideoMessage extends MemberMessage {
+  MemberVideoMessage({
     required super.id,
     required super.owner,
     required super.createdAt,
@@ -170,15 +194,15 @@ class VideoMessage extends Message {
     super.updatedByEventRecordNumber,
   });
 
-  factory VideoMessage.fromEntity() {
+  factory MemberVideoMessage.fromEntity() {
     return MockData.videoMessage;
   }
 
   final String? url;
 }
 
-class FileMessage extends Message {
-  FileMessage({
+class MemberFileMessage extends MemberMessage {
+  MemberFileMessage({
     required super.id,
     required super.owner,
     required super.createdAt,
@@ -189,15 +213,15 @@ class FileMessage extends Message {
     super.updatedByEventRecordNumber,
   });
 
-  factory FileMessage.fromEntity() {
+  factory MemberFileMessage.fromEntity() {
     return MockData.fileMessage;
   }
 
   final String? url;
 }
 
-class MiniAppMessage extends Message {
-  MiniAppMessage({
+class MemberMiniAppMessage extends MemberMessage {
+  MemberMiniAppMessage({
     required super.id,
     required super.owner,
     required super.createdAt,
@@ -208,15 +232,15 @@ class MiniAppMessage extends Message {
     super.updatedByEventRecordNumber,
   });
 
-  factory MiniAppMessage.fromEntity() {
+  factory MemberMiniAppMessage.fromEntity() {
     return MockData.miniAppMessage;
   }
 
   final MiniApp? miniApp;
 }
 
-class InviteMemberMessage extends Message {
-  InviteMemberMessage({
+class ActivityLogInviteMemberMessage extends ActivityLogMessage {
+  ActivityLogInviteMemberMessage({
     required super.id,
     required super.owner,
     required super.createdAt,
@@ -230,8 +254,8 @@ class InviteMemberMessage extends Message {
   final ChatRoomMember member;
 }
 
-class RemoveMemberMessage extends Message {
-  RemoveMemberMessage({
+class ActivityLogRemoveMemberMessage extends ActivityLogMessage {
+  ActivityLogRemoveMemberMessage({
     required super.id,
     required super.owner,
     required super.createdAt,

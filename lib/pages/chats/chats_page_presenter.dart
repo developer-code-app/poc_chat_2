@@ -59,42 +59,42 @@ class MessagePresenter {
 
   factory MessagePresenter.fromModel(Message message) {
     switch (message) {
-      case TextMessage():
+      case MemberTextMessage():
         return MessagePresenter(
           text: message.text ?? getDefaultMessageText(message),
           createdAt: message.createdAt,
         );
-      case TextReplyMessage():
+      case MemberTextReplyMessage():
         return MessagePresenter(
           text: message.text ?? getDefaultMessageText(message),
           createdAt: message.createdAt,
         );
-      case PhotoMessage():
+      case MemberPhotoMessage():
         return MessagePresenter(
           text: getDefaultMessageText(message),
           createdAt: message.createdAt,
         );
-      case VideoMessage():
+      case MemberVideoMessage():
         return MessagePresenter(
           text: getDefaultMessageText(message),
           createdAt: message.createdAt,
         );
-      case FileMessage():
+      case MemberFileMessage():
         return MessagePresenter(
           text: getDefaultMessageText(message),
           createdAt: message.createdAt,
         );
-      case MiniAppMessage():
+      case MemberMiniAppMessage():
         return MessagePresenter(
           text: getDefaultMessageText(message),
           createdAt: message.createdAt,
         );
-      case InviteMemberMessage():
+      case ActivityLogInviteMemberMessage():
         return MessagePresenter(
           text: getDefaultMessageText(message),
           createdAt: message.createdAt,
         );
-      case RemoveMemberMessage():
+      case ActivityLogRemoveMemberMessage():
         return MessagePresenter(
           text: getDefaultMessageText(message),
           createdAt: message.createdAt,
@@ -106,21 +106,21 @@ class MessagePresenter {
     final messageOwnerName = message.owner.name;
 
     switch (message) {
-      case TextMessage():
+      case MemberTextMessage():
         return "$messageOwnerName sent a text message";
-      case TextReplyMessage():
+      case MemberTextReplyMessage():
         return "$messageOwnerName sent a text message";
-      case PhotoMessage():
+      case MemberPhotoMessage():
         return "$messageOwnerName sent a photo";
-      case VideoMessage():
+      case MemberVideoMessage():
         return "$messageOwnerName sent a video";
-      case FileMessage():
+      case MemberFileMessage():
         return "$messageOwnerName sent a file";
-      case MiniAppMessage():
+      case MemberMiniAppMessage():
         return "$messageOwnerName sent a mini app";
-      case InviteMemberMessage():
+      case ActivityLogInviteMemberMessage():
         return "$messageOwnerName invite member";
-      case RemoveMemberMessage():
+      case ActivityLogRemoveMemberMessage():
         return "$messageOwnerName remove member";
     }
   }

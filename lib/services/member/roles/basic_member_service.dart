@@ -44,7 +44,7 @@ extension BasicMemberService on MemberService {
   }) async {}
 
   Future<void> sendTextReplyMessage({
-    required TextReplyMessage message,
+    required MemberTextReplyMessage message,
   }) async {}
 
   Future<void> readMessages() async {}

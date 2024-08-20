@@ -100,14 +100,10 @@ class _RueJaiChatService implements RueJaiChatService {
   @override
   Future<RuejaiResultListResponse<String>> getChatRoomEventArchiveUrls(
     int chatRoomId,
-    String type,
     int startEventRecordNumber,
   ) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'type': type,
-      r'start': startEventRecordNumber,
-    };
+    final queryParameters = <String, dynamic>{r'start': startEventRecordNumber};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<RuejaiResultListResponse<String>>(Options(

@@ -4,7 +4,7 @@ import 'package:poc_chat_2/model_services/chat_room/message/chat_room_message_fo
 import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
-import 'package:poc_chat_2/models/events/room_management_event.dart';
+import 'package:poc_chat_2/models/events/room_event.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 
 class ChatRoomRecordedEventAction {
@@ -23,7 +23,7 @@ class ChatRoomRecordedEventAction {
 
     if (event is MessageEvent) {
       processMessageEvent();
-    } else if (event is RoomManagementEvent) {
+    } else if (event is RoomEvent) {
       processRoomManagementEvent();
     } else if (event is ReadMessageEvent) {
       processReadMessageEvent();
@@ -238,7 +238,7 @@ extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
     required int chatRoomId,
     required RecordedEvent recordedEvent,
   }) async {
-    return (recordedEvent.event is RoomManagementEvent) &&
+    return (recordedEvent.event is RoomEvent) &&
         await _isEventFirstSuccessorOfLastSyncedRoomManagementEvent(
           chatRoomId: chatRoomId,
           recordedEvent: recordedEvent,

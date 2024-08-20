@@ -31,7 +31,7 @@ class MockData {
     lastReadMessageId: 10,
   );
 
-  static final textMessage = TextMessage(
+  static final textMessage = MemberTextMessage(
     id: 1,
     owner: owner,
     createdAt: DateTime.now(),
@@ -39,7 +39,7 @@ class MockData {
     text: 'Hello',
   );
 
-  static final textReplyMessage = TextReplyMessage(
+  static final textReplyMessage = MemberTextReplyMessage(
     id: 1,
     owner: owner,
     createdAt: DateTime.now(),
@@ -48,7 +48,7 @@ class MockData {
     repliedMessage: textMessage,
   );
 
-  static final photoMessage = PhotoMessage(
+  static final photoMessage = MemberPhotoMessage(
     id: 1,
     owner: owner,
     createdAt: DateTime.now(),
@@ -56,7 +56,7 @@ class MockData {
     urls: [],
   );
 
-  static final videoMessage = VideoMessage(
+  static final videoMessage = MemberVideoMessage(
     id: 1,
     owner: owner,
     createdAt: DateTime.now(),
@@ -64,7 +64,7 @@ class MockData {
     url: '',
   );
 
-  static final fileMessage = FileMessage(
+  static final fileMessage = MemberFileMessage(
     id: 1,
     owner: owner,
     createdAt: DateTime.now(),
@@ -72,7 +72,7 @@ class MockData {
     url: '',
   );
 
-  static final miniAppMessage = MiniAppMessage(
+  static final miniAppMessage = MemberMiniAppMessage(
     id: 1,
     owner: owner,
     createdAt: DateTime.now(),
@@ -128,22 +128,22 @@ class MockData {
     thumbnailUrl: '',
     members: [khunPatPong, chatRoomAdmin],
     confirmedMessages: [
-      TextMessage(
+      MemberTextMessage(
         id: 1,
         owner: chatRoomAdmin,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      TextMessage(
+      MemberTextMessage(
         id: 1,
         owner: khunPatPong,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      TextReplyMessage(
+      MemberTextReplyMessage(
         id: 1,
         owner: chatRoomAdmin,
-        repliedMessage: TextMessage(
+        repliedMessage: MemberTextMessage(
           id: 1,
           owner: chatRoomAdmin,
           createdAt: DateTime.now(),
@@ -152,13 +152,13 @@ class MockData {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      PhotoMessage(
+      MemberPhotoMessage(
         id: 1,
         owner: khunPatPong,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      TextMessage(
+      MemberTextMessage(
         id: 1,
         text:
             'สวัสดีค่ะ น้ำฝนนะคะ ตามที่เราเคยคุยกันไว้ เรื่องติดตั้งประตูไฟฟ้า คุณพัฒพงษ์ได้เลือกแบบสลิง ที่ราคา 33,000 บาท ใช่มั้ยคะ',
@@ -166,14 +166,14 @@ class MockData {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      TextMessage(
+      MemberTextMessage(
         id: 2,
         text: 'ใช่ครับผม',
         owner: khunPatPong,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      TextMessage(
+      MemberTextMessage(
         id: 3,
         text:
             'ผมขอแจ้งเพิ่มเรื่องบ้านนะครับ  พอดีฝนตกแล้วกระเบื้องหลังคาหล่น พอมีช่างแนะนำมั้ยครับ',
@@ -181,7 +181,7 @@ class MockData {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      PhotoMessage(
+      MemberPhotoMessage(
         id: 4,
         owner: khunPatPong,
         createdAt: DateTime.now(),
@@ -190,7 +190,7 @@ class MockData {
           'https://picsum.photos/800/800.jpg',
         ],
       ),
-      PhotoMessage(
+      MemberPhotoMessage(
         id: 5,
         owner: khunPatPong,
         createdAt: DateTime.now(),
@@ -201,7 +201,7 @@ class MockData {
           'https://picsum.photos/800/800.jpg',
         ],
       ),
-      PhotoMessage(
+      MemberPhotoMessage(
         id: 6,
         owner: khunPatPong,
         createdAt: DateTime.now(),
@@ -217,7 +217,7 @@ class MockData {
           'https://www.girlsallaround.com/wp-content/uploads/2015/02/Francis-Co-launches-Samsung-professional-laundry-range.jpg',
         ],
       ),
-      TextMessage(
+      MemberTextMessage(
         id: 7,
         text: 'ยกเลิก',
         owner: khunPatPong,
@@ -225,7 +225,7 @@ class MockData {
         updatedAt: DateTime.now(),
         deletedAt: DateTime.now(),
       ),
-      TextMessage(
+      MemberTextMessage(
         id: 8,
         text: 'ยกเลิก',
         owner: chatRoomAdmin,
@@ -233,14 +233,14 @@ class MockData {
         updatedAt: DateTime.now(),
         deletedAt: DateTime.now(),
       ),
-      InviteMemberMessage(
+      ActivityLogInviteMemberMessage(
         id: 9,
         owner: chatRoomAdmin,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         member: siteEngineer,
       ),
-      TextMessage(
+      MemberTextMessage(
         id: 9,
         text:
             'สวัสดีครับคุณพัฒพงษ์ ผมพีระช่างประจำโครงการนะครับ กำแพงห้องครัวฝั่งที่ติดกับห้องโถงสามารถทุบได้ครับเพราะไม่ได้อยู่ติดกับเสาบ้านครับผม',
@@ -248,25 +248,25 @@ class MockData {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      TextMessage(
+      MemberTextMessage(
         id: 10,
         text: 'ขอบคุณครับผม',
         owner: khunPatPong,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      TextMessage(
+      MemberTextMessage(
         id: 11,
         text: 'ยินดีครับ คุณพัฒพงษ์ มีอะไรสอบถาม เพิ่มเติมอีกไหมครับ',
         owner: siteEngineer,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      TextReplyMessage(
+      MemberTextReplyMessage(
         id: 12,
         text: 'ไม่มีครับ',
         owner: khunPatPong,
-        repliedMessage: TextMessage(
+        repliedMessage: MemberTextMessage(
           id: 11,
           text: 'ยินดีครับ คุณพัฒพงษ์ มีอะไรสอบถาม เพิ่มเติมอีกไหมครับ',
           owner: siteEngineer,
@@ -276,11 +276,11 @@ class MockData {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      TextReplyMessage(
+      MemberTextReplyMessage(
         id: 13,
         text: 'ขอบคุณครับ',
         owner: siteEngineer,
-        repliedMessage: TextMessage(
+        repliedMessage: MemberTextMessage(
           id: 12,
           text: 'ไม่มีครับ',
           owner: khunPatPong,
@@ -290,14 +290,14 @@ class MockData {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      RemoveMemberMessage(
+      ActivityLogRemoveMemberMessage(
         id: 9,
         owner: chatRoomAdmin,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         member: siteEngineer,
       ),
-      PhotoMessage(
+      MemberPhotoMessage(
         id: 14,
         owner: siteEngineer,
         createdAt: DateTime.now(),
@@ -306,18 +306,18 @@ class MockData {
           'https://picsum.photos/800/800.jpg',
         ],
       ),
-      TextMessage(
+      MemberTextMessage(
         id: 15,
         text: 'สวัสดีครับสามารถตัวทุบตัวผนังได้ครับ แต่ต้องเก็บเสาไว้นะครับ',
         owner: siteEngineer,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
-      TextReplyMessage(
+      MemberTextReplyMessage(
         id: 16,
         text: 'รับทราบครับ',
         owner: khunPatPong,
-        repliedMessage: PhotoMessage(
+        repliedMessage: MemberPhotoMessage(
           id: 14,
           owner: siteEngineer,
           createdAt: DateTime.now(),
@@ -331,7 +331,7 @@ class MockData {
       ),
     ],
     failedMessages: [
-      TextMessage(
+      MemberTextMessage(
         id: 13,
         text: 'ทดสอบ Failed Messages',
         owner: khunPatPong,
@@ -340,7 +340,7 @@ class MockData {
       ),
     ],
     sendingMessages: [
-      TextMessage(
+      MemberTextMessage(
         id: 14,
         text: 'ทดสอบ Sending Message',
         owner: khunPatPong,

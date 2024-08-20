@@ -216,13 +216,13 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   ) async {
     final message = event.message;
 
-    if (message is TextMessage) {
+    if (message is MemberTextMessage) {
       final confirmedMessages = chatRoom.confirmedMessages;
       final messageIndex = confirmedMessages
           .indexWhere((message) => message.id == event.message.id);
       final confirmedMessage = confirmedMessages[messageIndex];
 
-      if (confirmedMessage is TextMessage) {
+      if (confirmedMessage is MemberTextMessage) {
         message.copyWith(text: confirmedMessage.text);
       }
 
@@ -382,7 +382,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
 
     if (state is LoadSuccessState) {
       final message = state.chatRoom.confirmedMessages
-          .firstWhere((element) => element.id == event.messageId);
+          .whereType<MemberMessage>()
+          .firstWhere((message) => message.id == event.messageId);
       final isOwner = currentUser.id == message.owner.id;
 
       alertDialogCubit.alertActionSheet(
@@ -391,7 +392,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
             'Reply',
             onPressed: () => _replyMessage(message: message),
           ),
-          if (message is PhotoMessage) AlertAction('Save All'),
+          if (message is MemberPhotoMessage) AlertAction('Save All'),
           AlertAction('Copy'),
           if (isOwner) AlertAction('Unsend'),
         ],
@@ -412,7 +413,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
       alertDialogCubit.alertActionSheet(
         actions: [
           AlertAction('Resend'),
-          if (message is PhotoMessage) AlertAction('Save All'),
+          if (message is MemberPhotoMessage) AlertAction('Save All'),
           AlertAction('Copy'),
           AlertAction('Unsend'),
         ],
@@ -440,7 +441,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     }
   }
 
-  void _replyMessage({required Message message}) {
+  void _replyMessage({required MemberMessage message}) {
     replyMessageCubit.reply(message);
   }
 

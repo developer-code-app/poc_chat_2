@@ -7,16 +7,12 @@ part 'chat_room.g.dart';
 
 class ChatRoomSyncState {
   ChatRoomSyncState({
-    required this.messageEventSyncState,
-    required this.latestMessageEventRecordNumber,
-    required this.roomManagementEventSyncState,
-    required this.latestRoomManagementEventRecordNumber,
+    required this.roomAndMessageEventSyncState,
+    required this.latestRoomAndMessageEventRecordNumber,
   });
 
-  final SyncState messageEventSyncState;
-  final int latestMessageEventRecordNumber;
-  final SyncState roomManagementEventSyncState;
-  final int latestRoomManagementEventRecordNumber;
+  final SyncState roomAndMessageEventSyncState;
+  final int latestRoomAndMessageEventRecordNumber;
 }
 
 enum SyncState {

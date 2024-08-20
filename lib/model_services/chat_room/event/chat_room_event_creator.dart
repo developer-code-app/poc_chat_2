@@ -1,5 +1,5 @@
 import 'package:poc_chat_2/models/events/event.dart';
-import 'package:poc_chat_2/models/events/room_management_event.dart'
+import 'package:poc_chat_2/models/events/room_event.dart'
     as room_management_event;
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 

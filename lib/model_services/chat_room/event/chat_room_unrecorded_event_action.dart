@@ -4,7 +4,7 @@ import 'package:poc_chat_2/model_services/chat_room/message/chat_room_message_fo
 import 'package:poc_chat_2/models/events/event.dart';
 import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
-import 'package:poc_chat_2/models/events/room_management_event.dart';
+import 'package:poc_chat_2/models/events/room_event.dart';
 import 'package:poc_chat_2/models/forms/message_form.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
@@ -27,7 +27,7 @@ class ChatRoomUnrecordedEventAction {
 
     if (event is MessageEvent) {
       processMessageEvent();
-    } else if (event is RoomManagementEvent) {
+    } else if (event is RoomEvent) {
       processRoomManagementEvent();
     } else if (event is ReadMessageEvent) {
       processReadMessageEvent();
@@ -97,7 +97,7 @@ extension _UnrecordedRoomManagementEventAction
   Future<void> processRoomManagementEvent() async {
     final event = this.event;
 
-    if (event is! RoomManagementEvent) {
+    if (event is! RoomEvent) {
       throw UnprocessableEventError('Event is not a room management event');
     }
 

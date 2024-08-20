@@ -9,12 +9,8 @@ import 'package:poc_chat_2/services/system_service.dart';
 
 abstract class WebSocketProvider {
   static WebSocketBloc createWebSocketBloc(BuildContext context) {
-    final setting = WebSocketSetting(
-      url: FlavorConfig.instance.variables[FlavorVariableKeys.webSocketBaseUrl],
-    );
-
     return WebSocketBloc(
-      setting: setting,
+      url: FlavorConfig.instance.variables[FlavorVariableKeys.webSocketBaseUrl],
       systemService: SystemService(
         localChatRepository: context.read<LocalChatRepository>(),
         serverChatRepository: context.read<ServerChatRepository>(),
