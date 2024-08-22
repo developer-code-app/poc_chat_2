@@ -2,6 +2,7 @@ import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
+import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
@@ -11,8 +12,6 @@ import 'package:poc_chat_2/pages/chat_room/chat_room_page.dart';
 import 'package:poc_chat_2/pages/chats/bloc/chats_page_bloc.dart';
 import 'package:poc_chat_2/pages/chats/chats_page_presenter.dart';
 import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
-import 'package:poc_chat_2/providers/web_socket/bloc/web_socket_bloc.dart'
-    as web_socket_bloc;
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 
@@ -159,6 +158,9 @@ class _ChatsPageState extends State<ChatsPage> {
             BlocProvider<ReplyMessageCubit>(
               create: (context) => ReplyMessageCubit(),
             ),
+            BlocProvider<PhotosClipboardCubit>(
+              create: (context) => PhotosClipboardCubit(),
+            ),
           ],
           child: MultiBlocProvider(
             providers: [
@@ -169,6 +171,7 @@ class _ChatsPageState extends State<ChatsPage> {
                   assetsPickerCubit: context.read<AssetsPickerCubit>(),
                   alertDialogCubit: bloc.alertDialogCubit,
                   replyMessageCubit: context.read<ReplyMessageCubit>(),
+                  photosClipboardCubit: context.read<PhotosClipboardCubit>(),
                   chatRoom: chatRoom,
                 )..add(chat_room_bloc.StartedEvent()),
               ),

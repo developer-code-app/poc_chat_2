@@ -173,3 +173,9 @@ class FailedMessageActionRequestedEvent extends _Event {
 
   final int messageId;
 }
+
+class MessagePastedEvent extends _Event {
+  MessagePastedEvent({required this.editableTextState});
+
+  final EditableTextState editableTextState;
+}
