@@ -766,12 +766,17 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     required List<String> urls,
     required int index,
   }) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PhotoViewGalleryPage(
           imageUrls: urls,
           initialIndex: index,
+          onImageDownloaded: () => bloc.add(
+            SavePhotosRequestedEvent(urls: urls),
+          ),
         ),
       ),
     );

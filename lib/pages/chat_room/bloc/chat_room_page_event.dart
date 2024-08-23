@@ -179,3 +179,9 @@ class MessagePastedEvent extends _Event {
 
   final EditableTextState editableTextState;
 }
+
+class SavePhotosRequestedEvent extends _Event {
+  SavePhotosRequestedEvent({required this.urls});
+
+  final List<String> urls;
+}

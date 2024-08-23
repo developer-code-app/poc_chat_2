@@ -1,12 +1,17 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/extensions/extended_data_reader.dart';
+import 'package:poc_chat_2/extensions/extended_permission_handler.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 import 'package:poc_chat_2/app/image_picker/image_picker.dart';
@@ -67,6 +72,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         _onConfirmedMessageActionRequestedEvent);
     on<FailedMessageActionRequestedEvent>(_onFailedMessageActionRequestedEvent);
     on<MessagePastedEvent>(_onMessagePastedEvent);
+    on<SavePhotosRequestedEvent>(_onSavePhotosRequestedEvent);
 
     broadcaster.Broadcaster.instance.stream.listen(
       onBroadcasterMessageReceived,
@@ -398,7 +404,13 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
             'Reply',
             onPressed: () => _replyMessage(message: message),
           ),
-          if (message is MemberPhotoMessage) AlertAction('Save All'),
+          if (message is MemberPhotoMessage)
+            AlertAction(
+              'Save All',
+              onPressed: () => add(
+                SavePhotosRequestedEvent(urls: message.urls ?? []),
+              ),
+            ),
           AlertAction('Copy', onPressed: () => _copyMessage(message: message)),
           if (isOwner) AlertAction('Unsend'),
         ],
@@ -448,7 +460,13 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
       alertDialogCubit.alertActionSheet(
         actions: [
           AlertAction('Resend'),
-          if (message is MemberPhotoMessage) AlertAction('Save All'),
+          if (message is MemberPhotoMessage)
+            AlertAction(
+              'Save All',
+              onPressed: () => add(
+                SavePhotosRequestedEvent(urls: message.urls ?? []),
+              ),
+            ),
           AlertAction('Copy', onPressed: () => _copyMessage(message: message)),
           AlertAction('Unsend'),
         ],
@@ -461,6 +479,44 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     Emitter<_State> emit,
   ) async {
     replyMessageCubit.clear();
+  }
+
+  Future<void> _onSavePhotosRequestedEvent(
+    SavePhotosRequestedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final photoPermission = await ExtendedPermission.photos;
+
+    PermissionStatus photoPermissionStatus = await photoPermission.status;
+
+    if (photoPermissionStatus.isDenied) {
+      photoPermissionStatus = await photoPermission.request();
+    }
+
+    final isSuccess = await Future.wait(event.urls.map(_savePhoto).toList())
+        .then((value) => value.every((element) => element));
+
+    if (isSuccess) {
+      alertDialogCubit.alert(message: 'Save image success');
+    } else {
+      alertDialogCubit.alert(message: 'Cannot save image');
+    }
+  }
+
+  Future<bool> _savePhoto(String url) async {
+    final fileName = 'ruejai_chat_${DateFormat('yyyymmdd_HHmmss').format(
+      DateTime.now(),
+    )}';
+    final response = await Dio().get(
+      url,
+      options: Options(responseType: ResponseType.bytes),
+    );
+    final result = await ImageGallerySaver.saveImage(
+      Uint8List.fromList(response.data),
+      name: fileName,
+    );
+
+    return result['isSuccess'];
   }
 
   Future<void> _processEvent(MessageEvent event) async {

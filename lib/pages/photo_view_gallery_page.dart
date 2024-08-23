@@ -6,12 +6,14 @@ class PhotoViewGalleryPage extends StatefulWidget {
   PhotoViewGalleryPage({
     required this.imageUrls,
     this.initialIndex = 0,
+    this.onImageDownloaded,
     super.key,
   }) : pageController = PageController(initialPage: initialIndex);
 
   final List<String> imageUrls;
   final int initialIndex;
   final PageController pageController;
+  final void Function()? onImageDownloaded;
 
   @override
   State<PhotoViewGalleryPage> createState() => _PhotoViewGalleryPageState();
@@ -42,7 +44,9 @@ class _PhotoViewGalleryPageState extends State<PhotoViewGalleryPage> {
                 Icons.download,
                 color: Colors.grey.shade700,
               ),
-              onPressed: () {},
+              onPressed: () {
+                widget.onImageDownloaded?.call();
+              },
             ),
           ),
         ],
