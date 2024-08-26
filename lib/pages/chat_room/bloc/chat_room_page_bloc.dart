@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
+import 'package:poc_chat_2/cubits/ui_blocking_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/extensions/extended_data_reader.dart';
 import 'package:poc_chat_2/extensions/extended_permission_handler.dart';
@@ -45,6 +46,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     required this.alertDialogCubit,
     required this.replyMessageCubit,
     required this.photosClipboardCubit,
+    required this.uiBlockingCubit,
   }) : super(InitialState()) {
     on<StartedEvent>(_onStartedEvent);
     on<MessageSentEvent>(_onMessageSentEvent);
@@ -86,6 +88,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   final AlertDialogCubit alertDialogCubit;
   final ReplyMessageCubit replyMessageCubit;
   final PhotosClipboardCubit photosClipboardCubit;
+  final UIBlockingCubit uiBlockingCubit;
   final currentUser = MockData.khunPatPong;
 
   StreamSubscription? _broadcasterSubscription;
@@ -493,17 +496,16 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
       photoPermissionStatus = await photoPermission.request();
     }
 
-    final isSuccess = await Future.wait(event.urls.map(_savePhoto).toList())
-        .then((value) => value.every((element) => element));
+    uiBlockingCubit.block();
 
-    if (isSuccess) {
-      alertDialogCubit.alert(message: 'Save image success');
-    } else {
-      alertDialogCubit.alert(message: 'Cannot save image');
-    }
+    await Future.forEach(event.urls, _savePhoto);
+
+    uiBlockingCubit.unblock();
+
+    alertDialogCubit.alert(message: 'Save image success');
   }
 
-  Future<bool> _savePhoto(String url) async {
+  Future _savePhoto(String url) async {
     final fileName = 'ruejai_chat_${DateFormat('yyyymmdd_HHmmss').format(
       DateTime.now(),
     )}';
@@ -511,12 +513,11 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
       url,
       options: Options(responseType: ResponseType.bytes),
     );
-    final result = await ImageGallerySaver.saveImage(
+
+    await ImageGallerySaver.saveImage(
       Uint8List.fromList(response.data),
       name: fileName,
     );
-
-    return result['isSuccess'];
   }
 
   Future<void> _processEvent(MessageEvent event) async {

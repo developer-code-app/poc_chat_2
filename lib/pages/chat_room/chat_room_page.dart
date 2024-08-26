@@ -11,6 +11,7 @@ import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
 import 'package:poc_chat_2/pages/photo_view_gallery_page.dart';
+import 'package:poc_chat_2/widgets/loading_with_blocking_widget.dart';
 import 'package:poc_chat_2/widgets/shimmer_loading_widget.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
@@ -110,14 +111,16 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     BuildContext context,
     LoadSuccessState state,
   ) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Column(
-        children: [
-          _buildMessages(context, state),
-          _buildChatMessageInput(context),
-        ],
+    return LoadingWithBlockingWidget(
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Column(
+          children: [
+            _buildMessages(context, state),
+            _buildChatMessageInput(context),
+          ],
+        ),
       ),
     );
   }
