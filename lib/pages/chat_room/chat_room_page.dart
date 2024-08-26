@@ -10,6 +10,13 @@ import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
+import 'package:poc_chat_2/pages/chat_summary/bloc/chat_summary_page_bloc.dart'
+    as chat_summary_bloc;
+import 'package:poc_chat_2/pages/chat_summary/chat_summary_page.dart';
+import 'package:poc_chat_2/pages/chat_summary/photos_and_videos_subpage/bloc/photos_and_videos_subpage_bloc.dart'
+    as photos_and_videos_subpage_bloc;
+import 'package:poc_chat_2/pages/chat_summary/topics_subpage/bloc/topics_subpage_bloc.dart'
+    as topics_subpage_bloc;
 import 'package:poc_chat_2/pages/photo_view_gallery_page.dart';
 import 'package:poc_chat_2/widgets/loading_with_blocking_widget.dart';
 import 'package:poc_chat_2/widgets/shimmer_loading_widget.dart';
@@ -97,7 +104,22 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     String? appBarTitle,
   }) {
     return Scaffold(
-      appBar: AppBar(title: Text(appBarTitle ?? '')),
+      appBar: AppBar(
+        title: Text(appBarTitle ?? ''),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              onPressed: () => _navigationToChatSummaryPage(),
+              icon: const Icon(
+                Icons.menu,
+                color: Colors.grey,
+                size: 32,
+              ),
+            ),
+          )
+        ],
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -973,5 +995,37 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         ],
       );
     }
+  }
+
+  void _navigationToChatSummaryPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MultiBlocProvider(
+          providers: [
+            BlocProvider<topics_subpage_bloc.TopicsSubpageBloc>(
+              create: (context) => topics_subpage_bloc.TopicsSubpageBloc()
+                ..add(topics_subpage_bloc.StartedEvent()),
+            ),
+            BlocProvider<
+                photos_and_videos_subpage_bloc.PhotosAndVideosSubpageBloc>(
+              create: (context) =>
+                  photos_and_videos_subpage_bloc.PhotosAndVideosSubpageBloc()
+                    ..add(photos_and_videos_subpage_bloc.StartedEvent()),
+            ),
+            BlocProvider<chat_summary_bloc.ChatSummaryPageBloc>(
+              create: (context) => chat_summary_bloc.ChatSummaryPageBloc(
+                  topicsSubpageBloc:
+                      context.read<topics_subpage_bloc.TopicsSubpageBloc>(),
+                  photosAndVideosSubpageBloc: context.read<
+                      photos_and_videos_subpage_bloc
+                      .PhotosAndVideosSubpageBloc>())
+                ..add(chat_summary_bloc.StartedEvent()),
+            ),
+          ],
+          child: const ChatSummaryPage(),
+        ),
+      ),
+    );
   }
 }
