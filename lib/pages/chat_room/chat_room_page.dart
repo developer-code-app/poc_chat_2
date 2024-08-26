@@ -777,8 +777,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         builder: (context) => PhotoViewGalleryPage(
           imageUrls: urls,
           initialIndex: index,
-          onImageDownloaded: () => bloc.add(
-            SavePhotosRequestedEvent(urls: urls),
+          onImageDownloaded: (currentIndex) => bloc.add(
+            PhotoSelectActionRequestedEvent(
+              urls: urls,
+              index: currentIndex,
+            ),
           ),
         ),
       ),

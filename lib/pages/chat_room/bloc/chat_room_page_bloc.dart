@@ -74,7 +74,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         _onConfirmedMessageActionRequestedEvent);
     on<FailedMessageActionRequestedEvent>(_onFailedMessageActionRequestedEvent);
     on<MessagePastedEvent>(_onMessagePastedEvent);
-    on<SavePhotosRequestedEvent>(_onSavePhotosRequestedEvent);
+    on<PhotosSavedEvent>(_onPhotosSavedEvent);
+    on<PhotoSelectActionRequestedEvent>(_onPhotoSelectActionRequestedEvent);
 
     broadcaster.Broadcaster.instance.stream.listen(
       onBroadcasterMessageReceived,
@@ -411,7 +412,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
             AlertAction(
               'Save All',
               onPressed: () => add(
-                SavePhotosRequestedEvent(urls: message.urls ?? []),
+                PhotosSavedEvent(urls: message.urls ?? []),
               ),
             ),
           AlertAction('Copy', onPressed: () => _copyMessage(message: message)),
@@ -467,7 +468,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
             AlertAction(
               'Save All',
               onPressed: () => add(
-                SavePhotosRequestedEvent(urls: message.urls ?? []),
+                PhotosSavedEvent(urls: message.urls ?? []),
               ),
             ),
           AlertAction('Copy', onPressed: () => _copyMessage(message: message)),
@@ -484,8 +485,29 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     replyMessageCubit.clear();
   }
 
-  Future<void> _onSavePhotosRequestedEvent(
-    SavePhotosRequestedEvent event,
+  Future<void> _onPhotoSelectActionRequestedEvent(
+    PhotoSelectActionRequestedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    alertDialogCubit.alertActionSheet(
+      title: 'Select Action',
+      actions: [
+        AlertAction(
+          'Save only this image',
+          onPressed: () => add(
+            PhotosSavedEvent(urls: [event.urls[event.index]]),
+          ),
+        ),
+        AlertAction(
+          'Save all',
+          onPressed: () => add(PhotosSavedEvent(urls: event.urls)),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _onPhotosSavedEvent(
+    PhotosSavedEvent event,
     Emitter<_State> emit,
   ) async {
     final photoPermission = await ExtendedPermission.photos;

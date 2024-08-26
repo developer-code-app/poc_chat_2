@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
+import 'package:poc_chat_2/cubits/ui_blocking_cubit.dart';
 import 'package:poc_chat_2/providers/rue_jai_chat_archive/ruejai_chat_provider.dart';
 import 'package:poc_chat_2/providers/web_socket/bloc/web_socket_bloc.dart';
 import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
@@ -44,6 +45,9 @@ Future<void> setupApp(Widget app, {bool isMock = false}) async {
           providers: [
             BlocProvider<AlertDialogCubit>(
               create: (context) => AlertDialogCubit(),
+            ),
+            BlocProvider<UIBlockingCubit>(
+              create: (context) => UIBlockingCubit(),
             ),
             const BlocProvider<WebSocketBloc>(
               create: WebSocketProvider.createWebSocketBloc,

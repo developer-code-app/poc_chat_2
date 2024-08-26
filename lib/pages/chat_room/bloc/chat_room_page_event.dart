@@ -180,8 +180,18 @@ class MessagePastedEvent extends _Event {
   final EditableTextState editableTextState;
 }
 
-class SavePhotosRequestedEvent extends _Event {
-  SavePhotosRequestedEvent({required this.urls});
+class PhotosSavedEvent extends _Event {
+  PhotosSavedEvent({required this.urls});
 
   final List<String> urls;
+}
+
+class PhotoSelectActionRequestedEvent extends _Event {
+  PhotoSelectActionRequestedEvent({
+    required this.urls,
+    required this.index,
+  });
+
+  final List<String> urls;
+  final int index;
 }

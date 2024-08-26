@@ -162,9 +162,6 @@ class _ChatsPageState extends State<ChatsPage> {
             BlocProvider<PhotosClipboardCubit>(
               create: (context) => PhotosClipboardCubit(),
             ),
-            BlocProvider<UIBlockingCubit>(
-              create: (context) => UIBlockingCubit(),
-            ),
           ],
           child: MultiBlocProvider(
             providers: [
