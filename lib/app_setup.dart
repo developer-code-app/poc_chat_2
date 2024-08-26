@@ -10,6 +10,7 @@ import 'package:poc_chat_2/providers/ruejai_chat/ruejai_chat_api_provider.dart';
 import 'package:poc_chat_2/providers/web_socket/web_socket_provider.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
+import 'package:poc_chat_2/timezone_setup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> setupApp(Widget app, {bool isMock = false}) async {
@@ -24,6 +25,7 @@ Future<void> setupApp(Widget app, {bool isMock = false}) async {
   );
   final localProvider = IsarStorageProvider.basic();
 
+  await setupTimeZone();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then(
     (value) => runApp(
