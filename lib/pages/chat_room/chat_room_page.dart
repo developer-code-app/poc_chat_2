@@ -303,7 +303,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           child: _buildPhotoInputGridView(
             context,
             onRemoved: (index) => bloc.add(
-              RemoveAssetRequestedEvent(
+              AssetRemovedEvent(
                 asset: assets[index],
               ),
             ),
@@ -340,7 +340,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           messageAlignment: _messageAlignment(message: message),
           child: GestureDetector(
             onLongPress: () => bloc.add(
-              ConfirmedMessageActionRequestedEvent(messageId: message.id),
+              ConfirmedMessageSelectActionRequestedEvent(messageId: message.id),
             ),
             child: _buildMessage(context, message: message),
           ),
@@ -360,7 +360,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       messageAlignment: MessageAlignment.right,
       child: GestureDetector(
         onLongPress: () => bloc.add(
-          FailedMessageActionRequestedEvent(messageId: message.id),
+          FailedMessageSelectActionRequestedEvent(messageId: message.id),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -839,7 +839,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  onPressed: () => bloc.add(RemoveReplyRequestedEvent()),
+                  onPressed: () => bloc.add(MessageReplyRemovedEvent()),
                   icon: const Icon(
                     Icons.cancel,
                     color: Colors.grey,

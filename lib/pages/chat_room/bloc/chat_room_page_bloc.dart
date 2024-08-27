@@ -68,13 +68,16 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     on<ChatRoomFailedMessageRetriedEvent>(_onChatRoomFailedMessageRetriedEvent);
     on<ChatRoomFailedMessageRemovedEvent>(_onChatRoomFailedMessageRemovedEvent);
     on<AssetsPickerRequestedEvent>(_onAssetsPickerRequestedEvent);
-    on<RemoveAssetRequestedEvent>(_onRemoveAssetRequestedEvent);
-    on<RemoveReplyRequestedEvent>(_onRemoveReplyRequestedEvent);
-    on<ConfirmedMessageActionRequestedEvent>(
-        _onConfirmedMessageActionRequestedEvent);
-    on<FailedMessageActionRequestedEvent>(_onFailedMessageActionRequestedEvent);
-    on<MessagePastedEvent>(_onMessagePastedEvent);
+    on<AssetRemovedEvent>(_onAssetRemovedEvent);
+    on<ConfirmedMessageSelectActionRequestedEvent>(
+        _onConfirmedMessageSelectActionRequestedEvent);
+    on<FailedMessageSelectActionRequestedEvent>(
+        _onFailedMessageSelectActionRequestedEvent);
     on<PhotosSavedEvent>(_onPhotosSavedEvent);
+    on<MessageRepliedEvent>(_onMessageRepliedEvent);
+    on<MessageReplyRemovedEvent>(_onMessageReplyRemovedEvent);
+    on<MessageCopiedEvent>(_onMessageCopiedEvent);
+    on<MessagePastedEvent>(_onMessagePastedEvent);
     on<PhotoSelectActionRequestedEvent>(_onPhotoSelectActionRequestedEvent);
 
     broadcaster.Broadcaster.instance.stream.listen(
@@ -372,6 +375,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         );
 
         if (result != null) {
+          // ignore: use_build_context_synchronously
           Navigator.of(context).pop();
           assetsPickerCubit.addAssets([result] + selectedAssets);
         }
@@ -383,15 +387,15 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     }
   }
 
-  Future<void> _onRemoveAssetRequestedEvent(
-    RemoveAssetRequestedEvent event,
+  Future<void> _onAssetRemovedEvent(
+    AssetRemovedEvent event,
     Emitter<_State> emit,
   ) async {
     assetsPickerCubit.remove(event.asset);
   }
 
-  Future<void> _onConfirmedMessageActionRequestedEvent(
-    ConfirmedMessageActionRequestedEvent event,
+  Future<void> _onConfirmedMessageSelectActionRequestedEvent(
+    ConfirmedMessageSelectActionRequestedEvent event,
     Emitter<_State> emit,
   ) async {
     final state = this.state;
@@ -406,18 +410,83 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         actions: [
           AlertAction(
             'Reply',
-            onPressed: () => _replyMessage(message: message),
+            onPressed: () => add(MessageRepliedEvent(message: message)),
           ),
           if (message is MemberPhotoMessage)
             AlertAction(
-              'Save All',
+              message.urls!.length > 1 ? 'Save all' : 'Save',
               onPressed: () => add(
                 PhotosSavedEvent(urls: message.urls ?? []),
               ),
             ),
-          AlertAction('Copy', onPressed: () => _copyMessage(message: message)),
+          AlertAction(
+            'Copy',
+            onPressed: () => add(MessageCopiedEvent(message: message)),
+          ),
           if (isOwner) AlertAction('Unsend'),
         ],
+      );
+    }
+  }
+
+  Future<void> _onFailedMessageSelectActionRequestedEvent(
+    FailedMessageSelectActionRequestedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final state = this.state;
+
+    if (state is LoadSuccessState) {
+      final message = state.chatRoom.failedMessages
+          .whereType<MemberMessage>()
+          .firstWhere((element) => element.id == event.messageId);
+
+      alertDialogCubit.alertActionSheet(
+        actions: [
+          AlertAction('Resend'),
+          if (message is MemberPhotoMessage && message.urls != null)
+            AlertAction(
+              message.urls!.length > 1 ? 'Save all' : 'Save',
+              onPressed: () => add(
+                PhotosSavedEvent(urls: message.urls ?? []),
+              ),
+            ),
+          AlertAction(
+            'Copy',
+            onPressed: () => add(MessageCopiedEvent(message: message)),
+          ),
+          AlertAction('Unsend'),
+        ],
+      );
+    }
+  }
+
+  Future<void> _onMessageRepliedEvent(
+    MessageRepliedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    replyMessageCubit.reply(event.message);
+  }
+
+  Future<void> _onMessageReplyRemovedEvent(
+    MessageReplyRemovedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    replyMessageCubit.clear();
+  }
+
+  Future<void> _onMessageCopiedEvent(
+    MessageCopiedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final message = event.message;
+
+    if (message is MemberTextMessage) {
+      _copyTextMessage(textMessage: message);
+    } else if (message is MemberPhotoMessage) {
+      _copyPhotoMessage(photoMessage: message);
+    } else {
+      alertDialogCubit.errorAlert(
+        error: Exception('Clipboard is not available'),
       );
     }
   }
@@ -449,40 +518,6 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
 
       if (photos.isNotEmpty) photosClipboardCubit.addPhotos(photos);
     }
-  }
-
-  Future<void> _onFailedMessageActionRequestedEvent(
-    FailedMessageActionRequestedEvent event,
-    Emitter<_State> emit,
-  ) async {
-    final state = this.state;
-
-    if (state is LoadSuccessState) {
-      final message = state.chatRoom.failedMessages
-          .firstWhere((element) => element.id == event.messageId);
-
-      alertDialogCubit.alertActionSheet(
-        actions: [
-          AlertAction('Resend'),
-          if (message is MemberPhotoMessage)
-            AlertAction(
-              'Save All',
-              onPressed: () => add(
-                PhotosSavedEvent(urls: message.urls ?? []),
-              ),
-            ),
-          AlertAction('Copy', onPressed: () => _copyMessage(message: message)),
-          AlertAction('Unsend'),
-        ],
-      );
-    }
-  }
-
-  Future<void> _onRemoveReplyRequestedEvent(
-    RemoveReplyRequestedEvent event,
-    Emitter<_State> emit,
-  ) async {
-    replyMessageCubit.clear();
   }
 
   Future<void> _onPhotoSelectActionRequestedEvent(
@@ -542,6 +577,62 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     );
   }
 
+  Future<void> _copyTextMessage({
+    required MemberTextMessage textMessage,
+  }) async {
+    final text = textMessage.text;
+
+    if (text == null) return;
+
+    final clipboard = SystemClipboard.instance;
+
+    if (clipboard != null) {
+      final item = DataWriterItem()..add(Formats.plainText(text));
+
+      await clipboard.write([item]);
+
+      alertDialogCubit.snackBar(title: 'Copied to clipboard successfully');
+    } else {
+      alertDialogCubit.errorAlert(
+        error: Exception('Clipboard is not available on this platform'),
+      );
+    }
+  }
+
+  Future<void> _copyPhotoMessage({
+    required MemberPhotoMessage photoMessage,
+  }) async {
+    final clipboard = SystemClipboard.instance;
+    final urls = photoMessage.urls;
+
+    if (clipboard != null && urls != null) {
+      if (urls.length > 1) {
+        final items = await Future.wait(urls.map(_createDataWriterItem));
+
+        await clipboard.write(items);
+      } else {
+        final item = await _createDataWriterItem(urls.first);
+
+        await clipboard.write([item]);
+      }
+
+      alertDialogCubit.snackBar(title: 'Copied to clipboard successfully');
+    }
+  }
+
+  Future<DataWriterItem> _createDataWriterItem(String url) async {
+    final image = await _createImageData(url: url);
+
+    return DataWriterItem()..add(Formats.jpeg(image));
+  }
+
+  Future<Uint8List> _createImageData({required String url}) async {
+    final imageByteData = await NetworkAssetBundle(Uri.parse(url)).load(url);
+    final Uint8List data = (imageByteData).buffer.asUint8List();
+
+    return data.buffer.asUint8List();
+  }
+
   Future<void> _processEvent(MessageEvent event) async {
     try {
       await ChatRoomUnrecordedEventAction(
@@ -553,10 +644,6 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     } catch (error) {
       print(error);
     }
-  }
-
-  void _replyMessage({required MemberMessage message}) {
-    replyMessageCubit.reply(message);
   }
 
   void onBroadcasterMessageReceived(broadcaster.BroadcasterMessage message) {
@@ -651,71 +738,5 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
           messageId: message.messageId,
         ));
     }
-  }
-
-  void _copyMessage({required Message message}) {
-    if (message is MemberTextMessage) {
-      _copyTextMessage(textMessage: message);
-    } else if (message is MemberPhotoMessage) {
-      _copyPhotoMessage(photoMessage: message);
-    } else {
-      alertDialogCubit.errorAlert(
-        error: Exception('Clipboard is not available'),
-      );
-    }
-  }
-
-  void _copyTextMessage({required MemberTextMessage textMessage}) async {
-    final text = textMessage.text;
-
-    if (text == null) return;
-
-    final clipboard = SystemClipboard.instance;
-
-    if (clipboard != null) {
-      final item = DataWriterItem()..add(Formats.plainText(text));
-
-      await clipboard.write([item]);
-
-      alertDialogCubit.snackBar(title: 'Copied to clipboard successfully');
-    } else {
-      alertDialogCubit.errorAlert(
-        error: Exception('Clipboard is not available on this platform'),
-      );
-    }
-  }
-
-  Future<void> _copyPhotoMessage({
-    required MemberPhotoMessage photoMessage,
-  }) async {
-    final clipboard = SystemClipboard.instance;
-    final urls = photoMessage.urls;
-
-    if (clipboard != null && urls != null) {
-      if (urls.length > 1) {
-        final items = await Future.wait(urls.map(_createDataWriterItem));
-
-        await clipboard.write(items);
-      } else {
-        final item = await _createDataWriterItem(urls.first);
-
-        await clipboard.write([item]);
-      }
-
-      alertDialogCubit.snackBar(title: 'Copied to clipboard successfully');
-    }
-  }
-
-  Future<DataWriterItem> _createDataWriterItem(String url) async {
-    final image = await _createImageData(url: url);
-
-    return DataWriterItem()..add(Formats.jpeg(image));
-  }
-
-  Future<Uint8List> _createImageData({required String url}) async {
-    final imageByteData = await NetworkAssetBundle(Uri.parse(url)).load(url);
-    final Uint8List data = (imageByteData).buffer.asUint8List();
-
-    return data.buffer.asUint8List();
   }
 }
