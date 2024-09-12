@@ -72,11 +72,6 @@ extension _UnrecordedMessageEventAction on ChatRoomUnrecordedEventAction {
         ),
       );
     }
-
-    serverChatRepository.publishMessageEvent(
-      chatRoomId: chatRoomId,
-      event: event,
-    );
   }
 
   Future<MessageForm?> _convertUnrecordedEventToMessageForm({

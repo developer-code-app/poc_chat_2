@@ -176,7 +176,7 @@ class MockData {
       MemberTextMessage(
         id: 3,
         text:
-            'ผมขอแจ้งเพิ่มเรื่องบ้านนะครับ  พอดีฝนตกแล้วกระเบื้องหลังคาหล่น พอมีช่างแนะนำมั้ยครับ',
+            'ผมขอแจ้งเพิ่มเรื่องบ้านนะครับ พอดีฝนตกแล้วกระเบื้องหลังคาหล่น พอมีช่างแนะนำมั้ยครับ',
         owner: khunPatPong,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),

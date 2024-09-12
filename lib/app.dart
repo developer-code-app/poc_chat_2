@@ -134,17 +134,14 @@ class __BaseAppState extends State<_BaseApp> {
 
   Future<void> saveAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
+
     /* Account: notetest@gmail.com */
-    // prefs.setString(
-    //   AuthPreferenceKeys.accessToken,
-    //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbklkIjoiTU9DS19CUkpfVVNFUl9BQ0NFU1NfVE9LRU5fSUQiLCJpZCI6IjI2NDE0IiwidHlwZSI6IkJSSl9VU0VSX0FDQ0VTU19UT0tFTiIsImlhdCI6MTcyMzYxMTAwNSwiZXhwIjoxNzIzNjE0NjA1fQ.N7Rpza5befZGYI2zvtASJuQR7KH9bOTQDmW-hFzJBA8',
-    // );
+    // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbklkIjoiTU9DS19CUkpfVVNFUl9BQ0NFU1NfVE9LRU5fSUQiLCJpZCI6IjI2NDE0IiwidHlwZSI6IkJSSl9VU0VSX0FDQ0VTU19UT0tFTiIsImlhdCI6MTcyMzYxMTAwNSwiZXhwIjoxNzIzNjE0NjA1fQ.N7Rpza5befZGYI2zvtASJuQR7KH9bOTQDmW-hFzJBA8',
+    prefs.setString(AuthPreferenceKeys.accessToken, '1');
 
     /* Account: 901@gmail.com */
-    prefs.setString(
-      AuthPreferenceKeys.accessToken,
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbklkIjoiTU9DS19CUkpfVVNFUl9BQ0NFU1NfVE9LRU5fSUQiLCJpZCI6IjI2NDEzIiwidHlwZSI6IkJSSl9VU0VSX0FDQ0VTU19UT0tFTiIsImlhdCI6MTcyMzYxMDc5MywiZXhwIjoxNzIzNjE0MzkzfQ.cvuPBranlznMKbSa3LVJBFXyv6_AJT6Yh5NVLqCw1ZM',
-    );
+    // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbklkIjoiTU9DS19CUkpfVVNFUl9BQ0NFU1NfVE9LRU5fSUQiLCJpZCI6IjI2NDEzIiwidHlwZSI6IkJSSl9VU0VSX0FDQ0VTU19UT0tFTiIsImlhdCI6MTcyMzYxMDc5MywiZXhwIjoxNzIzNjE0MzkzfQ.cvuPBranlznMKbSa3LVJBFXyv6_AJT6Yh5NVLqCw1ZM',
+    prefs.setString(AuthPreferenceKeys.accessToken, '2');
   }
 
   @override

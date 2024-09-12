@@ -1,3 +1,4 @@
+import 'package:poc_chat_2/models/forms/message_form.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_confirmed_message_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_failed_message_entity.dart';

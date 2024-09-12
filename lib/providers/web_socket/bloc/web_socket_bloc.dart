@@ -4,7 +4,9 @@ import 'dart:io';
 
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:poc_chat_2/broadcaster/broadcaster.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
+import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/preference_keys.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_recorded_event_entity.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/interceptors/authentication_interceptor.dart';
@@ -26,6 +28,11 @@ class WebSocketBloc extends Bloc<_Event, _State> {
     on<ConnectingRequestedEvent>(_onConnectingRequestedEvent);
     on<ConnectedEvent>(_onConnectedEvent);
     on<ErrorOccurredEvent>(_onErrorOccurredEvent);
+    on<ChatRoomSendingMessageAddedEvent>(_onChatRoomSendingMessageAddedEvent);
+
+    Broadcaster.instance.stream.listen(
+      onBroadcasterMessageReceived,
+    );
   }
 
   final String url;
@@ -36,6 +43,27 @@ class WebSocketBloc extends Bloc<_Event, _State> {
 
     return state is ConnectionSuccessState &&
         state.webSocket.readyState == WebSocket.open;
+  }
+
+  void onBroadcasterMessageReceived(BroadcasterMessage message) {
+    switch (message) {
+      case ChatRoomMessage():
+        onChatRoomMessageBroadcasterMessageReceived(message);
+    }
+  }
+
+  void onChatRoomMessageBroadcasterMessageReceived(
+    ChatRoomMessage message,
+  ) {
+    switch (message) {
+      case ChatRoomSendingMessageAdded():
+        add(ChatRoomSendingMessageAddedEvent(
+          chatRoomId: message.chatRoomId,
+          message: message.message,
+        ));
+      default:
+        break;
+    }
   }
 
   Future<void> _onConnectingRequestedEvent(
@@ -71,6 +99,18 @@ class WebSocketBloc extends Bloc<_Event, _State> {
     print('Error: ${event.error.toString()}');
   }
 
+  Future<void> _onChatRoomSendingMessageAddedEvent(
+    ChatRoomSendingMessageAddedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final state = this.state;
+
+    if (state is ConnectionSuccessState) {
+      print('Sending Message: ${event.message.toString()}');
+      // state.webSocket.add('');
+    }
+  }
+
   Future<void> _reconnect(WebSocket webSocket) async {
     if (webSocket.readyState == WebSocket.open) await webSocket.close();
 
@@ -84,8 +124,7 @@ class WebSocketBloc extends Bloc<_Event, _State> {
           .getString(AuthPreferenceKeys.accessToken)
           ?.let((token) => AuthorizationHeader(token: token))
           .let((header) => [header.mapEntry])
-          .let(Map<String, dynamic>.fromIterable);
-
+          .let(Map<String, dynamic>.fromEntries);
       final webSocket = await WebSocket.connect(
         url,
         headers: headers,
