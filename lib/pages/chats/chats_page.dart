@@ -11,8 +11,6 @@ import 'package:poc_chat_2/pages/chat_room/chat_room_page.dart';
 import 'package:poc_chat_2/pages/chats/bloc/chats_page_bloc.dart';
 import 'package:poc_chat_2/pages/chats/chats_page_presenter.dart';
 import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
-import 'package:poc_chat_2/providers/web_socket/bloc/web_socket_bloc.dart'
-    as web_socket_bloc;
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 

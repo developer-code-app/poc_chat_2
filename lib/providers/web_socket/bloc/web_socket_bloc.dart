@@ -11,6 +11,7 @@ import 'package:poc_chat_2/preference_keys.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_recorded_event_entity.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/interceptors/authentication_interceptor.dart';
 import 'package:poc_chat_2/providers/web_socket/entites/web_socket_response.dart';
+import 'package:poc_chat_2/providers/web_socket/requests/web_socket_sending_message_added_request.dart';
 import 'package:poc_chat_2/services/system_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,6 +46,14 @@ class WebSocketBloc extends Bloc<_Event, _State> {
         state.webSocket.readyState == WebSocket.open;
   }
 
+  WebSocket? get _webSocket {
+    final state = this.state;
+
+    if (state is! ConnectionSuccessState) return null;
+
+    return state.webSocket;
+  }
+
   void onBroadcasterMessageReceived(BroadcasterMessage message) {
     switch (message) {
       case ChatRoomMessage():
@@ -53,16 +62,15 @@ class WebSocketBloc extends Bloc<_Event, _State> {
   }
 
   void onChatRoomMessageBroadcasterMessageReceived(
-    ChatRoomMessage message,
+    ChatRoomMessage broadcasterMessage,
   ) {
-    switch (message) {
-      case ChatRoomSendingMessageAdded():
-        add(ChatRoomSendingMessageAddedEvent(
-          chatRoomId: message.chatRoomId,
-          message: message.message,
-        ));
-      default:
-        break;
+    if (broadcasterMessage is ChatRoomSendingMessageAdded) {
+      final request = WebSocketSendingMessageAddedRequest.fromModel(
+        chatRoomId: broadcasterMessage.chatRoomId,
+        message: broadcasterMessage.message,
+      );
+
+      _webSocket?.add(const JsonEncoder().convert(request.toJson()));
     }
   }
 
@@ -107,7 +115,7 @@ class WebSocketBloc extends Bloc<_Event, _State> {
 
     if (state is ConnectionSuccessState) {
       print('Sending Message: ${event.message.toString()}');
-      // state.webSocket.add('');
+      _webSocket?.add('');
     }
   }
 

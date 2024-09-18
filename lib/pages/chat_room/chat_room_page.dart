@@ -28,6 +28,14 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   void _onMessageSubmitted() {
     final bloc = context.read<ChatRoomPageBloc>();
 
+    bloc.add(MessageSentEvent(text: textEditingController.text));
+
+    clearKeyboard();
+  }
+
+  void clearKeyboard() {
+    final bloc = context.read<ChatRoomPageBloc>();
+
     scrollController.animateTo(
       0,
       duration: const Duration(milliseconds: 300),

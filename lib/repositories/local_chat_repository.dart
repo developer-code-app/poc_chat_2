@@ -209,7 +209,7 @@ extension LocalChatRoomTemporaryMessageRepository on LocalChatRepository {
     required MessageForm form,
   }) async {
     return provider.chat
-        .createSendingMessage()
+        .createSendingMessage(targetChatRoomId: targetChatRoomId, form: form)
         .then((message) => Message.fromSendingMessageEntity(message))
         .onError<Error>((error, _) => throw Exception());
   }

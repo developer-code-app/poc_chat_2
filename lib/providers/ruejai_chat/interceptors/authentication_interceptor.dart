@@ -40,7 +40,7 @@ class AuthorizationHeader {
 
   final String token;
 
-  String get value => '$prefixValue $token';
+  String get value => '$prefixValue $token:RUE_JAI_APP_USER';
   MapEntry<String, String> get mapEntry => MapEntry(key, value);
 
   static const key = 'Authorization';

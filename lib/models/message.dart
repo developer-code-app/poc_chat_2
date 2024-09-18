@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/message_type.dart';
 import 'package:poc_chat_2/models/mini_app.dart';
@@ -60,7 +62,13 @@ sealed class Message {
   ) {
     switch (entity.type) {
       case MessageType.text:
-        return MemberTextMessage.fromEntity();
+        return MemberTextMessage(
+          id: entity.id,
+          owner: MockData.owner,
+          createdAt: entity.createdAt,
+          updatedAt: entity.updatedAt,
+          text: utf8.decode(entity.content),
+        );
       case MessageType.photo:
         return MemberPhotoMessage.fromEntity();
       case MessageType.video:

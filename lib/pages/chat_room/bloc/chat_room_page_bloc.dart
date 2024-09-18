@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
+import 'package:poc_chat_2/model_services/chat_room/event/chat_room_event_creator.dart';
 import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 
 import 'package:poc_chat_2/app/image_picker/image_picker.dart';
@@ -98,7 +99,12 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     MessageSentEvent event,
     Emitter<_State> emit,
   ) async {
-    unawaited(_processEvent(event.messageEvent));
+    final messageEvent = ChatRoomEventCreator(
+      chatRoomId: chatRoom.id,
+      rueJaiUser: MockData.rueJaiUser,
+    ).createCreateTextMessageEvent(text: event.text);
+
+    unawaited(_processEvent(messageEvent));
   }
 
   Future<void> _onChatRoomBasicInfoUpdatedEvent(

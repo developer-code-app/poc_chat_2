@@ -5,9 +5,9 @@ sealed class ChatRoomPageEvent {}
 class StartedEvent extends _Event {}
 
 class MessageSentEvent extends _Event {
-  MessageSentEvent({required this.messageEvent});
+  MessageSentEvent({required this.text});
 
-  final MessageEvent messageEvent;
+  final String text;
 }
 
 class ChatRoomBasicInfoUpdatedEvent extends _Event {

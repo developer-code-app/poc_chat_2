@@ -1,4 +1,5 @@
 import 'package:poc_chat_2/models/events/event.dart';
+import 'package:poc_chat_2/models/events/message_event.dart' as message_event;
 import 'package:poc_chat_2/models/events/room_event.dart'
     as room_management_event;
 import 'package:poc_chat_2/models/rue_jai_user.dart';
@@ -25,6 +26,17 @@ class ChatRoomEventCreator {
       owner: owner,
       createdAt: getCreatedAt(),
       member: member,
+    );
+  }
+
+  message_event.CreateTextMessageEvent createCreateTextMessageEvent({
+    required String text,
+  }) {
+    return message_event.CreateTextMessageEvent(
+      id: generateEventId(),
+      owner: owner,
+      createdAt: getCreatedAt(),
+      text: text,
     );
   }
 
