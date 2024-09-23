@@ -11,8 +11,6 @@ abstract class _$ChatRoomCWProxy {
 
   ChatRoom name(String name);
 
-  ChatRoom thumbnailUrl(String thumbnailUrl);
-
   ChatRoom members(List<ChatRoomMember> members);
 
   ChatRoom confirmedMessages(List<Message> confirmedMessages);
@@ -20,6 +18,8 @@ abstract class _$ChatRoomCWProxy {
   ChatRoom failedMessages(List<Message> failedMessages);
 
   ChatRoom sendingMessages(List<Message> sendingMessages);
+
+  ChatRoom thumbnailUrl(String? thumbnailUrl);
 
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `ChatRoom(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
@@ -30,11 +30,11 @@ abstract class _$ChatRoomCWProxy {
   ChatRoom call({
     int? id,
     String? name,
-    String? thumbnailUrl,
     List<ChatRoomMember>? members,
     List<Message>? confirmedMessages,
     List<Message>? failedMessages,
     List<Message>? sendingMessages,
+    String? thumbnailUrl,
   });
 }
 
@@ -49,10 +49,6 @@ class _$ChatRoomCWProxyImpl implements _$ChatRoomCWProxy {
 
   @override
   ChatRoom name(String name) => this(name: name);
-
-  @override
-  ChatRoom thumbnailUrl(String thumbnailUrl) =>
-      this(thumbnailUrl: thumbnailUrl);
 
   @override
   ChatRoom members(List<ChatRoomMember> members) => this(members: members);
@@ -70,6 +66,10 @@ class _$ChatRoomCWProxyImpl implements _$ChatRoomCWProxy {
       this(sendingMessages: sendingMessages);
 
   @override
+  ChatRoom thumbnailUrl(String? thumbnailUrl) =>
+      this(thumbnailUrl: thumbnailUrl);
+
+  @override
 
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `ChatRoom(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
@@ -80,11 +80,11 @@ class _$ChatRoomCWProxyImpl implements _$ChatRoomCWProxy {
   ChatRoom call({
     Object? id = const $CopyWithPlaceholder(),
     Object? name = const $CopyWithPlaceholder(),
-    Object? thumbnailUrl = const $CopyWithPlaceholder(),
     Object? members = const $CopyWithPlaceholder(),
     Object? confirmedMessages = const $CopyWithPlaceholder(),
     Object? failedMessages = const $CopyWithPlaceholder(),
     Object? sendingMessages = const $CopyWithPlaceholder(),
+    Object? thumbnailUrl = const $CopyWithPlaceholder(),
   }) {
     return ChatRoom(
       id: id == const $CopyWithPlaceholder() || id == null
@@ -95,11 +95,6 @@ class _$ChatRoomCWProxyImpl implements _$ChatRoomCWProxy {
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
-      thumbnailUrl:
-          thumbnailUrl == const $CopyWithPlaceholder() || thumbnailUrl == null
-              ? _value.thumbnailUrl
-              // ignore: cast_nullable_to_non_nullable
-              : thumbnailUrl as String,
       members: members == const $CopyWithPlaceholder() || members == null
           ? _value.members
           // ignore: cast_nullable_to_non_nullable
@@ -119,6 +114,10 @@ class _$ChatRoomCWProxyImpl implements _$ChatRoomCWProxy {
           ? _value.sendingMessages
           // ignore: cast_nullable_to_non_nullable
           : sendingMessages as List<Message>,
+      thumbnailUrl: thumbnailUrl == const $CopyWithPlaceholder()
+          ? _value.thumbnailUrl
+          // ignore: cast_nullable_to_non_nullable
+          : thumbnailUrl as String?,
     );
   }
 }

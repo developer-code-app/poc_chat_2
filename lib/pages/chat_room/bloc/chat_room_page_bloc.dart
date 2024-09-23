@@ -31,6 +31,7 @@ typedef _State = ChatRoomPageState;
 
 class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   ChatRoomPageBloc({
+    required this.currentRueJaiUser,
     required this.serverChatRepository,
     required this.localChatRepository,
     required this.chatRoom,
@@ -69,13 +70,13 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     );
   }
 
+  final RueJaiUser currentRueJaiUser;
   final ServerChatRepository serverChatRepository;
   final LocalChatRepository localChatRepository;
   final ChatRoom chatRoom;
   final AssetsPickerCubit assetsPickerCubit;
   final AlertDialogCubit alertDialogCubit;
   final ReplyMessageCubit replyMessageCubit;
-  final currentUser = MockData.khunPatPong;
 
   StreamSubscription? _broadcasterSubscription;
 
@@ -101,7 +102,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   ) async {
     final messageEvent = ChatRoomEventCreator(
       chatRoomId: chatRoom.id,
-      rueJaiUser: MockData.rueJaiUser,
+      rueJaiUser: currentRueJaiUser,
     ).createCreateTextMessageEvent(text: event.text);
 
     unawaited(_processEvent(messageEvent));
@@ -390,7 +391,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
       final message = state.chatRoom.confirmedMessages
           .whereType<MemberMessage>()
           .firstWhere((message) => message.id == event.messageId);
-      final isOwner = currentUser.id == message.owner.id;
+      final isOwner = currentRueJaiUser.id == message.owner.id;
 
       alertDialogCubit.alertActionSheet(
         actions: [

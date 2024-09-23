@@ -22,9 +22,9 @@ class ChatRoomPresenter {
   ChatRoomPresenter({
     required this.id,
     required this.name,
-    required this.thumbnailUrl,
     required this.latestMessage,
     required this.unreadMessageCount,
+    this.thumbnailUrl,
   });
 
   factory ChatRoomPresenter.fromModel(
@@ -46,7 +46,7 @@ class ChatRoomPresenter {
 
   final int id;
   final String name;
-  final String thumbnailUrl;
+  final String? thumbnailUrl;
   final MessagePresenter? latestMessage;
   final int unreadMessageCount;
 }

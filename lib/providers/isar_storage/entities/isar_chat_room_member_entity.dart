@@ -9,7 +9,6 @@ part 'isar_chat_room_member_entity.g.dart';
 class IsarChatRoomMemberEntity {
   Id id = Isar.autoIncrement;
 
-  late int memberId;
   late int lastReadMessageId;
 
   @Enumerated(EnumType.name)

@@ -22,33 +22,34 @@ class _RueJaiChatService implements RueJaiChatService {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<RuejaiResultListResponse<int>> getChatRooms() async {
+  Future<RuejaiListResponse<RueJaiChatRoomEntity>> getChatRooms() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<RuejaiResultListResponse<int>>(Options(
+    final _options =
+        _setStreamType<RuejaiListResponse<RueJaiChatRoomEntity>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
-        .compose(
-          _dio.options,
-          'api/ruejai-chat/chat-rooms',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
+            .compose(
+              _dio.options,
+              'api/ruejai-chat/chat-rooms',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late RuejaiResultListResponse<int> _value;
+    late RuejaiListResponse<RueJaiChatRoomEntity> _value;
     try {
-      _value = RuejaiResultListResponse<int>.fromJson(
+      _value = RuejaiListResponse<RueJaiChatRoomEntity>.fromJson(
         _result.data!,
-        (json) => json as int,
+        (json) => RueJaiChatRoomEntity.fromJson(json as Map<String, dynamic>),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
@@ -137,29 +138,42 @@ class _RueJaiChatService implements RueJaiChatService {
   }
 
   @override
-  Future<void> createChatRoom(RuejaiChatCreateChatRoomRequest request) async {
+  Future<RuejaiResponse<RueJaiChatRoomEntity>> createChatRoom(
+      RuejaiChatCreateChatRoomRequest request) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
-    final _options = _setStreamType<void>(Options(
+    final _options =
+        _setStreamType<RuejaiResponse<RueJaiChatRoomEntity>>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
     )
-        .compose(
-          _dio.options,
-          'api/ruejai-chat/chat-rooms',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    await _dio.fetch<void>(_options);
+            .compose(
+              _dio.options,
+              'api/ruejai-chat/chat-rooms',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late RuejaiResponse<RueJaiChatRoomEntity> _value;
+    try {
+      _value = RuejaiResponse<RueJaiChatRoomEntity>.fromJson(
+        _result.data!,
+        (json) => RueJaiChatRoomEntity.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {

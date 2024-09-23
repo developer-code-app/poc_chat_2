@@ -26,7 +26,7 @@ class RueJaiUser {
     required this.rueJaiUserType,
     required this.rueJaiUserRole,
     required this.name,
-    required this.thumbnailUrl,
+    this.thumbnailUrl,
   });
 
   factory RueJaiUser.fromEntity(IsarRueJaiUserEntity entity) {
@@ -45,5 +45,5 @@ class RueJaiUser {
   final RueJaiUserType rueJaiUserType;
   final RueJaiUserRole rueJaiUserRole;
   final String name;
-  final String thumbnailUrl;
+  final String? thumbnailUrl;
 }

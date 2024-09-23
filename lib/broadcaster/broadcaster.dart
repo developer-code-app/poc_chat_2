@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:poc_chat_2/models/chat_room_member.dart';
+import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/models/message.dart';
 
 part 'chat_room.dart';
 part 'chat_room_basic_info.dart';
 part 'chat_room_message.dart';
+part 'web_socket.dart';
+part 'rue_jai_chat.dart';
 
 class Broadcaster {
   Broadcaster._({required this.messageStreamController});

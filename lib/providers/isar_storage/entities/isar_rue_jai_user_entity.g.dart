@@ -77,7 +77,12 @@ int _isarRueJaiUserEntityEstimateSize(
   bytesCount += 3 + object.name.length * 3;
   bytesCount += 3 + object.role.name.length * 3;
   bytesCount += 3 + object.rueJaiUserId.length * 3;
-  bytesCount += 3 + object.thumbnailUrl.length * 3;
+  {
+    final value = object.thumbnailUrl;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.type.name.length * 3;
   return bytesCount;
 }
@@ -108,7 +113,7 @@ IsarRueJaiUserEntity _isarRueJaiUserEntityDeserialize(
           reader.readStringOrNull(offsets[1])] ??
       RueJaiUserRole.homeOwner;
   object.rueJaiUserId = reader.readString(offsets[2]);
-  object.thumbnailUrl = reader.readString(offsets[3]);
+  object.thumbnailUrl = reader.readStringOrNull(offsets[3]);
   object.type = _IsarRueJaiUserEntitytypeValueEnumMap[
           reader.readStringOrNull(offsets[4])] ??
       RueJaiUserType.rueJaiAdmin;
@@ -131,7 +136,7 @@ P _isarRueJaiUserEntityDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 4:
       return (_IsarRueJaiUserEntitytypeValueEnumMap[
               reader.readStringOrNull(offset)] ??
@@ -732,8 +737,26 @@ extension IsarRueJaiUserEntityQueryFilter on QueryBuilder<IsarRueJaiUserEntity,
   }
 
   QueryBuilder<IsarRueJaiUserEntity, IsarRueJaiUserEntity,
+      QAfterFilterCondition> thumbnailUrlIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'thumbnailUrl',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarRueJaiUserEntity, IsarRueJaiUserEntity,
+      QAfterFilterCondition> thumbnailUrlIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'thumbnailUrl',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarRueJaiUserEntity, IsarRueJaiUserEntity,
       QAfterFilterCondition> thumbnailUrlEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -747,7 +770,7 @@ extension IsarRueJaiUserEntityQueryFilter on QueryBuilder<IsarRueJaiUserEntity,
 
   QueryBuilder<IsarRueJaiUserEntity, IsarRueJaiUserEntity,
       QAfterFilterCondition> thumbnailUrlGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -763,7 +786,7 @@ extension IsarRueJaiUserEntityQueryFilter on QueryBuilder<IsarRueJaiUserEntity,
 
   QueryBuilder<IsarRueJaiUserEntity, IsarRueJaiUserEntity,
       QAfterFilterCondition> thumbnailUrlLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -779,8 +802,8 @@ extension IsarRueJaiUserEntityQueryFilter on QueryBuilder<IsarRueJaiUserEntity,
 
   QueryBuilder<IsarRueJaiUserEntity, IsarRueJaiUserEntity,
       QAfterFilterCondition> thumbnailUrlBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -1301,7 +1324,7 @@ extension IsarRueJaiUserEntityQueryProperty on QueryBuilder<
     });
   }
 
-  QueryBuilder<IsarRueJaiUserEntity, String, QQueryOperations>
+  QueryBuilder<IsarRueJaiUserEntity, String?, QQueryOperations>
       thumbnailUrlProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'thumbnailUrl');

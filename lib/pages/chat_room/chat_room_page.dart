@@ -67,7 +67,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     final bloc = context.read<ChatRoomPageBloc>();
 
     if (message is MemberMessagePresenter) {
-      return bloc.currentUser.id == message.owner.id
+      return bloc.currentRueJaiUser.id == message.owner.id
           ? MessageAlignment.right
           : MessageAlignment.left;
     } else {
@@ -470,7 +470,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     required MemberTextMessagePresenter textMessage,
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
-    final isOwner = bloc.currentUser.id == textMessage.owner.id;
+    final isOwner = bloc.currentRueJaiUser.id == textMessage.owner.id;
     final text = textMessage.text;
 
     return text == null
@@ -495,7 +495,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
     final text = textReplyMessage.text;
-    final isOwner = bloc.currentUser.id == textReplyMessage.owner.id;
+    final isOwner = bloc.currentRueJaiUser.id == textReplyMessage.owner.id;
 
     return text == null
         ? _buildTextReplyMessageSkeletonView(context)
@@ -603,7 +603,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     required MemberPresenter member,
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
-    final isOwner = bloc.currentUser.id == member.id;
+    final isOwner = bloc.currentRueJaiUser.id == member.id;
+    final thumbnail = member.thumbnail;
 
     if (isOwner) return Container();
 
@@ -611,14 +612,15 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          SizedBox(
-            width: 40,
-            height: 40,
-            child: CircleAvatar(
-              radius: 30,
-              backgroundImage: NetworkImage(member.thumbnail),
+          if (thumbnail != null)
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: CircleAvatar(
+                radius: 30,
+                backgroundImage: NetworkImage(thumbnail),
+              ),
             ),
-          ),
           const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

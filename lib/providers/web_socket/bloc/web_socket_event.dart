@@ -15,13 +15,3 @@ class ErrorOccurredEvent extends WebSocketEvent {
 
   final Exception error;
 }
-
-class ChatRoomSendingMessageAddedEvent extends WebSocketEvent {
-  ChatRoomSendingMessageAddedEvent({
-    required this.chatRoomId,
-    required this.message,
-  });
-
-  final int chatRoomId;
-  final Message message;
-}

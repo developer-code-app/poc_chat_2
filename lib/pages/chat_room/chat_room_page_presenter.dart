@@ -33,8 +33,8 @@ class MemberPresenter {
   MemberPresenter({
     required this.id,
     required this.name,
-    required this.thumbnail,
     required this.userRole,
+    this.thumbnail,
   });
 
   factory MemberPresenter.fromModel(ChatRoomMember owner) {
@@ -61,7 +61,7 @@ class MemberPresenter {
 
   final int id;
   final String name;
-  final String thumbnail;
+  final String? thumbnail;
   final String userRole;
 }
 

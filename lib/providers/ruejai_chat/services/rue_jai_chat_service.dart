@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:poc_chat_2/models/chat_room.dart';
+import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_room_entity.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_room_latest_event_record_info_entity.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/requests/ruejai_chat_create_chat_room_request.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/ruejai_response.dart';
@@ -12,7 +14,7 @@ abstract class RueJaiChatService {
   factory RueJaiChatService(Dio dio, {String baseUrl}) = _RueJaiChatService;
 
   @GET('api/ruejai-chat/chat-rooms')
-  Future<RuejaiResultListResponse<int>> getChatRooms();
+  Future<RuejaiListResponse<RueJaiChatRoomEntity>> getChatRooms();
 
   @GET('api/ruejai-chat/chat-rooms/{chatRoomId}/latest-event-record-info')
   Future<RuejaiResponse<RueJaiChatRoomLatestEventRecordInfoEntity>>
@@ -27,7 +29,7 @@ abstract class RueJaiChatService {
   );
 
   @POST('api/ruejai-chat/chat-rooms')
-  Future<void> createChatRoom(
+  Future<RuejaiResponse<RueJaiChatRoomEntity>> createChatRoom(
     @Body() RuejaiChatCreateChatRoomRequest request,
   );
 }

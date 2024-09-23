@@ -90,7 +90,7 @@ class ChatRoomAction {
   }) {
     if (latestRecordNumber == serverLatestRecordNumber) {
       return SyncState.synced;
-    } else if (latestRecordNumber > serverLatestRecordNumber) {
+    } else if (latestRecordNumber < serverLatestRecordNumber) {
       return SyncState.unsynced;
     } else {
       return SyncState.corrupted;

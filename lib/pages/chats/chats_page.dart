@@ -71,7 +71,7 @@ class _ChatsPageState extends State<ChatsPage> {
                 case LoadSuccessState():
                   return _buildLoadSuccess(context, state);
                 case LoadFailureState():
-                  return Text(state.error.toString());
+                  return Center(child: Text(state.error.toString()));
               }
             },
           ),
@@ -87,9 +87,9 @@ class _ChatsPageState extends State<ChatsPage> {
     final shouldShowPlaceholder = state.presenter.chatRooms.isEmpty;
 
     if (shouldShowPlaceholder) {
-      return const Center(child: Text('Rooms not found.'));
+      return const Center(child: Text('No Rooms'));
     } else {
-      return Column(
+      return ListView(
         children: state.presenter.chatRooms
             .map(
               (presenter) {
@@ -168,6 +168,7 @@ class _ChatsPageState extends State<ChatsPage> {
                   alertDialogCubit: bloc.alertDialogCubit,
                   replyMessageCubit: context.read<ReplyMessageCubit>(),
                   chatRoom: chatRoom,
+                  currentRueJaiUser: bloc.currentRueJaiUser,
                 )..add(chat_room_bloc.StartedEvent()),
               ),
             ],

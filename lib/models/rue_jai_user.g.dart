@@ -17,7 +17,7 @@ abstract class _$RueJaiUserCWProxy {
 
   RueJaiUser name(String name);
 
-  RueJaiUser thumbnailUrl(String thumbnailUrl);
+  RueJaiUser thumbnailUrl(String? thumbnailUrl);
 
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `RueJaiUser(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
@@ -60,7 +60,7 @@ class _$RueJaiUserCWProxyImpl implements _$RueJaiUserCWProxy {
   RueJaiUser name(String name) => this(name: name);
 
   @override
-  RueJaiUser thumbnailUrl(String thumbnailUrl) =>
+  RueJaiUser thumbnailUrl(String? thumbnailUrl) =>
       this(thumbnailUrl: thumbnailUrl);
 
   @override
@@ -103,11 +103,10 @@ class _$RueJaiUserCWProxyImpl implements _$RueJaiUserCWProxy {
           ? _value.name
           // ignore: cast_nullable_to_non_nullable
           : name as String,
-      thumbnailUrl:
-          thumbnailUrl == const $CopyWithPlaceholder() || thumbnailUrl == null
-              ? _value.thumbnailUrl
-              // ignore: cast_nullable_to_non_nullable
-              : thumbnailUrl as String,
+      thumbnailUrl: thumbnailUrl == const $CopyWithPlaceholder()
+          ? _value.thumbnailUrl
+          // ignore: cast_nullable_to_non_nullable
+          : thumbnailUrl as String?,
     );
   }
 }

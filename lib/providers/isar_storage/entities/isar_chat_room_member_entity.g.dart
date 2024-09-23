@@ -23,13 +23,8 @@ const IsarChatRoomMemberEntitySchema = CollectionSchema(
       name: r'lastReadMessageId',
       type: IsarType.long,
     ),
-    r'memberId': PropertySchema(
-      id: 1,
-      name: r'memberId',
-      type: IsarType.long,
-    ),
     r'role': PropertySchema(
-      id: 2,
+      id: 1,
       name: r'role',
       type: IsarType.string,
       enumMap: _IsarChatRoomMemberEntityroleEnumValueMap,
@@ -73,8 +68,7 @@ void _isarChatRoomMemberEntitySerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.lastReadMessageId);
-  writer.writeLong(offsets[1], object.memberId);
-  writer.writeString(offsets[2], object.role.name);
+  writer.writeString(offsets[1], object.role.name);
 }
 
 IsarChatRoomMemberEntity _isarChatRoomMemberEntityDeserialize(
@@ -86,9 +80,8 @@ IsarChatRoomMemberEntity _isarChatRoomMemberEntityDeserialize(
   final object = IsarChatRoomMemberEntity();
   object.id = id;
   object.lastReadMessageId = reader.readLong(offsets[0]);
-  object.memberId = reader.readLong(offsets[1]);
   object.role = _IsarChatRoomMemberEntityroleValueEnumMap[
-          reader.readStringOrNull(offsets[2])] ??
+          reader.readStringOrNull(offsets[1])] ??
       ChatRoomMemberRole.admin;
   return object;
 }
@@ -103,8 +96,6 @@ P _isarChatRoomMemberEntityDeserializeProp<P>(
     case 0:
       return (reader.readLong(offset)) as P;
     case 1:
-      return (reader.readLong(offset)) as P;
-    case 2:
       return (_IsarChatRoomMemberEntityroleValueEnumMap[
               reader.readStringOrNull(offset)] ??
           ChatRoomMemberRole.admin) as P;
@@ -334,62 +325,6 @@ extension IsarChatRoomMemberEntityQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
-      QAfterFilterCondition> memberIdEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'memberId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
-      QAfterFilterCondition> memberIdGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'memberId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
-      QAfterFilterCondition> memberIdLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'memberId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
-      QAfterFilterCondition> memberIdBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'memberId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
       QAfterFilterCondition> roleEqualTo(
     ChatRoomMemberRole value, {
     bool caseSensitive = true,
@@ -565,20 +500,6 @@ extension IsarChatRoomMemberEntityQuerySortBy on QueryBuilder<
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
-      sortByMemberId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'memberId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
-      sortByMemberIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'memberId', Sort.desc);
-    });
-  }
-
-  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
       sortByRole() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'role', Sort.asc);
@@ -624,20 +545,6 @@ extension IsarChatRoomMemberEntityQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
-      thenByMemberId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'memberId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
-      thenByMemberIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'memberId', Sort.desc);
-    });
-  }
-
-  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
       thenByRole() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'role', Sort.asc);
@@ -662,13 +569,6 @@ extension IsarChatRoomMemberEntityQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QDistinct>
-      distinctByMemberId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'memberId');
-    });
-  }
-
-  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QDistinct>
       distinctByRole({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'role', caseSensitive: caseSensitive);
@@ -688,13 +588,6 @@ extension IsarChatRoomMemberEntityQueryProperty on QueryBuilder<
       lastReadMessageIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lastReadMessageId');
-    });
-  }
-
-  QueryBuilder<IsarChatRoomMemberEntity, int, QQueryOperations>
-      memberIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'memberId');
     });
   }
 

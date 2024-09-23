@@ -9,7 +9,13 @@ class ChatRoomCreator {
 
   Future<void> createChatRoom({
     required int chatRoomId,
+    required String name,
+    String? thumbnailUrl,
   }) async {
-    await localChatRepository.addChatRoom(chatRoomId: chatRoomId);
+    await localChatRepository.addChatRoom(
+      chatRoomId: chatRoomId,
+      name: name,
+      thumbnailUrl: thumbnailUrl,
+    );
   }
 }
