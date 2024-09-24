@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/mock_data.dart';
-import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/pages/chats/bloc/chats_page_bloc.dart';
 import 'package:poc_chat_2/pages/chats/chats_page.dart';
 import 'package:poc_chat_2/preference_keys.dart';
@@ -133,12 +132,11 @@ class _BaseApp extends StatefulWidget {
 
 class __BaseAppState extends State<_BaseApp> {
   WebSocket? webSocket;
-  static const String currentAccessToken = '2';
 
   Future<void> saveAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
 
-    prefs.setString(AuthPreferenceKeys.accessToken, currentAccessToken);
+    prefs.setString(AuthPreferenceKeys.accessToken, MockData.accessToken);
   }
 
   @override
@@ -159,7 +157,7 @@ class __BaseAppState extends State<_BaseApp> {
 
   @override
   Widget build(BuildContext context) {
-    final currentRueJaiUser = MockData.rueJaiUser[currentAccessToken];
+    final currentRueJaiUser = MockData.currentRueJaiUser;
 
     if (currentRueJaiUser == null) throw Exception('User not found');
 

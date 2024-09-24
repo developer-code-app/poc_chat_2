@@ -5,6 +5,9 @@ import 'package:poc_chat_2/models/mini_app.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 
 class MockData {
+  static const accessToken = 'KornSiwat:RUE_JAI_APP_USER';
+  static final currentRueJaiUser = _kornSiwatRueJaiUser;
+
   static const chatRoom = ChatRoom(
     id: 1,
     name: "name",
@@ -35,6 +38,15 @@ class MockData {
     rueJaiUserType: RueJaiUserType.rueJaiAppUser,
     rueJaiUserRole: RueJaiUserRole.homeOwner,
     name: 'Mong',
+    thumbnailUrl: 'https://picsum.photos/600/600.jpg',
+  );
+
+  static final _kornSiwatRueJaiUser = RueJaiUser(
+    id: 3,
+    rueJaiUserId: 'KornSiwat',
+    rueJaiUserType: RueJaiUserType.rueJaiAppUser,
+    rueJaiUserRole: RueJaiUserRole.homeOwner,
+    name: 'KornSiwat',
     thumbnailUrl: 'https://picsum.photos/600/600.jpg',
   );
 

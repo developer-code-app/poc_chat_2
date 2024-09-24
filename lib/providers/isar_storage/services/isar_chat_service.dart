@@ -7,7 +7,6 @@ import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/forms/message_form.dart';
 import 'package:poc_chat_2/models/message_type.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
-import 'package:poc_chat_2/preference_keys.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_latest_event_record_info_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_member_entity.dart';
@@ -18,7 +17,6 @@ import 'package:poc_chat_2/providers/isar_storage/entities/isar_sending_message_
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_unconfirmed_message_entity.dart';
 import 'package:isar/isar.dart';
 import 'package:poc_chat_2/providers/isar_storage/requests/isar_add_chat_room_request.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class IsarChatService {
   IsarChatService(this.isar);
@@ -26,11 +24,7 @@ class IsarChatService {
   final Future<Isar> isar;
 
   Future<RueJaiUser> findRueJaiUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final accessToken = prefs.getString(AuthPreferenceKeys.accessToken);
-
-    return MockData.rueJaiUser[accessToken]
-        .getOrThrowException(Exception('Token Expired'));
+    return MockData.currentRueJaiUser;
   }
 
   Future<List<IsarChatRoomEntity>> getChatRooms() async {
