@@ -127,4 +127,7 @@ class ImagePickerTextDelegate implements AssetPickerTextDelegate {
   AssetPickerTextDelegate get semanticsTextDelegate {
     return this;
   }
+
+  @override
+  String get livePhotoIndicator => throw UnimplementedError();
 }

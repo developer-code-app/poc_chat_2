@@ -11,7 +11,7 @@ class IsarRueJaiUserEntity {
 
   late String rueJaiUserId;
   late String name;
-  late String thumbnailUrl;
+  String? thumbnailUrl;
 
   @Enumerated(EnumType.name)
   late RueJaiUserType type;

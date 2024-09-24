@@ -1,9 +1,10 @@
+import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_latest_event_record_info.dart';
-import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/models/events/room_event.dart';
 import 'package:poc_chat_2/providers/rue_jai_chat_archive/ruejai_chat_provider.dart';
+import 'package:poc_chat_2/providers/ruejai_chat/requests/ruejai_chat_create_chat_room_request.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/ruejai_chat_api_provider.dart';
 
 class ServerChatRepository {
@@ -21,13 +22,13 @@ class ServerChatRepository {
     return chatApiProvider.chat
         .getChatRoomLatestEventRecordInfo(chatRoomId)
         .then((response) => response.result)
-        .then((entity) => ChatRoomLatestEventRecordInfo.fromEntity(entity));
+        .then(ChatRoomLatestEventRecordInfo.fromEntity);
   }
 
-  Future<List<int>> getAllChatRoomIds() async {
+  Future<List<ChatRoom>> getAllChatRooms() async {
     return chatApiProvider.chat
         .getChatRooms()
-        .then((response) => response.result);
+        .then((response) => response.result.map(ChatRoom.fromEntity).toList());
   }
 
   Future<List<String>> getChatRoomEventArchiveUrls({
@@ -53,11 +54,16 @@ class ServerChatRepository {
             .toList());
   }
 
-  //  WS /chats
-  Future<void> publishMessageEvent({
-    required int chatRoomId,
-    required MessageEvent event,
-  }) async {}
+  Future<ChatRoom> publishCreateChatRoomEvent({
+    required CreateRoomEvent event,
+  }) async {
+    final request = RuejaiChatCreateChatRoomRequest.fromEvent(event);
+
+    return chatApiProvider.chat
+        .createChatRoom(request)
+        .then((response) => response.result)
+        .then(ChatRoom.fromEntity);
+  }
 
   //  WS /chats
   Future<void> publishReadMessageEvent({
@@ -69,10 +75,5 @@ class ServerChatRepository {
   Future<void> publishRoomManagementEvent({
     required int chatRoomId,
     required RoomEvent event,
-  }) async {}
-
-  //  WS /chats
-  Future<void> publishCreateChatRoomEvent({
-    required CreateRoomEvent event,
   }) async {}
 }

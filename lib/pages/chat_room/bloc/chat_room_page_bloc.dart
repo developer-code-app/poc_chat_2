@@ -11,6 +11,7 @@ import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/cubits/ui_blocking_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
+import 'package:poc_chat_2/model_services/chat_room/event/chat_room_event_creator.dart';
 import 'package:poc_chat_2/extensions/extended_data_reader.dart';
 import 'package:poc_chat_2/extensions/extended_permission_handler.dart';
 import 'package:super_clipboard/super_clipboard.dart';
@@ -39,6 +40,7 @@ typedef _State = ChatRoomPageState;
 
 class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   ChatRoomPageBloc({
+    required this.currentRueJaiUser,
     required this.serverChatRepository,
     required this.localChatRepository,
     required this.chatRoom,
@@ -85,6 +87,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     );
   }
 
+  final RueJaiUser currentRueJaiUser;
   final ServerChatRepository serverChatRepository;
   final LocalChatRepository localChatRepository;
   final ChatRoom chatRoom;
@@ -93,7 +96,6 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   final ReplyMessageCubit replyMessageCubit;
   final PhotosClipboardCubit photosClipboardCubit;
   final UIBlockingCubit uiBlockingCubit;
-  final currentUser = MockData.khunPatPong;
 
   StreamSubscription? _broadcasterSubscription;
 
@@ -117,7 +119,12 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     MessageSentEvent event,
     Emitter<_State> emit,
   ) async {
-    unawaited(_processEvent(event.messageEvent));
+    final messageEvent = ChatRoomEventCreator(
+      chatRoomId: chatRoom.id,
+      rueJaiUser: currentRueJaiUser,
+    ).createCreateTextMessageEvent(text: event.text);
+
+    unawaited(_processEvent(messageEvent));
   }
 
   Future<void> _onChatRoomBasicInfoUpdatedEvent(
@@ -404,7 +411,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
       final message = state.chatRoom.confirmedMessages
           .whereType<MemberMessage>()
           .firstWhere((message) => message.id == event.messageId);
-      final isOwner = currentUser.id == message.owner.id;
+      final isOwner = currentRueJaiUser.id == message.owner.id;
 
       alertDialogCubit.alertActionSheet(
         actions: [

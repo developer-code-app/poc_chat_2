@@ -86,7 +86,12 @@ int _isarChatRoomEntityEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.name.length * 3;
-  bytesCount += 3 + object.thumbnail.length * 3;
+  {
+    final value = object.thumbnail;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -111,7 +116,7 @@ IsarChatRoomEntity _isarChatRoomEntityDeserialize(
   object.id = id;
   object.name = reader.readString(offsets[0]);
   object.roomId = reader.readLong(offsets[1]);
-  object.thumbnail = reader.readString(offsets[2]);
+  object.thumbnail = reader.readStringOrNull(offsets[2]);
   return object;
 }
 
@@ -127,7 +132,7 @@ P _isarChatRoomEntityDeserializeProp<P>(
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -500,8 +505,26 @@ extension IsarChatRoomEntityQueryFilter
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      thumbnailIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'thumbnail',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      thumbnailIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'thumbnail',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
       thumbnailEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -515,7 +538,7 @@ extension IsarChatRoomEntityQueryFilter
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
       thumbnailGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -531,7 +554,7 @@ extension IsarChatRoomEntityQueryFilter
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
       thumbnailLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -547,8 +570,8 @@ extension IsarChatRoomEntityQueryFilter
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
       thumbnailBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -1099,7 +1122,7 @@ extension IsarChatRoomEntityQueryProperty
     });
   }
 
-  QueryBuilder<IsarChatRoomEntity, String, QQueryOperations>
+  QueryBuilder<IsarChatRoomEntity, String?, QQueryOperations>
       thumbnailProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'thumbnail');

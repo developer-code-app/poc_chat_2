@@ -8,6 +8,7 @@ import 'package:poc_chat_2/models/forms/message_form.dart';
 import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
+import 'package:poc_chat_2/providers/isar_storage/requests/isar_add_chat_room_request.dart';
 
 class LocalChatRepository {
   LocalChatRepository({required this.provider});
@@ -23,16 +24,17 @@ class LocalChatRepository {
   Future<ChatRoomLatestEventRecordInfo> getChatRoomLatestEventRecordInfo({
     required int chatRoomId,
   }) async {
-    return ChatRoomLatestEventRecordInfo(
-      roomAndMessageRecordNumber: 0,
-    );
+    return provider.chat
+        .getChatRoomLatestEventRecordInfo()
+        .then(ChatRoomLatestEventRecordInfo.fromIsarEntity)
+        .onError<Error>((error, _) => throw Exception());
   }
 
   Future<List<ChatRoom>> getChatRooms() async {
     return provider.chat
         .getChatRooms()
-        .then((chatRooms) => chatRooms.map(ChatRoom.fromEntity).toList())
-        .onError<Error>((error, _) => throw Exception());
+        .then((chatRooms) => chatRooms.map(ChatRoom.fromIsarEntity).toList())
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<ChatRoom?> getChatRoom() async {
@@ -57,7 +59,19 @@ class LocalChatRepository {
 
   Future<void> addChatRoom({
     required int chatRoomId,
-  }) async {}
+    required String name,
+    String? thumbnailUrl,
+  }) async {
+    final request = IsarAddChatRoomRequest(
+      chatRoomId: chatRoomId,
+      name: name,
+      thumbnailUrl: thumbnailUrl,
+    );
+
+    return provider.chat
+        .addChatRoom(request)
+        .onError<Error>((error, _) => throw Exception());
+  }
 
   Future<List<Message>> searchMessages(
     int chatRoomId,
@@ -209,7 +223,7 @@ extension LocalChatRoomTemporaryMessageRepository on LocalChatRepository {
     required MessageForm form,
   }) async {
     return provider.chat
-        .createSendingMessage()
+        .createSendingMessage(targetChatRoomId: targetChatRoomId, form: form)
         .then((message) => Message.fromSendingMessageEntity(message))
         .onError<Error>((error, _) => throw Exception());
   }

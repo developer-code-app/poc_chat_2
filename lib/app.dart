@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/mock_data.dart';
+import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/pages/chats/bloc/chats_page_bloc.dart';
 import 'package:poc_chat_2/pages/chats/chats_page.dart';
 import 'package:poc_chat_2/preference_keys.dart';
@@ -14,6 +15,7 @@ import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 import 'package:poc_chat_2/services/member/member_service.dart';
 import 'package:poc_chat_2/services/rue_jai_user_service.dart';
+import 'package:poc_chat_2/services/system_service.dart';
 import 'package:poc_chat_2/widgets/action_sheet.dart' as action_sheet;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -131,20 +133,12 @@ class _BaseApp extends StatefulWidget {
 
 class __BaseAppState extends State<_BaseApp> {
   WebSocket? webSocket;
+  static const String currentAccessToken = '2';
 
   Future<void> saveAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
-    /* Account: notetest@gmail.com */
-    // prefs.setString(
-    //   AuthPreferenceKeys.accessToken,
-    //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbklkIjoiTU9DS19CUkpfVVNFUl9BQ0NFU1NfVE9LRU5fSUQiLCJpZCI6IjI2NDE0IiwidHlwZSI6IkJSSl9VU0VSX0FDQ0VTU19UT0tFTiIsImlhdCI6MTcyMzYxMTAwNSwiZXhwIjoxNzIzNjE0NjA1fQ.N7Rpza5befZGYI2zvtASJuQR7KH9bOTQDmW-hFzJBA8',
-    // );
 
-    /* Account: 901@gmail.com */
-    prefs.setString(
-      AuthPreferenceKeys.accessToken,
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbklkIjoiTU9DS19CUkpfVVNFUl9BQ0NFU1NfVE9LRU5fSUQiLCJpZCI6IjI2NDEzIiwidHlwZSI6IkJSSl9VU0VSX0FDQ0VTU19UT0tFTiIsImlhdCI6MTcyMzYxMDc5MywiZXhwIjoxNzIzNjE0MzkzfQ.cvuPBranlznMKbSa3LVJBFXyv6_AJT6Yh5NVLqCw1ZM',
-    );
+    prefs.setString(AuthPreferenceKeys.accessToken, currentAccessToken);
   }
 
   @override
@@ -165,19 +159,28 @@ class __BaseAppState extends State<_BaseApp> {
 
   @override
   Widget build(BuildContext context) {
+    final currentRueJaiUser = MockData.rueJaiUser[currentAccessToken];
+
+    if (currentRueJaiUser == null) throw Exception('User not found');
+
     return MultiBlocProvider(
       providers: [
         BlocProvider<ChatsPageBloc>(
           create: (context) => ChatsPageBloc(
+            currentRueJaiUser: currentRueJaiUser,
             alertDialogCubit: context.read<AlertDialogCubit>(),
             rueJaiUserService: RueJaiUserService(
-              rueJaiUser: MockData.rueJaiUser,
+              rueJaiUser: currentRueJaiUser,
               localChatRepository: context.read<LocalChatRepository>(),
               serverChatRepository: context.read<ServerChatRepository>(),
             ),
             memberService: MemberService(
               chatRoomId: 1,
               memberId: 1,
+              localChatRepository: context.read<LocalChatRepository>(),
+              serverChatRepository: context.read<ServerChatRepository>(),
+            ),
+            systemService: SystemService(
               localChatRepository: context.read<LocalChatRepository>(),
               serverChatRepository: context.read<ServerChatRepository>(),
             ),

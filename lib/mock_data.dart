@@ -5,7 +5,7 @@ import 'package:poc_chat_2/models/mini_app.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 
 class MockData {
-  static final chatRoom = ChatRoom(
+  static const chatRoom = ChatRoom(
     id: 1,
     name: "name",
     thumbnailUrl: "thumbnailUrl",
@@ -15,19 +15,33 @@ class MockData {
     sendingMessages: [],
   );
 
-  static final rueJaiUser = RueJaiUser(
+  static final rueJaiUser = {
+    '1': _noteAccount,
+    '2': _mongAccount,
+  };
+
+  static final _noteAccount = RueJaiUser(
     id: 1,
-    rueJaiUserId: '69',
+    rueJaiUserId: '1',
     rueJaiUserType: RueJaiUserType.rueJaiAppUser,
-    rueJaiUserRole: RueJaiUserRole.renter,
-    name: 'MongATI',
-    thumbnailUrl: '',
+    rueJaiUserRole: RueJaiUserRole.homeOwner,
+    name: 'Note',
+    thumbnailUrl: 'https://picsum.photos/600/600.jpg',
+  );
+
+  static final _mongAccount = RueJaiUser(
+    id: 2,
+    rueJaiUserId: '2',
+    rueJaiUserType: RueJaiUserType.rueJaiAppUser,
+    rueJaiUserRole: RueJaiUserRole.homeOwner,
+    name: 'Mong',
+    thumbnailUrl: 'https://picsum.photos/600/600.jpg',
   );
 
   static final owner = ChatRoomMember(
     id: 1,
     role: ChatRoomMemberRole.member,
-    rueJaiUser: rueJaiUser,
+    rueJaiUser: _mongAccount,
     lastReadMessageId: 10,
   );
 

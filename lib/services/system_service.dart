@@ -1,3 +1,4 @@
+import 'package:poc_chat_2/broadcaster/broadcaster.dart' as broadcaster;
 import 'package:poc_chat_2/model_services/chat_room/chat_room_action.dart';
 import 'package:poc_chat_2/model_services/chat_room/chat_room_creator.dart';
 import 'package:poc_chat_2/model_services/chat_room/chat_room_lister.dart';
@@ -21,7 +22,11 @@ class SystemService {
         ),
         _userProfileInquiry = UserProfileInquiry(
           serverChatRepository: serverChatRepository,
-        );
+        ) {
+    broadcaster.Broadcaster.instance.stream.listen(
+      onBroadcasterMessageReceived,
+    );
+  }
 
   final LocalChatRepository localChatRepository;
   final ServerChatRepository serverChatRepository;
@@ -37,6 +42,18 @@ class SystemService {
   final ChatRoomCreator _chatRoomCreator;
   final UserProfileInquiry _userProfileInquiry;
 
+  void onBroadcasterMessageReceived(broadcaster.BroadcasterMessage message) {
+    switch (message) {
+      case broadcaster.WebSocketConnected():
+        syncChatRooms();
+      case broadcaster.WebSocketMessageReceived():
+        processRecordedEvent(
+          chatRoomId: message.chatRoomId,
+          recordedEvent: message.recordedEvent,
+        );
+    }
+  }
+
   Future<void> syncChatRooms() async {
     _updateExistingChatRooms();
     _createAndSyncNewChatRoomsIfExists();
@@ -44,7 +61,9 @@ class SystemService {
 
   Future<void> syncChatRoom({
     required int chatRoomId,
-  }) async {}
+  }) async {
+    return _getChatRoomAction(chatRoomId: chatRoomId).updateChatRoom();
+  }
 
   Future<void> processRecordedEvent({
     required int chatRoomId,
@@ -64,29 +83,35 @@ class SystemService {
 
     await Future.wait(
       chatRooms.map(
-        (chatRoom) async => _getChatRoomAction(
-          chatRoomId: chatRoom.id,
-        ).updateChatRoom(),
+        (chatRoom) async => syncChatRoom(chatRoomId: chatRoom.id),
       ),
     );
   }
 
   Future<void> _createAndSyncNewChatRoomsIfExists() async {
-    final serverChatRoomIds =
-        await _userProfileInquiry.getServerAllChatRoomIds();
-    final existingChatRoomIds = await _chatRoomLister.getAllChatRooms().then(
-          (chatRooms) => chatRooms.map((chatRoom) => chatRoom.id),
-        );
-    final newChatRoomIds =
-        serverChatRoomIds.toSet().difference(existingChatRoomIds.toSet());
+    final serverChatRooms = await _userProfileInquiry.getServerAllChatRooms();
+    final existingChatRoomIds = await _chatRoomLister
+        .getAllChatRooms()
+        .then((chatRooms) => chatRooms.map((chatRoom) => chatRoom.id).toList());
+    final newChatRooms = serverChatRooms.where(
+      (chatRoom) => !existingChatRoomIds.contains(chatRoom.id),
+    );
 
-    await Future.wait(newChatRoomIds.map(
-      (chatRoomId) async {
-        await _chatRoomCreator.createChatRoom(
-          chatRoomId: chatRoomId,
-        );
-        await _getChatRoomAction(chatRoomId: chatRoomId).updateChatRoom();
-      },
-    ));
+    await Future.wait(newChatRooms.map(_createAndSyncNewChatRoom));
+
+    if (newChatRooms.isNotEmpty) {
+      broadcaster.Broadcaster.instance.add(
+        broadcaster.CreatedAndSyncedNewChatRooms(),
+      );
+    }
+  }
+
+  Future<void> _createAndSyncNewChatRoom(ChatRoom chatRoom) async {
+    await _chatRoomCreator.createChatRoom(
+      chatRoomId: chatRoom.id,
+      name: chatRoom.name,
+      thumbnailUrl: chatRoom.thumbnailUrl,
+    );
+    await syncChatRoom(chatRoomId: chatRoom.id);
   }
 }

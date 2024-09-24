@@ -74,7 +74,7 @@ class _ChatsPageState extends State<ChatsPage> {
                 case LoadSuccessState():
                   return _buildLoadSuccess(context, state);
                 case LoadFailureState():
-                  return Text(state.error.toString());
+                  return Center(child: Text(state.error.toString()));
               }
             },
           ),
@@ -90,9 +90,9 @@ class _ChatsPageState extends State<ChatsPage> {
     final shouldShowPlaceholder = state.presenter.chatRooms.isEmpty;
 
     if (shouldShowPlaceholder) {
-      return const Center(child: Text('Rooms not found.'));
+      return const Center(child: Text('No Rooms'));
     } else {
-      return Column(
+      return ListView(
         children: state.presenter.chatRooms
             .map(
               (presenter) {
@@ -114,6 +114,7 @@ class _ChatsPageState extends State<ChatsPage> {
     ChatRoom chatRoom,
   ) {
     final latestMessage = presenter.latestMessage;
+    final thumbnailUrl = presenter.thumbnailUrl;
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -122,15 +123,17 @@ class _ChatsPageState extends State<ChatsPage> {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            SizedBox(
-              width: 48,
-              height: 48,
-              child: CircleAvatar(
-                radius: 30,
-                backgroundImage: NetworkImage(presenter.thumbnailUrl),
+            if (thumbnailUrl != null) ...[
+              SizedBox(
+                width: 48,
+                height: 48,
+                child: CircleAvatar(
+                  radius: 30,
+                  backgroundImage: NetworkImage(thumbnailUrl),
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
+              const SizedBox(width: 8),
+            ],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,6 +221,7 @@ class _ChatsPageState extends State<ChatsPage> {
                   photosClipboardCubit: context.read<PhotosClipboardCubit>(),
                   uiBlockingCubit: context.read<UIBlockingCubit>(),
                   chatRoom: chatRoom,
+                  currentRueJaiUser: bloc.currentRueJaiUser,
                 )..add(chat_room_bloc.StartedEvent()),
               ),
             ],
