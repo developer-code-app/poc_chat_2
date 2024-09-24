@@ -1,3 +1,5 @@
+import 'package:flutter_flavor/flutter_flavor.dart';
+import 'package:poc_chat_2/flavor_constants.dart';
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_recorded_event_action.dart';
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_unrecorded_event_action.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
@@ -44,7 +46,7 @@ class ChatRoomAction {
 
     _updateChatRoomState(
       currentSyncState: chatRoomSyncState.roomAndMessageEventSyncState,
-      onUnsynced: () => _syncChatRoomMessageEvent(
+      onUnsynced: () => _syncChatRoomRoomAndMessageEvent(
         lastSyncedEventRecordNumber:
             chatRoomSyncState.latestRoomAndMessageEventRecordNumber,
       ),
@@ -97,7 +99,7 @@ class ChatRoomAction {
     }
   }
 
-  Future<void> _syncChatRoomMessageEvent({
+  Future<void> _syncChatRoomRoomAndMessageEvent({
     required int lastSyncedEventRecordNumber,
   }) async {
     _syncChatRoomEvent(
@@ -110,40 +112,22 @@ class ChatRoomAction {
   Future<void> _syncChatRoomEvent({
     required int lastSyncedEventRecordNumber,
   }) async {
-    final eventsStream = _getServerEventsAfter(
-      eventRecordNumber: lastSyncedEventRecordNumber,
+    final events = await _getServerEventsAfter(
+      startAt: lastSyncedEventRecordNumber,
     );
 
-    eventsStream.listen((events) {
-      for (final event in events) {
-        processRecordedEvent(recordedEvent: event);
-      }
-    });
-  }
-
-  Stream<List<RecordedEvent>> _getServerEventsAfter({
-    required int eventRecordNumber,
-  }) async* {
-    final eventUrls = await _getServerEventArchiveURLs(
-      startEventRecordNumber: eventRecordNumber,
-    );
-
-    for (final eventUrl in eventUrls) {
-      final events = await serverChatRepository.getChatRoomEventsFromUrl(
-        url: eventUrl,
-      );
-
-      yield events;
+    for (var event in events) {
+      processRecordedEvent(recordedEvent: event);
     }
   }
 
-  Future<List<String>> _getServerEventArchiveURLs({
-    required int startEventRecordNumber,
-  }) async {
-    return serverChatRepository.getChatRoomEventArchiveUrls(
-      chatRoomId: chatRoomId,
-      startEventRecordNumber: startEventRecordNumber,
-    );
+  Future<List<RecordedEvent>> _getServerEventsAfter(
+      {required int startAt}) async {
+    // TODO: This is for POC only, change to real implementation
+    final url =
+        '${FlavorConfig.instance.variables[FlavorVariableKeys.ruejaiChatApiBaseUrl]}/chat-rooms/$chatRoomId/events';
+
+    return serverChatRepository.getChatRoomEventsFromUrl(url: url);
   }
 
   Future<void> _updateChatRoomState({
