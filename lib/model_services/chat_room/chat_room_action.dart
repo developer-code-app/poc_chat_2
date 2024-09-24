@@ -125,7 +125,7 @@ class ChatRoomAction {
       {required int startAt}) async {
     // TODO: This is for POC only, change to real implementation
     final url =
-        '${FlavorConfig.instance.variables[FlavorVariableKeys.ruejaiChatApiBaseUrl]}/chat-rooms/$chatRoomId/events';
+        '${FlavorConfig.instance.variables[FlavorVariableKeys.ruejaiChatApiBaseUrl]}api/ruejai-chat/chat-rooms/$chatRoomId/events';
 
     return serverChatRepository.getChatRoomEventsFromUrl(url: url);
   }
