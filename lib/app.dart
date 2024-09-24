@@ -124,7 +124,7 @@ class App extends StatelessWidget {
 }
 
 class _BaseApp extends StatefulWidget {
-  const _BaseApp({super.key});
+  const _BaseApp();
 
   @override
   State<_BaseApp> createState() => __BaseAppState();
@@ -158,8 +158,6 @@ class __BaseAppState extends State<_BaseApp> {
   @override
   Widget build(BuildContext context) {
     final currentRueJaiUser = MockData.currentRueJaiUser;
-
-    if (currentRueJaiUser == null) throw Exception('User not found');
 
     return MultiBlocProvider(
       providers: [
