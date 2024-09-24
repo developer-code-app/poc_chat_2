@@ -1,12 +1,21 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
+import 'package:poc_chat_2/cubits/ui_blocking_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_event_creator.dart';
+import 'package:poc_chat_2/extensions/extended_data_reader.dart';
+import 'package:poc_chat_2/extensions/extended_permission_handler.dart';
+import 'package:super_clipboard/super_clipboard.dart';
 import 'package:wechat_camera_picker/wechat_camera_picker.dart';
-
 import 'package:poc_chat_2/app/image_picker/image_picker.dart';
 import 'package:poc_chat_2/app/image_picker/ruejai_camera_picker_text_delegate.dart';
 import 'package:poc_chat_2/broadcaster/broadcaster.dart' as broadcaster;
@@ -38,6 +47,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     required this.assetsPickerCubit,
     required this.alertDialogCubit,
     required this.replyMessageCubit,
+    required this.photosClipboardCubit,
+    required this.uiBlockingCubit,
   }) : super(InitialState()) {
     on<StartedEvent>(_onStartedEvent);
     on<MessageSentEvent>(_onMessageSentEvent);
@@ -59,11 +70,17 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     on<ChatRoomFailedMessageRetriedEvent>(_onChatRoomFailedMessageRetriedEvent);
     on<ChatRoomFailedMessageRemovedEvent>(_onChatRoomFailedMessageRemovedEvent);
     on<AssetsPickerRequestedEvent>(_onAssetsPickerRequestedEvent);
-    on<RemoveAssetRequestedEvent>(_onRemoveAssetRequestedEvent);
-    on<RemoveReplyRequestedEvent>(_onRemoveReplyRequestedEvent);
-    on<ConfirmedMessageActionRequestedEvent>(
-        _onConfirmedMessageActionRequestedEvent);
-    on<FailedMessageActionRequestedEvent>(_onFailedMessageActionRequestedEvent);
+    on<AssetRemovedEvent>(_onAssetRemovedEvent);
+    on<ConfirmedMessageSelectActionRequestedEvent>(
+        _onConfirmedMessageSelectActionRequestedEvent);
+    on<FailedMessageSelectActionRequestedEvent>(
+        _onFailedMessageSelectActionRequestedEvent);
+    on<PhotosSavedEvent>(_onPhotosSavedEvent);
+    on<MessageRepliedEvent>(_onMessageRepliedEvent);
+    on<MessageReplyRemovedEvent>(_onMessageReplyRemovedEvent);
+    on<MessageCopiedEvent>(_onMessageCopiedEvent);
+    on<MessagePastedEvent>(_onMessagePastedEvent);
+    on<PhotoSelectActionRequestedEvent>(_onPhotoSelectActionRequestedEvent);
 
     broadcaster.Broadcaster.instance.stream.listen(
       onBroadcasterMessageReceived,
@@ -77,6 +94,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   final AssetsPickerCubit assetsPickerCubit;
   final AlertDialogCubit alertDialogCubit;
   final ReplyMessageCubit replyMessageCubit;
+  final PhotosClipboardCubit photosClipboardCubit;
+  final UIBlockingCubit uiBlockingCubit;
 
   StreamSubscription? _broadcasterSubscription;
 
@@ -363,6 +382,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         );
 
         if (result != null) {
+          // ignore: use_build_context_synchronously
           Navigator.of(context).pop();
           assetsPickerCubit.addAssets([result] + selectedAssets);
         }
@@ -374,15 +394,15 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     }
   }
 
-  Future<void> _onRemoveAssetRequestedEvent(
-    RemoveAssetRequestedEvent event,
+  Future<void> _onAssetRemovedEvent(
+    AssetRemovedEvent event,
     Emitter<_State> emit,
   ) async {
     assetsPickerCubit.remove(event.asset);
   }
 
-  Future<void> _onConfirmedMessageActionRequestedEvent(
-    ConfirmedMessageActionRequestedEvent event,
+  Future<void> _onConfirmedMessageSelectActionRequestedEvent(
+    ConfirmedMessageSelectActionRequestedEvent event,
     Emitter<_State> emit,
   ) async {
     final state = this.state;
@@ -397,42 +417,227 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         actions: [
           AlertAction(
             'Reply',
-            onPressed: () => _replyMessage(message: message),
+            onPressed: () => add(MessageRepliedEvent(message: message)),
           ),
-          if (message is MemberPhotoMessage) AlertAction('Save All'),
-          AlertAction('Copy'),
+          if (message is MemberPhotoMessage)
+            AlertAction(
+              message.urls!.length > 1 ? 'Save all' : 'Save',
+              onPressed: () => add(
+                PhotosSavedEvent(urls: message.urls ?? []),
+              ),
+            ),
+          AlertAction(
+            'Copy',
+            onPressed: () => add(MessageCopiedEvent(message: message)),
+          ),
           if (isOwner) AlertAction('Unsend'),
         ],
       );
     }
   }
 
-  Future<void> _onFailedMessageActionRequestedEvent(
-    FailedMessageActionRequestedEvent event,
+  Future<void> _onFailedMessageSelectActionRequestedEvent(
+    FailedMessageSelectActionRequestedEvent event,
     Emitter<_State> emit,
   ) async {
     final state = this.state;
 
     if (state is LoadSuccessState) {
       final message = state.chatRoom.failedMessages
+          .whereType<MemberMessage>()
           .firstWhere((element) => element.id == event.messageId);
 
       alertDialogCubit.alertActionSheet(
         actions: [
           AlertAction('Resend'),
-          if (message is MemberPhotoMessage) AlertAction('Save All'),
-          AlertAction('Copy'),
+          if (message is MemberPhotoMessage && message.urls != null)
+            AlertAction(
+              message.urls!.length > 1 ? 'Save all' : 'Save',
+              onPressed: () => add(
+                PhotosSavedEvent(urls: message.urls ?? []),
+              ),
+            ),
+          AlertAction(
+            'Copy',
+            onPressed: () => add(MessageCopiedEvent(message: message)),
+          ),
           AlertAction('Unsend'),
         ],
       );
     }
   }
 
-  Future<void> _onRemoveReplyRequestedEvent(
-    RemoveReplyRequestedEvent event,
+  Future<void> _onMessageRepliedEvent(
+    MessageRepliedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    replyMessageCubit.reply(event.message);
+  }
+
+  Future<void> _onMessageReplyRemovedEvent(
+    MessageReplyRemovedEvent event,
     Emitter<_State> emit,
   ) async {
     replyMessageCubit.clear();
+  }
+
+  Future<void> _onMessageCopiedEvent(
+    MessageCopiedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final message = event.message;
+
+    if (message is MemberTextMessage) {
+      _copyTextMessage(textMessage: message);
+    } else if (message is MemberPhotoMessage) {
+      _copyPhotoMessage(photoMessage: message);
+    } else {
+      alertDialogCubit.errorAlert(
+        error: Exception('Clipboard is not available'),
+      );
+    }
+  }
+
+  Future<void> _onMessagePastedEvent(
+    MessagePastedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final clipboard = SystemClipboard.instance;
+
+    if (clipboard != null) {
+      final reader = await clipboard.read();
+      final List<Uint8List> photos = [];
+
+      for (var item in reader.items) {
+        final text = await item.readValue(Formats.plainText);
+        final photo = await item.readFile(Formats.jpeg);
+
+        if (text != null) {
+          event.editableTextState.pasteText(SelectionChangedCause.tap);
+        } else if (photo != null) {
+          photos.add(photo);
+        } else {
+          alertDialogCubit.errorAlert(
+            error: Exception('Clipboard is not available on this platform'),
+          );
+        }
+      }
+
+      if (photos.isNotEmpty) photosClipboardCubit.addPhotos(photos);
+    }
+  }
+
+  Future<void> _onPhotoSelectActionRequestedEvent(
+    PhotoSelectActionRequestedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    alertDialogCubit.alertActionSheet(
+      title: 'Select Action',
+      actions: [
+        AlertAction(
+          'Save only this image',
+          onPressed: () => add(
+            PhotosSavedEvent(urls: [event.urls[event.index]]),
+          ),
+        ),
+        AlertAction(
+          'Save all',
+          onPressed: () => add(PhotosSavedEvent(urls: event.urls)),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _onPhotosSavedEvent(
+    PhotosSavedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final photoPermission = await ExtendedPermission.photos;
+
+    PermissionStatus photoPermissionStatus = await photoPermission.status;
+
+    if (photoPermissionStatus.isDenied) {
+      photoPermissionStatus = await photoPermission.request();
+    }
+
+    uiBlockingCubit.block();
+
+    await Future.forEach(event.urls, _savePhoto);
+
+    uiBlockingCubit.unblock();
+
+    alertDialogCubit.alert(message: 'Save image success');
+  }
+
+  Future _savePhoto(String url) async {
+    final fileName = 'ruejai_chat_${DateFormat('yyyymmdd_HHmmss').format(
+      DateTime.now(),
+    )}';
+    final response = await Dio().get(
+      url,
+      options: Options(responseType: ResponseType.bytes),
+    );
+
+    await ImageGallerySaver.saveImage(
+      Uint8List.fromList(response.data),
+      name: fileName,
+    );
+  }
+
+  Future<void> _copyTextMessage({
+    required MemberTextMessage textMessage,
+  }) async {
+    final text = textMessage.text;
+
+    if (text == null) return;
+
+    final clipboard = SystemClipboard.instance;
+
+    if (clipboard != null) {
+      final item = DataWriterItem()..add(Formats.plainText(text));
+
+      await clipboard.write([item]);
+
+      alertDialogCubit.snackBar(title: 'Copied to clipboard successfully');
+    } else {
+      alertDialogCubit.errorAlert(
+        error: Exception('Clipboard is not available on this platform'),
+      );
+    }
+  }
+
+  Future<void> _copyPhotoMessage({
+    required MemberPhotoMessage photoMessage,
+  }) async {
+    final clipboard = SystemClipboard.instance;
+    final urls = photoMessage.urls;
+
+    if (clipboard != null && urls != null) {
+      if (urls.length > 1) {
+        final items = await Future.wait(urls.map(_createDataWriterItem));
+
+        await clipboard.write(items);
+      } else {
+        final item = await _createDataWriterItem(urls.first);
+
+        await clipboard.write([item]);
+      }
+
+      alertDialogCubit.snackBar(title: 'Copied to clipboard successfully');
+    }
+  }
+
+  Future<DataWriterItem> _createDataWriterItem(String url) async {
+    final image = await _createImageData(url: url);
+
+    return DataWriterItem()..add(Formats.jpeg(image));
+  }
+
+  Future<Uint8List> _createImageData({required String url}) async {
+    final imageByteData = await NetworkAssetBundle(Uri.parse(url)).load(url);
+    final Uint8List data = (imageByteData).buffer.asUint8List();
+
+    return data.buffer.asUint8List();
   }
 
   Future<void> _processEvent(MessageEvent event) async {
@@ -446,10 +651,6 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     } catch (error) {
       print(error);
     }
-  }
-
-  void _replyMessage({required MemberMessage message}) {
-    replyMessageCubit.reply(message);
   }
 
   void onBroadcasterMessageReceived(broadcaster.BroadcasterMessage message) {

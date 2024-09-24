@@ -2,8 +2,11 @@ import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
+import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
+import 'package:poc_chat_2/cubits/ui_blocking_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
+import 'package:poc_chat_2/extensions/extended_date_time.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart'
     as chat_room_bloc;
@@ -100,7 +103,7 @@ class _ChatsPageState extends State<ChatsPage> {
                 return _buildChatRoom(presenter, chatRoom);
               },
             )
-            .intersperse(const Divider())
+            .intersperse(afterLast: true, const Divider())
             .toList(),
       );
     }
@@ -111,6 +114,7 @@ class _ChatsPageState extends State<ChatsPage> {
     ChatRoom chatRoom,
   ) {
     final latestMessage = presenter.latestMessage;
+    final thumbnailUrl = presenter.thumbnailUrl;
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -119,21 +123,65 @@ class _ChatsPageState extends State<ChatsPage> {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            Column(
-              children: [
-                Text(
-                  presenter.name,
-                  style: const TextStyle(color: Colors.black),
+            if (thumbnailUrl != null) ...[
+              SizedBox(
+                width: 48,
+                height: 48,
+                child: CircleAvatar(
+                  radius: 30,
+                  backgroundImage: NetworkImage(thumbnailUrl),
                 ),
-                if (latestMessage != null)
+              ),
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    latestMessage.text,
-                    style: const TextStyle(color: Colors.grey),
+                    presenter.name,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-              ],
+                  const SizedBox(height: 4),
+                  if (latestMessage != null) ...[
+                    Text(
+                      latestMessage.text,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    Text(
+                      latestMessage.createdAt.toRelativeTime(context),
+                      style: const TextStyle(color: Colors.grey),
+                      maxLines: 1,
+                    ),
+                  ]
+                ],
+              ),
             ),
+            if (presenter.unreadMessageCount != 0) ...[
+              const SizedBox(width: 8),
+              _buildUnreadMessageBadge(),
+            ]
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildUnreadMessageBadge() {
+    return Container(
+      width: 8,
+      height: 8,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.red,
       ),
     );
   }
@@ -157,6 +205,9 @@ class _ChatsPageState extends State<ChatsPage> {
             BlocProvider<ReplyMessageCubit>(
               create: (context) => ReplyMessageCubit(),
             ),
+            BlocProvider<PhotosClipboardCubit>(
+              create: (context) => PhotosClipboardCubit(),
+            ),
           ],
           child: MultiBlocProvider(
             providers: [
@@ -167,6 +218,8 @@ class _ChatsPageState extends State<ChatsPage> {
                   assetsPickerCubit: context.read<AssetsPickerCubit>(),
                   alertDialogCubit: bloc.alertDialogCubit,
                   replyMessageCubit: context.read<ReplyMessageCubit>(),
+                  photosClipboardCubit: context.read<PhotosClipboardCubit>(),
+                  uiBlockingCubit: context.read<UIBlockingCubit>(),
                   chatRoom: chatRoom,
                   currentRueJaiUser: bloc.currentRueJaiUser,
                 )..add(chat_room_bloc.StartedEvent()),

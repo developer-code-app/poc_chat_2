@@ -148,28 +148,62 @@ class AssetsPickerRequestedEvent extends _Event {
   final BuildContext context;
 }
 
-class RemoveAssetRequestedEvent extends _Event {
-  RemoveAssetRequestedEvent({
+class AssetRemovedEvent extends _Event {
+  AssetRemovedEvent({
     required this.asset,
   });
 
   final AssetEntity asset;
 }
 
-class RemoveReplyRequestedEvent extends _Event {}
-
-class ConfirmedMessageActionRequestedEvent extends _Event {
-  ConfirmedMessageActionRequestedEvent({
+class ConfirmedMessageSelectActionRequestedEvent extends _Event {
+  ConfirmedMessageSelectActionRequestedEvent({
     required this.messageId,
   });
 
   final int messageId;
 }
 
-class FailedMessageActionRequestedEvent extends _Event {
-  FailedMessageActionRequestedEvent({
+class FailedMessageSelectActionRequestedEvent extends _Event {
+  FailedMessageSelectActionRequestedEvent({
     required this.messageId,
   });
 
   final int messageId;
+}
+
+class PhotosSavedEvent extends _Event {
+  PhotosSavedEvent({required this.urls});
+
+  final List<String> urls;
+}
+
+class MessageRepliedEvent extends _Event {
+  MessageRepliedEvent({required this.message});
+
+  final MemberMessage message;
+}
+
+class MessageReplyRemovedEvent extends _Event {}
+
+class MessageCopiedEvent extends _Event {
+  MessageCopiedEvent({required this.message});
+
+  final MemberMessage message;
+}
+
+class MessagePastedEvent extends _Event {
+  MessagePastedEvent({required this.editableTextState});
+
+  final EditableTextState editableTextState;
+}
+
+class PhotoSelectActionRequestedEvent extends _Event {
+  PhotoSelectActionRequestedEvent({
+    required this.urls,
+    required this.index,
+  });
+
+  final List<String> urls;
+  final int index;
 }

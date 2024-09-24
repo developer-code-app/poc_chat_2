@@ -2,13 +2,23 @@ import 'dart:math';
 
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
+import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
+import 'package:poc_chat_2/pages/chat_summary/bloc/chat_summary_page_bloc.dart'
+    as chat_summary_bloc;
+import 'package:poc_chat_2/pages/chat_summary/chat_summary_page.dart';
+import 'package:poc_chat_2/pages/chat_summary/photos_and_videos_subpage/bloc/photos_and_videos_subpage_bloc.dart'
+    as photos_and_videos_subpage_bloc;
+import 'package:poc_chat_2/pages/chat_summary/topics_subpage/bloc/topics_subpage_bloc.dart'
+    as topics_subpage_bloc;
 import 'package:poc_chat_2/pages/photo_view_gallery_page.dart';
+import 'package:poc_chat_2/widgets/loading_with_blocking_widget.dart';
 import 'package:poc_chat_2/widgets/shimmer_loading_widget.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
@@ -102,7 +112,22 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     String? appBarTitle,
   }) {
     return Scaffold(
-      appBar: AppBar(title: Text(appBarTitle ?? '')),
+      appBar: AppBar(
+        title: Text(appBarTitle ?? ''),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              onPressed: () => _navigationToChatSummaryPage(),
+              icon: const Icon(
+                Icons.menu,
+                color: Colors.grey,
+                size: 32,
+              ),
+            ),
+          )
+        ],
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -116,14 +141,16 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     BuildContext context,
     LoadSuccessState state,
   ) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Column(
-        children: [
-          _buildMessages(context, state),
-          _buildChatMessageInput(context),
-        ],
+    return LoadingWithBlockingWidget(
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Column(
+          children: [
+            _buildMessages(context, state),
+            _buildChatMessageInput(context),
+          ],
+        ),
       ),
     );
   }
@@ -161,80 +188,21 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   }
 
   Widget _buildChatMessageInput(BuildContext context) {
-    final bloc = context.read<ChatRoomPageBloc>();
-
     return Column(
       children: [
-        BlocBuilder<AssetsPickerCubit, List<AssetEntity>>(
-          builder: (context, assets) {
-            return Visibility(
-              visible: assets.isNotEmpty,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: _buildPhotosSelectedInput(
-                  context,
-                  assets: assets,
-                ),
-              ),
-            );
-          },
-        ),
-        BlocBuilder<ReplyMessageCubit, MemberMessage?>(
-          builder: (context, message) {
-            if (message != null) {
-              final messagePresenter =
-                  MemberMessagePresenter.fromModel(message);
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: _buildReplyMessageInput(
-                  context,
-                  message: messagePresenter,
-                ),
-              );
-            } else {
-              return Container();
-            }
-          },
-        ),
+        _buildPhotosSelectedInputIfNeed(context),
+        _buildReplyMessageInputIfNeed(context),
+        _buildPhotosFromClipboardIfNeed(context),
         SizedBox(
           height: 60,
           width: double.maxFinite,
           child: Row(
             children: [
-              SizedBox(
-                width: 50,
-                height: 50,
-                child: GestureDetector(
-                  onTap: () => bloc.add(
-                    AssetsPickerRequestedEvent(context: context),
-                  ),
-                  child: Icon(
-                    Icons.photo_outlined,
-                    color: Colors.grey.shade700,
-                    size: 32,
-                  ),
-                ),
-              ),
+              _buildPhotoPickerButton(context),
               const SizedBox(width: 8),
-              Expanded(
-                child: TextField(
-                  controller: textEditingController,
-                  decoration: const InputDecoration(hintText: 'Aa'),
-                ),
-              ),
+              Expanded(child: _buildInputTextField(context)),
               const SizedBox(width: 8),
-              SizedBox(
-                width: 80,
-                height: 80,
-                child: GestureDetector(
-                  onTap: _onMessageSubmitted,
-                  child: Icon(
-                    Icons.send,
-                    color: Colors.grey.shade700,
-                  ),
-                ),
-              ),
+              _buildSubmitMessageButton(context),
             ],
           ),
         ),
@@ -242,70 +210,122 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     );
   }
 
-  Widget _buildPhotosSelectedInput(
-    BuildContext context, {
-    required List<AssetEntity> assets,
-  }) {
+  Widget _buildPhotoPickerButton(BuildContext context) {
     final bloc = context.read<ChatRoomPageBloc>();
 
     return SizedBox(
-      child: GridView.count(
-        crossAxisCount: 4,
-        crossAxisSpacing: 4,
-        mainAxisSpacing: 4,
-        shrinkWrap: true,
-        physics: const ScrollPhysics(),
-        children: List.generate(assets.length, (index) {
-          return Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Image(
-                    image: AssetEntityImageProvider(
-                      assets[index],
-                      isOriginal: false,
-                    ),
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: () => bloc.add(
-                    RemoveAssetRequestedEvent(
-                      asset: assets[index],
-                    ),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.cancel,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        }),
+      width: 50,
+      height: 50,
+      child: GestureDetector(
+        onTap: () => bloc.add(
+          AssetsPickerRequestedEvent(context: context),
+        ),
+        child: Icon(
+          Icons.photo_outlined,
+          color: Colors.grey.shade700,
+          size: 32,
+        ),
       ),
+    );
+  }
+
+  Widget _buildInputTextField(BuildContext context) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
+    return TextField(
+      controller: textEditingController,
+      decoration: const InputDecoration(hintText: 'Aa'),
+      contextMenuBuilder: (context, textState) {
+        return AdaptiveTextSelectionToolbar.editable(
+          clipboardStatus: ClipboardStatus.pasteable,
+          onCopy: () {
+            textState.copySelection(SelectionChangedCause.tap);
+            textState.hideToolbar();
+          },
+          onPaste: () {
+            bloc.add(MessagePastedEvent(editableTextState: textState));
+            textState.hideToolbar();
+          },
+          onCut: () {
+            textState.cutSelection(SelectionChangedCause.tap);
+            textState.hideToolbar();
+          },
+          onSelectAll: () {
+            textState.selectAll(SelectionChangedCause.tap);
+            textState.hideToolbar();
+          },
+          onLookUp: null,
+          onSearchWeb: null,
+          onShare: null,
+          onLiveTextInput: null,
+          anchors: textState.contextMenuAnchors,
+        );
+      },
+    );
+  }
+
+  Widget _buildSubmitMessageButton(BuildContext context) {
+    return SizedBox(
+      width: 80,
+      height: 80,
+      child: GestureDetector(
+        onTap: _onMessageSubmitted,
+        child: Icon(
+          Icons.send,
+          color: Colors.grey.shade700,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhotosFromClipboardIfNeed(BuildContext context) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
+    return BlocBuilder<PhotosClipboardCubit, List<Uint8List>>(
+      builder: (context, photos) {
+        final scale = MediaQuery.of(context).devicePixelRatio;
+
+        return Visibility(
+          visible: photos.isNotEmpty,
+          child: _buildPhotoInputGridView(
+            context,
+            onRemoved: (index) => bloc.photosClipboardCubit.remove(
+              photos[index],
+            ),
+            children: photos
+                .map((photo) => Image.memory(photo, scale: scale))
+                .toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPhotosSelectedInputIfNeed(BuildContext context) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
+    return BlocBuilder<AssetsPickerCubit, List<AssetEntity>>(
+      builder: (context, assets) {
+        return Visibility(
+          visible: assets.isNotEmpty,
+          child: _buildPhotoInputGridView(
+            context,
+            onRemoved: (index) => bloc.add(
+              AssetRemovedEvent(
+                asset: assets[index],
+              ),
+            ),
+            children: assets
+                .map(
+                  (asset) => Image(
+                    image: AssetEntityImageProvider(asset, isOriginal: false),
+                    fit: BoxFit.cover,
+                  ),
+                )
+                .toList(),
+          ),
+        );
+      },
     );
   }
 
@@ -314,6 +334,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     required MessagePresenter message,
     required bool shouldShowUser,
   }) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
     return Column(
       children: [
         if (shouldShowUser && message is MemberMessagePresenter)
@@ -324,7 +346,12 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         _buildMessageAlignment(
           context,
           messageAlignment: _messageAlignment(message: message),
-          child: _buildMessage(context, message: message),
+          child: GestureDetector(
+            onLongPress: () => bloc.add(
+              ConfirmedMessageSelectActionRequestedEvent(messageId: message.id),
+            ),
+            child: _buildMessage(context, message: message),
+          ),
         ),
       ],
     );
@@ -341,7 +368,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       messageAlignment: MessageAlignment.right,
       child: GestureDetector(
         onLongPress: () => bloc.add(
-          FailedMessageActionRequestedEvent(messageId: message.id),
+          FailedMessageSelectActionRequestedEvent(messageId: message.id),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -774,47 +801,66 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     required List<String> urls,
     required int index,
   }) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PhotoViewGalleryPage(
           imageUrls: urls,
           initialIndex: index,
+          onImageDownloaded: (currentIndex) => bloc.add(
+            PhotoSelectActionRequestedEvent(
+              urls: urls,
+              index: currentIndex,
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildReplyMessageInput(
-    BuildContext context, {
-    required MemberMessagePresenter message,
-  }) {
+  Widget _buildReplyMessageInputIfNeed(BuildContext context) {
     final bloc = context.read<ChatRoomPageBloc>();
 
-    return SizedBox(
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocBuilder<ReplyMessageCubit, MemberMessage?>(
+      builder: (context, message) {
+        if (message == null) return Container();
+
+        final messagePresenter = MemberMessagePresenter.fromModel(message);
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: SizedBox(
+            child: Row(
               children: [
-                Text('Replying to ${message.owner.name}'),
-                const SizedBox(height: 8),
-                _buildReplyMessage(context, message: message),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Replying to ${message.owner.name}'),
+                      const SizedBox(height: 8),
+                      _buildReplyMessage(
+                        context,
+                        message: messagePresenter,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () => bloc.add(MessageReplyRemovedEvent()),
+                  icon: const Icon(
+                    Icons.cancel,
+                    color: Colors.grey,
+                    size: 28,
+                  ),
+                ),
               ],
             ),
           ),
-          const SizedBox(width: 8),
-          IconButton(
-            onPressed: () => bloc.add(RemoveReplyRequestedEvent()),
-            icon: const Icon(
-              Icons.cancel,
-              color: Colors.grey,
-              size: 28,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -881,6 +927,53 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     );
   }
 
+  Widget _buildPhotoInputGridView(
+    BuildContext context, {
+    required List<Widget> children,
+    required Function(int) onRemoved,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: SizedBox(
+        child: GridView.count(
+          crossAxisCount: 4,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+          shrinkWrap: true,
+          physics: const ScrollPhysics(),
+          children: List.generate(children.length, (index) {
+            return Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: children[index],
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: () => onRemoved(index),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.cancel,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }),
+        ),
+      ),
+    );
+  }
+
   Widget _buildMessageAlignment(
     BuildContext context, {
     required MessageAlignment messageAlignment,
@@ -912,5 +1005,37 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         ],
       );
     }
+  }
+
+  void _navigationToChatSummaryPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MultiBlocProvider(
+          providers: [
+            BlocProvider<topics_subpage_bloc.TopicsSubpageBloc>(
+              create: (context) => topics_subpage_bloc.TopicsSubpageBloc()
+                ..add(topics_subpage_bloc.StartedEvent()),
+            ),
+            BlocProvider<
+                photos_and_videos_subpage_bloc.PhotosAndVideosSubpageBloc>(
+              create: (context) =>
+                  photos_and_videos_subpage_bloc.PhotosAndVideosSubpageBloc()
+                    ..add(photos_and_videos_subpage_bloc.StartedEvent()),
+            ),
+            BlocProvider<chat_summary_bloc.ChatSummaryPageBloc>(
+              create: (context) => chat_summary_bloc.ChatSummaryPageBloc(
+                  topicsSubpageBloc:
+                      context.read<topics_subpage_bloc.TopicsSubpageBloc>(),
+                  photosAndVideosSubpageBloc: context.read<
+                      photos_and_videos_subpage_bloc
+                      .PhotosAndVideosSubpageBloc>())
+                ..add(chat_summary_bloc.StartedEvent()),
+            ),
+          ],
+          child: const ChatSummaryPage(),
+        ),
+      ),
+    );
   }
 }
