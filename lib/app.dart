@@ -159,27 +159,32 @@ class __BaseAppState extends State<_BaseApp> {
   Widget build(BuildContext context) {
     final currentRueJaiUser = MockData.currentRueJaiUser;
 
+    final systemService = SystemService(
+      localChatRepository: context.read<LocalChatRepository>(),
+      serverChatRepository: context.read<ServerChatRepository>(),
+    );
+    final rueJaiUserService = RueJaiUserService(
+      systemService: systemService,
+      rueJaiUser: currentRueJaiUser,
+      localChatRepository: context.read<LocalChatRepository>(),
+      serverChatRepository: context.read<ServerChatRepository>(),
+    );
+    final memberService = MemberService(
+      chatRoomId: 1,
+      memberId: 1,
+      localChatRepository: context.read<LocalChatRepository>(),
+      serverChatRepository: context.read<ServerChatRepository>(),
+    );
+
     return MultiBlocProvider(
       providers: [
         BlocProvider<ChatsPageBloc>(
           create: (context) => ChatsPageBloc(
             currentRueJaiUser: currentRueJaiUser,
             alertDialogCubit: context.read<AlertDialogCubit>(),
-            rueJaiUserService: RueJaiUserService(
-              rueJaiUser: currentRueJaiUser,
-              localChatRepository: context.read<LocalChatRepository>(),
-              serverChatRepository: context.read<ServerChatRepository>(),
-            ),
-            memberService: MemberService(
-              chatRoomId: 1,
-              memberId: 1,
-              localChatRepository: context.read<LocalChatRepository>(),
-              serverChatRepository: context.read<ServerChatRepository>(),
-            ),
-            systemService: SystemService(
-              localChatRepository: context.read<LocalChatRepository>(),
-              serverChatRepository: context.read<ServerChatRepository>(),
-            ),
+            rueJaiUserService: rueJaiUserService,
+            memberService: memberService,
+            systemService: systemService,
           )..add(StartedEvent()),
         )
       ],

@@ -14,6 +14,7 @@ class RueJaiUserService {
     required this.rueJaiUser,
     required this.localChatRepository,
     required this.serverChatRepository,
+    required this.systemService,
   })  : _chatRoomLister = ChatRoomLister(
           localChatRepository: localChatRepository,
           serverChatRepository: serverChatRepository,
@@ -21,16 +22,12 @@ class RueJaiUserService {
         _eventCreator = EventCreator(rueJaiUser: rueJaiUser),
         _chatRoomCreator = ChatRoomCreator(
           localChatRepository: localChatRepository,
-        ),
-        _systemService = SystemService(
-          localChatRepository: localChatRepository,
-          serverChatRepository: serverChatRepository,
         );
 
   final RueJaiUser rueJaiUser;
   final LocalChatRepository localChatRepository;
   final ServerChatRepository serverChatRepository;
-  final SystemService _systemService;
+  final SystemService systemService;
 
   final EventCreator _eventCreator;
   final ChatRoomCreator _chatRoomCreator;
@@ -54,7 +51,7 @@ class RueJaiUserService {
       thumbnailUrl: chatRoom.thumbnailUrl,
     );
 
-    await _systemService.syncChatRoom(chatRoomId: chatRoom.id);
+    await systemService.syncChatRoom(chatRoomId: chatRoom.id);
 
     broadcaster.Broadcaster.instance.add(
       broadcaster.CreatedAndSyncedNewChatRooms(),
