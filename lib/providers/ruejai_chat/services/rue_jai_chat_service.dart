@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:poc_chat_2/models/chat_room.dart';
+
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_room_entity.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_room_latest_event_record_info_entity.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/requests/ruejai_chat_create_chat_room_request.dart';

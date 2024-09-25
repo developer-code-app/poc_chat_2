@@ -124,7 +124,7 @@ class App extends StatelessWidget {
 }
 
 class _BaseApp extends StatefulWidget {
-  const _BaseApp({super.key});
+  const _BaseApp();
 
   @override
   State<_BaseApp> createState() => __BaseAppState();
@@ -132,12 +132,11 @@ class _BaseApp extends StatefulWidget {
 
 class __BaseAppState extends State<_BaseApp> {
   WebSocket? webSocket;
-  static const String currentAccessToken = '2';
 
   Future<void> saveAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
 
-    prefs.setString(AuthPreferenceKeys.accessToken, currentAccessToken);
+    prefs.setString(AuthPreferenceKeys.accessToken, MockData.accessToken);
   }
 
   @override
@@ -158,9 +157,7 @@ class __BaseAppState extends State<_BaseApp> {
 
   @override
   Widget build(BuildContext context) {
-    final currentRueJaiUser = MockData.rueJaiUser[currentAccessToken];
-
-    if (currentRueJaiUser == null) throw Exception('User not found');
+    final currentRueJaiUser = MockData.currentRueJaiUser;
 
     return MultiBlocProvider(
       providers: [
