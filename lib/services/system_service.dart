@@ -97,21 +97,19 @@ class SystemService {
       (chatRoom) => !existingChatRoomIds.contains(chatRoom.id),
     );
 
-    await Future.wait(newChatRooms.map(_createAndSyncNewChatRoom));
+    await Future.wait(newChatRooms.map((chatRoom) async {
+      await _chatRoomCreator.createChatRoom(
+        chatRoomId: chatRoom.id,
+        name: chatRoom.name,
+        thumbnailUrl: chatRoom.thumbnailUrl,
+      );
+      // await syncChatRoom(chatRoomId: chatRoom.id);
+    }));
 
     if (newChatRooms.isNotEmpty) {
       broadcaster.Broadcaster.instance.add(
         broadcaster.CreatedAndSyncedNewChatRooms(),
       );
     }
-  }
-
-  Future<void> _createAndSyncNewChatRoom(ChatRoom chatRoom) async {
-    await _chatRoomCreator.createChatRoom(
-      chatRoomId: chatRoom.id,
-      name: chatRoom.name,
-      thumbnailUrl: chatRoom.thumbnailUrl,
-    );
-    await syncChatRoom(chatRoomId: chatRoom.id);
   }
 }

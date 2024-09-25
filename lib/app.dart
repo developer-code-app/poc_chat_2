@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/mock_data.dart';
-import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/pages/chats/bloc/chats_page_bloc.dart';
 import 'package:poc_chat_2/pages/chats/chats_page.dart';
 import 'package:poc_chat_2/preference_keys.dart';

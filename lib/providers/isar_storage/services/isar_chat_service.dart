@@ -62,13 +62,14 @@ class IsarChatService {
         ..role = ChatRoomMemberRole.member
         ..rueJaiUser.value = rueJaiUserEntity;
 
-      isar.writeTxn(() async {
-        await isar.isarChatRoomEntitys.put(room);
+      await isar.writeTxn(() async {
         await isar.isarChatRoomMemberEntitys.put(member);
+        await member.rueJaiUser.save();
+
+        await isar.isarChatRoomEntitys.put(room);
 
         room.members.add(member);
 
-        await member.rueJaiUser.save();
         await room.members.save();
       });
     });
@@ -77,10 +78,10 @@ class IsarChatService {
   Future<IsarRueJaiUserEntity> _createRueJaiUserIfExists() {
     return isar.then((isar) async {
       final currentRueJaiUser = await findRueJaiUser();
-      final rueJaiUserEntity = isar.isarRueJaiUserEntitys
+      final rueJaiUserEntity = await isar.isarRueJaiUserEntitys
           .filter()
           .rueJaiUserIdEqualTo(currentRueJaiUser.rueJaiUserId)
-          .findFirstSync();
+          .findFirst();
 
       if (rueJaiUserEntity == null) {
         final newRueJaiUserEntity = IsarRueJaiUserEntity()
@@ -90,9 +91,9 @@ class IsarChatService {
           ..type = RueJaiUserType.rueJaiAppUser
           ..role = RueJaiUserRole.homeOwner;
 
-        isar.writeTxn(() async {
-          await isar.isarRueJaiUserEntitys.put(newRueJaiUserEntity);
-        });
+        await isar.writeTxn(
+          () => isar.isarRueJaiUserEntitys.put(newRueJaiUserEntity),
+        );
 
         return newRueJaiUserEntity;
       } else {
@@ -116,14 +117,22 @@ class IsarChatService {
   }) async {
     return isar.then((isar) async {
       final rueJaiUser = await findRueJaiUser();
-      final room = await isar.isarChatRoomEntitys.get(targetChatRoomId);
-      final member = room
-          .getOrThrowException(Exception('Room not found.'))
-          .members
-          .firstWhereOrNull(
-            (member) => member.rueJaiUser.value?.id == rueJaiUser.id,
+      final room = await isar.isarChatRoomEntitys
+          .filter()
+          .roomIdEqualTo(targetChatRoomId)
+          .findFirst();
+
+      if (room == null) throw Exception('Room not found.');
+
+      final member = await isar.isarChatRoomMemberEntitys
+          .filter()
+          .rueJaiUser(
+            (query) => query.rueJaiUserIdEqualTo(rueJaiUser.id.toString()),
           )
-          .getOrThrowException(Exception('Member not found.'));
+          .and()
+          .oneOf(room.members, (query, member) => query.idEqualTo(member.id))
+          .findFirst();
+
       final message = IsarSendingMessageEntity()
         ..createdAt = form.createdAt
         ..updatedAt = form.createdAt
