@@ -50,7 +50,6 @@ class RueJaiUserService {
       name: chatRoom.name,
       thumbnailUrl: chatRoom.thumbnailUrl,
     );
-
     await systemService.syncChatRoom(chatRoomId: chatRoom.id);
 
     broadcaster.Broadcaster.instance.add(
