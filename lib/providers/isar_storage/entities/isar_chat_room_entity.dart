@@ -12,6 +12,7 @@ part 'isar_chat_room_entity.g.dart';
 class IsarChatRoomEntity {
   Id id = Isar.autoIncrement;
 
+  @Index(unique: true)
   late int roomId;
   late String name;
   late String? thumbnail;

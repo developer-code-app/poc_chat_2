@@ -55,7 +55,21 @@ const IsarSendingMessageEntitySchema = CollectionSchema(
   deserialize: _isarSendingMessageEntityDeserialize,
   deserializeProp: _isarSendingMessageEntityDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'createdByEventId': IndexSchema(
+      id: -1786545763247957892,
+      name: r'createdByEventId',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'createdByEventId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    )
+  },
   links: {
     r'owner': LinkSchema(
       id: -2239134829242211396,
@@ -182,6 +196,68 @@ void _isarSendingMessageEntityAttach(
       .attach(col, col.isar.collection<IsarChatRoomEntity>(), r'room', id);
 }
 
+extension IsarSendingMessageEntityByIndex
+    on IsarCollection<IsarSendingMessageEntity> {
+  Future<IsarSendingMessageEntity?> getByCreatedByEventId(
+      String createdByEventId) {
+    return getByIndex(r'createdByEventId', [createdByEventId]);
+  }
+
+  IsarSendingMessageEntity? getByCreatedByEventIdSync(String createdByEventId) {
+    return getByIndexSync(r'createdByEventId', [createdByEventId]);
+  }
+
+  Future<bool> deleteByCreatedByEventId(String createdByEventId) {
+    return deleteByIndex(r'createdByEventId', [createdByEventId]);
+  }
+
+  bool deleteByCreatedByEventIdSync(String createdByEventId) {
+    return deleteByIndexSync(r'createdByEventId', [createdByEventId]);
+  }
+
+  Future<List<IsarSendingMessageEntity?>> getAllByCreatedByEventId(
+      List<String> createdByEventIdValues) {
+    final values = createdByEventIdValues.map((e) => [e]).toList();
+    return getAllByIndex(r'createdByEventId', values);
+  }
+
+  List<IsarSendingMessageEntity?> getAllByCreatedByEventIdSync(
+      List<String> createdByEventIdValues) {
+    final values = createdByEventIdValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'createdByEventId', values);
+  }
+
+  Future<int> deleteAllByCreatedByEventId(List<String> createdByEventIdValues) {
+    final values = createdByEventIdValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'createdByEventId', values);
+  }
+
+  int deleteAllByCreatedByEventIdSync(List<String> createdByEventIdValues) {
+    final values = createdByEventIdValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'createdByEventId', values);
+  }
+
+  Future<Id> putByCreatedByEventId(IsarSendingMessageEntity object) {
+    return putByIndex(r'createdByEventId', object);
+  }
+
+  Id putByCreatedByEventIdSync(IsarSendingMessageEntity object,
+      {bool saveLinks = true}) {
+    return putByIndexSync(r'createdByEventId', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByCreatedByEventId(
+      List<IsarSendingMessageEntity> objects) {
+    return putAllByIndex(r'createdByEventId', objects);
+  }
+
+  List<Id> putAllByCreatedByEventIdSync(List<IsarSendingMessageEntity> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'createdByEventId', objects,
+        saveLinks: saveLinks);
+  }
+}
+
 extension IsarSendingMessageEntityQueryWhereSort on QueryBuilder<
     IsarSendingMessageEntity, IsarSendingMessageEntity, QWhere> {
   QueryBuilder<IsarSendingMessageEntity, IsarSendingMessageEntity, QAfterWhere>
@@ -259,6 +335,51 @@ extension IsarSendingMessageEntityQueryWhere on QueryBuilder<
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<IsarSendingMessageEntity, IsarSendingMessageEntity,
+      QAfterWhereClause> createdByEventIdEqualTo(String createdByEventId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'createdByEventId',
+        value: [createdByEventId],
+      ));
+    });
+  }
+
+  QueryBuilder<IsarSendingMessageEntity, IsarSendingMessageEntity,
+      QAfterWhereClause> createdByEventIdNotEqualTo(String createdByEventId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByEventId',
+              lower: [],
+              upper: [createdByEventId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByEventId',
+              lower: [createdByEventId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByEventId',
+              lower: [createdByEventId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByEventId',
+              lower: [],
+              upper: [createdByEventId],
+              includeUpper: false,
+            ));
+      }
     });
   }
 }

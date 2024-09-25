@@ -10,16 +10,22 @@ part 'isar_confirmed_message_entity.g.dart';
 class IsarConfirmedMessageEntity {
   Id id = Isar.autoIncrement;
 
-  late DateTime createdAt;
-  late DateTime updatedAt;
-  late String createdByEventId;
-  late byte content;
-
   @Enumerated(EnumType.name)
   late MessageType type;
 
+  late byte content;
+
+  @Index(unique: true)
+  late String createdByEventId;
+
+  late DateTime createdAt;
+
+  late DateTime updatedAt;
+
   int? createdByRecordNumber;
+
   int? lastUpdatedByRecordNumber;
+
   DateTime? deletedAt;
 
   final owner = IsarLink<IsarChatRoomMemberEntity>();

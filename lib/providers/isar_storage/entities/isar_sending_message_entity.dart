@@ -10,13 +10,17 @@ part 'isar_sending_message_entity.g.dart';
 class IsarSendingMessageEntity {
   Id id = Isar.autoIncrement;
 
-  late DateTime createdAt;
-  late DateTime updatedAt;
-  late String createdByEventId;
-  late List<byte> content;
-
   @Enumerated(EnumType.name)
   late MessageType type;
+
+  late List<byte> content;
+
+  @Index(unique: true)
+  late String createdByEventId;
+
+  late DateTime createdAt;
+
+  late DateTime updatedAt;
 
   DateTime? deletedAt;
 

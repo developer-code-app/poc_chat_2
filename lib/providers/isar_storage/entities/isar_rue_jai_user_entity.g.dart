@@ -51,7 +51,26 @@ const IsarRueJaiUserEntitySchema = CollectionSchema(
   deserialize: _isarRueJaiUserEntityDeserialize,
   deserializeProp: _isarRueJaiUserEntityDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'rueJaiUserId_type': IndexSchema(
+      id: 2305547233811128353,
+      name: r'rueJaiUserId_type',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'rueJaiUserId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        ),
+        IndexPropertySchema(
+          name: r'type',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    )
+  },
   links: {
     r'member': LinkSchema(
       id: 4558710930490059963,
@@ -183,6 +202,99 @@ void _isarRueJaiUserEntityAttach(
       col, col.isar.collection<IsarChatRoomMemberEntity>(), r'member', id);
 }
 
+extension IsarRueJaiUserEntityByIndex on IsarCollection<IsarRueJaiUserEntity> {
+  Future<IsarRueJaiUserEntity?> getByRueJaiUserIdType(
+      String rueJaiUserId, RueJaiUserType type) {
+    return getByIndex(r'rueJaiUserId_type', [rueJaiUserId, type]);
+  }
+
+  IsarRueJaiUserEntity? getByRueJaiUserIdTypeSync(
+      String rueJaiUserId, RueJaiUserType type) {
+    return getByIndexSync(r'rueJaiUserId_type', [rueJaiUserId, type]);
+  }
+
+  Future<bool> deleteByRueJaiUserIdType(
+      String rueJaiUserId, RueJaiUserType type) {
+    return deleteByIndex(r'rueJaiUserId_type', [rueJaiUserId, type]);
+  }
+
+  bool deleteByRueJaiUserIdTypeSync(String rueJaiUserId, RueJaiUserType type) {
+    return deleteByIndexSync(r'rueJaiUserId_type', [rueJaiUserId, type]);
+  }
+
+  Future<List<IsarRueJaiUserEntity?>> getAllByRueJaiUserIdType(
+      List<String> rueJaiUserIdValues, List<RueJaiUserType> typeValues) {
+    final len = rueJaiUserIdValues.length;
+    assert(
+        typeValues.length == len, 'All index values must have the same length');
+    final values = <List<dynamic>>[];
+    for (var i = 0; i < len; i++) {
+      values.add([rueJaiUserIdValues[i], typeValues[i]]);
+    }
+
+    return getAllByIndex(r'rueJaiUserId_type', values);
+  }
+
+  List<IsarRueJaiUserEntity?> getAllByRueJaiUserIdTypeSync(
+      List<String> rueJaiUserIdValues, List<RueJaiUserType> typeValues) {
+    final len = rueJaiUserIdValues.length;
+    assert(
+        typeValues.length == len, 'All index values must have the same length');
+    final values = <List<dynamic>>[];
+    for (var i = 0; i < len; i++) {
+      values.add([rueJaiUserIdValues[i], typeValues[i]]);
+    }
+
+    return getAllByIndexSync(r'rueJaiUserId_type', values);
+  }
+
+  Future<int> deleteAllByRueJaiUserIdType(
+      List<String> rueJaiUserIdValues, List<RueJaiUserType> typeValues) {
+    final len = rueJaiUserIdValues.length;
+    assert(
+        typeValues.length == len, 'All index values must have the same length');
+    final values = <List<dynamic>>[];
+    for (var i = 0; i < len; i++) {
+      values.add([rueJaiUserIdValues[i], typeValues[i]]);
+    }
+
+    return deleteAllByIndex(r'rueJaiUserId_type', values);
+  }
+
+  int deleteAllByRueJaiUserIdTypeSync(
+      List<String> rueJaiUserIdValues, List<RueJaiUserType> typeValues) {
+    final len = rueJaiUserIdValues.length;
+    assert(
+        typeValues.length == len, 'All index values must have the same length');
+    final values = <List<dynamic>>[];
+    for (var i = 0; i < len; i++) {
+      values.add([rueJaiUserIdValues[i], typeValues[i]]);
+    }
+
+    return deleteAllByIndexSync(r'rueJaiUserId_type', values);
+  }
+
+  Future<Id> putByRueJaiUserIdType(IsarRueJaiUserEntity object) {
+    return putByIndex(r'rueJaiUserId_type', object);
+  }
+
+  Id putByRueJaiUserIdTypeSync(IsarRueJaiUserEntity object,
+      {bool saveLinks = true}) {
+    return putByIndexSync(r'rueJaiUserId_type', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByRueJaiUserIdType(
+      List<IsarRueJaiUserEntity> objects) {
+    return putAllByIndex(r'rueJaiUserId_type', objects);
+  }
+
+  List<Id> putAllByRueJaiUserIdTypeSync(List<IsarRueJaiUserEntity> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'rueJaiUserId_type', objects,
+        saveLinks: saveLinks);
+  }
+}
+
 extension IsarRueJaiUserEntityQueryWhereSort
     on QueryBuilder<IsarRueJaiUserEntity, IsarRueJaiUserEntity, QWhere> {
   QueryBuilder<IsarRueJaiUserEntity, IsarRueJaiUserEntity, QAfterWhere>
@@ -260,6 +372,97 @@ extension IsarRueJaiUserEntityQueryWhere
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<IsarRueJaiUserEntity, IsarRueJaiUserEntity, QAfterWhereClause>
+      rueJaiUserIdEqualToAnyType(String rueJaiUserId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'rueJaiUserId_type',
+        value: [rueJaiUserId],
+      ));
+    });
+  }
+
+  QueryBuilder<IsarRueJaiUserEntity, IsarRueJaiUserEntity, QAfterWhereClause>
+      rueJaiUserIdNotEqualToAnyType(String rueJaiUserId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'rueJaiUserId_type',
+              lower: [],
+              upper: [rueJaiUserId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'rueJaiUserId_type',
+              lower: [rueJaiUserId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'rueJaiUserId_type',
+              lower: [rueJaiUserId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'rueJaiUserId_type',
+              lower: [],
+              upper: [rueJaiUserId],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<IsarRueJaiUserEntity, IsarRueJaiUserEntity, QAfterWhereClause>
+      rueJaiUserIdTypeEqualTo(String rueJaiUserId, RueJaiUserType type) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'rueJaiUserId_type',
+        value: [rueJaiUserId, type],
+      ));
+    });
+  }
+
+  QueryBuilder<IsarRueJaiUserEntity, IsarRueJaiUserEntity, QAfterWhereClause>
+      rueJaiUserIdEqualToTypeNotEqualTo(
+          String rueJaiUserId, RueJaiUserType type) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'rueJaiUserId_type',
+              lower: [rueJaiUserId],
+              upper: [rueJaiUserId, type],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'rueJaiUserId_type',
+              lower: [rueJaiUserId, type],
+              includeLower: false,
+              upper: [rueJaiUserId],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'rueJaiUserId_type',
+              lower: [rueJaiUserId, type],
+              includeLower: false,
+              upper: [rueJaiUserId],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'rueJaiUserId_type',
+              lower: [rueJaiUserId],
+              upper: [rueJaiUserId, type],
+              includeUpper: false,
+            ));
+      }
     });
   }
 }
