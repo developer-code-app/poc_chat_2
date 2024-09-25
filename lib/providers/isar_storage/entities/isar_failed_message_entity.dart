@@ -11,8 +11,12 @@ class IsarFailedMessageEntity {
   Id id = Isar.autoIncrement;
 
   late DateTime createdAt;
+
   late DateTime updatedAt;
+
+  @Index(unique: true)
   late String createdByEventId;
+
   late byte content;
 
   @Enumerated(EnumType.name)

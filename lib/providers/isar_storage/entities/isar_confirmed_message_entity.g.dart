@@ -65,7 +65,21 @@ const IsarConfirmedMessageEntitySchema = CollectionSchema(
   deserialize: _isarConfirmedMessageEntityDeserialize,
   deserializeProp: _isarConfirmedMessageEntityDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'createdByEventId': IndexSchema(
+      id: -1786545763247957892,
+      name: r'createdByEventId',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'createdByEventId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    )
+  },
   links: {
     r'owner': LinkSchema(
       id: -1644511625167208652,
@@ -199,6 +213,70 @@ void _isarConfirmedMessageEntityAttach(
       .attach(col, col.isar.collection<IsarChatRoomEntity>(), r'room', id);
 }
 
+extension IsarConfirmedMessageEntityByIndex
+    on IsarCollection<IsarConfirmedMessageEntity> {
+  Future<IsarConfirmedMessageEntity?> getByCreatedByEventId(
+      String createdByEventId) {
+    return getByIndex(r'createdByEventId', [createdByEventId]);
+  }
+
+  IsarConfirmedMessageEntity? getByCreatedByEventIdSync(
+      String createdByEventId) {
+    return getByIndexSync(r'createdByEventId', [createdByEventId]);
+  }
+
+  Future<bool> deleteByCreatedByEventId(String createdByEventId) {
+    return deleteByIndex(r'createdByEventId', [createdByEventId]);
+  }
+
+  bool deleteByCreatedByEventIdSync(String createdByEventId) {
+    return deleteByIndexSync(r'createdByEventId', [createdByEventId]);
+  }
+
+  Future<List<IsarConfirmedMessageEntity?>> getAllByCreatedByEventId(
+      List<String> createdByEventIdValues) {
+    final values = createdByEventIdValues.map((e) => [e]).toList();
+    return getAllByIndex(r'createdByEventId', values);
+  }
+
+  List<IsarConfirmedMessageEntity?> getAllByCreatedByEventIdSync(
+      List<String> createdByEventIdValues) {
+    final values = createdByEventIdValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'createdByEventId', values);
+  }
+
+  Future<int> deleteAllByCreatedByEventId(List<String> createdByEventIdValues) {
+    final values = createdByEventIdValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'createdByEventId', values);
+  }
+
+  int deleteAllByCreatedByEventIdSync(List<String> createdByEventIdValues) {
+    final values = createdByEventIdValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'createdByEventId', values);
+  }
+
+  Future<Id> putByCreatedByEventId(IsarConfirmedMessageEntity object) {
+    return putByIndex(r'createdByEventId', object);
+  }
+
+  Id putByCreatedByEventIdSync(IsarConfirmedMessageEntity object,
+      {bool saveLinks = true}) {
+    return putByIndexSync(r'createdByEventId', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByCreatedByEventId(
+      List<IsarConfirmedMessageEntity> objects) {
+    return putAllByIndex(r'createdByEventId', objects);
+  }
+
+  List<Id> putAllByCreatedByEventIdSync(
+      List<IsarConfirmedMessageEntity> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'createdByEventId', objects,
+        saveLinks: saveLinks);
+  }
+}
+
 extension IsarConfirmedMessageEntityQueryWhereSort on QueryBuilder<
     IsarConfirmedMessageEntity, IsarConfirmedMessageEntity, QWhere> {
   QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
@@ -276,6 +354,51 @@ extension IsarConfirmedMessageEntityQueryWhere on QueryBuilder<
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
+      QAfterWhereClause> createdByEventIdEqualTo(String createdByEventId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'createdByEventId',
+        value: [createdByEventId],
+      ));
+    });
+  }
+
+  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
+      QAfterWhereClause> createdByEventIdNotEqualTo(String createdByEventId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByEventId',
+              lower: [],
+              upper: [createdByEventId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByEventId',
+              lower: [createdByEventId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByEventId',
+              lower: [createdByEventId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByEventId',
+              lower: [],
+              upper: [createdByEventId],
+              includeUpper: false,
+            ));
+      }
     });
   }
 }

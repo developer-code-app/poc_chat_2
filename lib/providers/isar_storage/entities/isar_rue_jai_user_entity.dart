@@ -9,15 +9,18 @@ part 'isar_rue_jai_user_entity.g.dart';
 class IsarRueJaiUserEntity {
   Id id = Isar.autoIncrement;
 
+  @Index(composite: [CompositeIndex('type')], unique: true)
   late String rueJaiUserId;
-  late String name;
-  String? thumbnailUrl;
 
   @Enumerated(EnumType.name)
   late RueJaiUserType type;
 
   @Enumerated(EnumType.name)
   late RueJaiUserRole role;
+
+  late String name;
+
+  String? thumbnailUrl;
 
   @Backlink(to: 'rueJaiUser')
   final member = IsarLinks<IsarChatRoomMemberEntity>();

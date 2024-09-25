@@ -65,7 +65,34 @@ const IsarUnconfirmedMessageEntitySchema = CollectionSchema(
   deserialize: _isarUnconfirmedMessageEntityDeserialize,
   deserializeProp: _isarUnconfirmedMessageEntityDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'createdByEventId': IndexSchema(
+      id: -1786545763247957892,
+      name: r'createdByEventId',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'createdByEventId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    ),
+    r'createdByRecordNumber': IndexSchema(
+      id: -802686535216475452,
+      name: r'createdByRecordNumber',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'createdByRecordNumber',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
   links: {
     r'owner': LinkSchema(
       id: 2715873549782930735,
@@ -199,12 +226,149 @@ void _isarUnconfirmedMessageEntityAttach(
       .attach(col, col.isar.collection<IsarChatRoomEntity>(), r'room', id);
 }
 
+extension IsarUnconfirmedMessageEntityByIndex
+    on IsarCollection<IsarUnconfirmedMessageEntity> {
+  Future<IsarUnconfirmedMessageEntity?> getByCreatedByEventId(
+      String createdByEventId) {
+    return getByIndex(r'createdByEventId', [createdByEventId]);
+  }
+
+  IsarUnconfirmedMessageEntity? getByCreatedByEventIdSync(
+      String createdByEventId) {
+    return getByIndexSync(r'createdByEventId', [createdByEventId]);
+  }
+
+  Future<bool> deleteByCreatedByEventId(String createdByEventId) {
+    return deleteByIndex(r'createdByEventId', [createdByEventId]);
+  }
+
+  bool deleteByCreatedByEventIdSync(String createdByEventId) {
+    return deleteByIndexSync(r'createdByEventId', [createdByEventId]);
+  }
+
+  Future<List<IsarUnconfirmedMessageEntity?>> getAllByCreatedByEventId(
+      List<String> createdByEventIdValues) {
+    final values = createdByEventIdValues.map((e) => [e]).toList();
+    return getAllByIndex(r'createdByEventId', values);
+  }
+
+  List<IsarUnconfirmedMessageEntity?> getAllByCreatedByEventIdSync(
+      List<String> createdByEventIdValues) {
+    final values = createdByEventIdValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'createdByEventId', values);
+  }
+
+  Future<int> deleteAllByCreatedByEventId(List<String> createdByEventIdValues) {
+    final values = createdByEventIdValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'createdByEventId', values);
+  }
+
+  int deleteAllByCreatedByEventIdSync(List<String> createdByEventIdValues) {
+    final values = createdByEventIdValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'createdByEventId', values);
+  }
+
+  Future<Id> putByCreatedByEventId(IsarUnconfirmedMessageEntity object) {
+    return putByIndex(r'createdByEventId', object);
+  }
+
+  Id putByCreatedByEventIdSync(IsarUnconfirmedMessageEntity object,
+      {bool saveLinks = true}) {
+    return putByIndexSync(r'createdByEventId', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByCreatedByEventId(
+      List<IsarUnconfirmedMessageEntity> objects) {
+    return putAllByIndex(r'createdByEventId', objects);
+  }
+
+  List<Id> putAllByCreatedByEventIdSync(
+      List<IsarUnconfirmedMessageEntity> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'createdByEventId', objects,
+        saveLinks: saveLinks);
+  }
+
+  Future<IsarUnconfirmedMessageEntity?> getByCreatedByRecordNumber(
+      int? createdByRecordNumber) {
+    return getByIndex(r'createdByRecordNumber', [createdByRecordNumber]);
+  }
+
+  IsarUnconfirmedMessageEntity? getByCreatedByRecordNumberSync(
+      int? createdByRecordNumber) {
+    return getByIndexSync(r'createdByRecordNumber', [createdByRecordNumber]);
+  }
+
+  Future<bool> deleteByCreatedByRecordNumber(int? createdByRecordNumber) {
+    return deleteByIndex(r'createdByRecordNumber', [createdByRecordNumber]);
+  }
+
+  bool deleteByCreatedByRecordNumberSync(int? createdByRecordNumber) {
+    return deleteByIndexSync(r'createdByRecordNumber', [createdByRecordNumber]);
+  }
+
+  Future<List<IsarUnconfirmedMessageEntity?>> getAllByCreatedByRecordNumber(
+      List<int?> createdByRecordNumberValues) {
+    final values = createdByRecordNumberValues.map((e) => [e]).toList();
+    return getAllByIndex(r'createdByRecordNumber', values);
+  }
+
+  List<IsarUnconfirmedMessageEntity?> getAllByCreatedByRecordNumberSync(
+      List<int?> createdByRecordNumberValues) {
+    final values = createdByRecordNumberValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'createdByRecordNumber', values);
+  }
+
+  Future<int> deleteAllByCreatedByRecordNumber(
+      List<int?> createdByRecordNumberValues) {
+    final values = createdByRecordNumberValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'createdByRecordNumber', values);
+  }
+
+  int deleteAllByCreatedByRecordNumberSync(
+      List<int?> createdByRecordNumberValues) {
+    final values = createdByRecordNumberValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'createdByRecordNumber', values);
+  }
+
+  Future<Id> putByCreatedByRecordNumber(IsarUnconfirmedMessageEntity object) {
+    return putByIndex(r'createdByRecordNumber', object);
+  }
+
+  Id putByCreatedByRecordNumberSync(IsarUnconfirmedMessageEntity object,
+      {bool saveLinks = true}) {
+    return putByIndexSync(r'createdByRecordNumber', object,
+        saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByCreatedByRecordNumber(
+      List<IsarUnconfirmedMessageEntity> objects) {
+    return putAllByIndex(r'createdByRecordNumber', objects);
+  }
+
+  List<Id> putAllByCreatedByRecordNumberSync(
+      List<IsarUnconfirmedMessageEntity> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'createdByRecordNumber', objects,
+        saveLinks: saveLinks);
+  }
+}
+
 extension IsarUnconfirmedMessageEntityQueryWhereSort on QueryBuilder<
     IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity, QWhere> {
   QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
       QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
+      QAfterWhere> anyCreatedByRecordNumber() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'createdByRecordNumber'),
+      );
     });
   }
 }
@@ -274,6 +438,168 @@ extension IsarUnconfirmedMessageEntityQueryWhere on QueryBuilder<
         lower: lowerId,
         includeLower: includeLower,
         upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
+      QAfterWhereClause> createdByEventIdEqualTo(String createdByEventId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'createdByEventId',
+        value: [createdByEventId],
+      ));
+    });
+  }
+
+  QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
+      QAfterWhereClause> createdByEventIdNotEqualTo(String createdByEventId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByEventId',
+              lower: [],
+              upper: [createdByEventId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByEventId',
+              lower: [createdByEventId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByEventId',
+              lower: [createdByEventId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByEventId',
+              lower: [],
+              upper: [createdByEventId],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
+      QAfterWhereClause> createdByRecordNumberIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'createdByRecordNumber',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
+      QAfterWhereClause> createdByRecordNumberIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'createdByRecordNumber',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
+          QAfterWhereClause>
+      createdByRecordNumberEqualTo(int? createdByRecordNumber) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'createdByRecordNumber',
+        value: [createdByRecordNumber],
+      ));
+    });
+  }
+
+  QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
+          QAfterWhereClause>
+      createdByRecordNumberNotEqualTo(int? createdByRecordNumber) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByRecordNumber',
+              lower: [],
+              upper: [createdByRecordNumber],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByRecordNumber',
+              lower: [createdByRecordNumber],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByRecordNumber',
+              lower: [createdByRecordNumber],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createdByRecordNumber',
+              lower: [],
+              upper: [createdByRecordNumber],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
+      QAfterWhereClause> createdByRecordNumberGreaterThan(
+    int? createdByRecordNumber, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'createdByRecordNumber',
+        lower: [createdByRecordNumber],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
+      QAfterWhereClause> createdByRecordNumberLessThan(
+    int? createdByRecordNumber, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'createdByRecordNumber',
+        lower: [],
+        upper: [createdByRecordNumber],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
+      QAfterWhereClause> createdByRecordNumberBetween(
+    int? lowerCreatedByRecordNumber,
+    int? upperCreatedByRecordNumber, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'createdByRecordNumber',
+        lower: [lowerCreatedByRecordNumber],
+        includeLower: includeLower,
+        upper: [upperCreatedByRecordNumber],
         includeUpper: includeUpper,
       ));
     });
