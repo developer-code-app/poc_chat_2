@@ -130,6 +130,7 @@ class IsarChatService {
       final message = IsarSendingMessageEntity()
         ..createdAt = form.createdAt
         ..updatedAt = form.createdAt
+        ..createdByEventId = form.createdByEventId
         ..owner.value = member
         ..room.value = room;
 
@@ -142,11 +143,15 @@ class IsarChatService {
           break;
       }
 
-      isar.writeTxn(() async {
-        await isar.isarSendingMessageEntitys.put(message);
+      await isar.writeTxn(() async {
+        try {
+          await isar.isarSendingMessageEntitys.put(message);
 
-        await message.owner.save();
-        await message.room.save();
+          await message.owner.save();
+          await message.room.save();
+        } catch (e) {
+          print(e);
+        }
       });
 
       return message;

@@ -5,23 +5,8 @@ import 'package:poc_chat_2/models/mini_app.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 
 class MockData {
-  static const accessToken = 'KornSiwat:RUE_JAI_APP_USER';
-  static final currentRueJaiUser = _kornSiwatRueJaiUser;
-
-  static const chatRoom = ChatRoom(
-    id: 1,
-    name: "name",
-    thumbnailUrl: "thumbnailUrl",
-    members: [],
-    confirmedMessages: [],
-    failedMessages: [],
-    sendingMessages: [],
-  );
-
-  static final rueJaiUser = {
-    '1': _noteAccount,
-    '2': _mongAccount,
-  };
+  static const accessToken = '2:RUE_JAI_APP_USER';
+  static final currentRueJaiUser = _mongAccount;
 
   static final _noteAccount = RueJaiUser(
     id: 1,
@@ -48,6 +33,16 @@ class MockData {
     rueJaiUserRole: RueJaiUserRole.homeOwner,
     name: 'KornSiwat',
     thumbnailUrl: 'https://picsum.photos/600/600.jpg',
+  );
+
+  static const chatRoom = ChatRoom(
+    id: 1,
+    name: "name",
+    thumbnailUrl: "thumbnailUrl",
+    members: [],
+    confirmedMessages: [],
+    failedMessages: [],
+    sendingMessages: [],
   );
 
   static final owner = ChatRoomMember(
@@ -202,7 +197,7 @@ class MockData {
       MemberTextMessage(
         id: 3,
         text:
-            'ผมขอแจ้งเพิ่มเรื่องบ้านนะครับ  พอดีฝนตกแล้วกระเบื้องหลังคาหล่น พอมีช่างแนะนำมั้ยครับ',
+            'ผมขอแจ้งเพิ่มเรื่องบ้านนะครับ พอดีฝนตกแล้วกระเบื้องหลังคาหล่น พอมีช่างแนะนำมั้ยครับ',
         owner: khunPatPong,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),

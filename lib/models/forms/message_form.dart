@@ -7,6 +7,7 @@ sealed class MessageForm {
     required this.owner,
     required this.createdAt,
     required this.updatedAt,
+    required this.createdByEventId,
     this.deletedAt,
     this.addedByEventRecordNumber,
     this.updatedByEventRecordNumber,
@@ -15,6 +16,7 @@ sealed class MessageForm {
   final ChatRoomMember owner;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String createdByEventId;
   final DateTime? deletedAt;
   final int? addedByEventRecordNumber;
   final int? updatedByEventRecordNumber;
@@ -25,6 +27,7 @@ class TextMessageForm extends MessageForm {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
+    required super.createdByEventId,
     required this.text,
     super.deletedAt,
     super.addedByEventRecordNumber,
@@ -39,6 +42,7 @@ class TextReplyMessageForm extends MessageForm {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
+    required super.createdByEventId,
     required this.repliedMessage,
     required this.text,
     super.deletedAt,
@@ -55,6 +59,7 @@ class PhotoMessageForm extends MessageForm {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
+    required super.createdByEventId,
     required this.urls,
     super.deletedAt,
     super.addedByEventRecordNumber,
@@ -69,6 +74,7 @@ class VideoMessageForm extends MessageForm {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
+    required super.createdByEventId,
     required this.url,
     super.deletedAt,
     super.addedByEventRecordNumber,
@@ -83,6 +89,7 @@ class FileMessageForm extends MessageForm {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
+    required super.createdByEventId,
     required this.url,
     super.deletedAt,
     super.addedByEventRecordNumber,
@@ -97,6 +104,7 @@ class MiniAppMessageForm extends MessageForm {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
+    required super.createdByEventId,
     required this.miniApp,
     super.deletedAt,
     super.addedByEventRecordNumber,

@@ -103,7 +103,7 @@ class SystemService {
         name: chatRoom.name,
         thumbnailUrl: chatRoom.thumbnailUrl,
       );
-      // await syncChatRoom(chatRoomId: chatRoom.id);
+      await syncChatRoom(chatRoomId: chatRoom.id);
     }));
 
     if (newChatRooms.isNotEmpty) {

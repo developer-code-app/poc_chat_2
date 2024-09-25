@@ -110,7 +110,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     StartedEvent event,
     Emitter<_State> emit,
   ) async {
-    final chatRoom = MockData.chatRoom2;
+    // final chatRoom = MockData.chatRoom2;
 
     emit(LoadSuccessState(chatRoom: chatRoom));
   }
