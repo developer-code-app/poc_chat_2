@@ -71,6 +71,13 @@ extension _UnrecordedMessageEventAction on ChatRoomUnrecordedEventAction {
           message: message,
         ),
       );
+
+      Broadcaster.instance.add(
+        WebSocketMessageSent(
+          chatRoomId: chatRoomId,
+          message: message,
+        ),
+      );
     }
   }
 

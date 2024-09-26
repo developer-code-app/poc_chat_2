@@ -10,6 +10,7 @@ import 'package:poc_chat_2/preference_keys.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_recorded_event_entity.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/interceptors/authentication_interceptor.dart';
 import 'package:poc_chat_2/providers/web_socket/entites/web_socket_response.dart';
+import 'package:poc_chat_2/providers/web_socket/requests/web_socket_sending_message_added_request.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'web_socket_event.dart';
@@ -23,6 +24,10 @@ class WebSocketBloc extends Bloc<_Event, _State> {
     on<ConnectingRequestedEvent>(_onConnectingRequestedEvent);
     on<ConnectedEvent>(_onConnectedEvent);
     on<ErrorOccurredEvent>(_onErrorOccurredEvent);
+
+    broadcaster.Broadcaster.instance.stream.listen(
+      _onBroadcasterMessageReceived,
+    );
   }
 
   final String url;
@@ -32,6 +37,29 @@ class WebSocketBloc extends Bloc<_Event, _State> {
 
     return state is ConnectionSuccessState &&
         state.webSocket.readyState == WebSocket.open;
+  }
+
+  WebSocket? get _webSocket {
+    final state = this.state;
+
+    return state is ConnectionSuccessState ? state.webSocket : null;
+  }
+
+  void _onBroadcasterMessageReceived(broadcaster.BroadcasterMessage message) {
+    switch (message) {
+      case broadcaster.WebSocketMessageSent():
+        _onWebSocketMessageSent(message);
+        break;
+    }
+  }
+
+  void _onWebSocketMessageSent(broadcaster.WebSocketMessageSent message) {
+    final request = WebSocketSendingMessageAddedRequest.fromModel(
+      chatRoomId: message.chatRoomId,
+      message: message.message,
+    );
+
+    _webSocket?.add(json.encode(request.toJson()));
   }
 
   Future<void> _onConnectingRequestedEvent(
@@ -53,7 +81,7 @@ class WebSocketBloc extends Bloc<_Event, _State> {
 
     webSocket.listen(
       (data) => _handleWebSocketListener(data),
-      onError: () => _reconnect(webSocket),
+      onError: (_) => _reconnect(webSocket),
       onDone: () => _reconnect(webSocket),
     );
   }
