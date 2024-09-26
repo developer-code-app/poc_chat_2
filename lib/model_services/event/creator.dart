@@ -4,6 +4,7 @@ import 'package:poc_chat_2/models/events/room_event.dart'
 import 'package:poc_chat_2/models/events/room_event.dart';
 import 'package:poc_chat_2/models/forms/chat_room_form.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
+import 'package:uuid/uuid.dart';
 
 class EventCreator {
   EventCreator({
@@ -41,6 +42,6 @@ class EventCreator {
   }
 
   String generateEventId() {
-    return 'event_id';
+    return const Uuid().v8();
   }
 }

@@ -3,6 +3,7 @@ import 'package:poc_chat_2/models/events/message_event.dart' as message_event;
 import 'package:poc_chat_2/models/events/room_event.dart'
     as room_management_event;
 import 'package:poc_chat_2/models/rue_jai_user.dart';
+import 'package:uuid/uuid.dart';
 
 class ChatRoomEventCreator {
   ChatRoomEventCreator({
@@ -45,6 +46,6 @@ class ChatRoomEventCreator {
   }
 
   String generateEventId() {
-    return 'event_id';
+    return const Uuid().v8();
   }
 }
