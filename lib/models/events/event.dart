@@ -25,7 +25,7 @@ abstract class Event {
         return CreateFileMessageEvent.fromEntity(entity: entity);
       case RueJaiChatCreateHomeCareMessageEventEntity():
         return CreateMiniAppMessageEvent.fromEntity(entity: entity);
-      case RueJaiChatTextEditedEventEntity():
+      case RueJaiChatEditTextMessageEventEntity():
         return UpdateTextMessageEvent.fromEntity(entity: entity);
       case RueJaiChatDeleteMessageEventEntity():
         return DeleteMessageEvent.fromEntity(entity: entity);
@@ -33,11 +33,11 @@ abstract class Event {
         return ReadMessageEvent.fromEntity(entity: entity);
       case RueJaiChatCreateRoomEventEntity():
         return CreateRoomEvent.fromEntity(entity: entity);
-      case RueJaiChatRoleEditedEventEntity():
+      case RueJaiChatEditMemberRoleEventEntity():
         return UpdateMemberRoleEvent.fromEntity(entity: entity);
-      case RueJaiChatInviteEventEntity():
+      case RueJaiChatInviteMemberEventEntity():
         return InviteMemberEvent.fromEntity(entity: entity);
-      case RueJaiChatRejectEventEntity():
+      case RueJaiChatRemoveMemberEventEntity():
         return RemoveMemberEvent.fromEntity(entity: entity);
       default:
         throw Exception();

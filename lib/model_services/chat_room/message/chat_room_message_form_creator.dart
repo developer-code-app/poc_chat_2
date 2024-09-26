@@ -4,6 +4,7 @@ import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/events/event.dart';
 import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
+import 'package:poc_chat_2/models/events/room_event.dart' as room_event;
 import 'package:poc_chat_2/models/forms/message_form.dart';
 import 'package:poc_chat_2/models/mini_app.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
@@ -118,6 +119,14 @@ class ChatRoomMessageFormCreator {
         recordNumber: recordedEvent.recordNumber,
         recordedAt: recordedEvent.recordedAt,
       );
+    } else if (event is room_event.CreateRoomEvent) {
+      throw UnimplementedError();
+    } else if (event is room_event.InviteMemberEvent) {
+      throw UnimplementedError();
+    } else if (event is room_event.UpdateMemberRoleEvent) {
+      throw UnimplementedError();
+    } else if (event is room_event.RemoveMemberEvent) {
+      throw UnimplementedError();
     }
 
     throw UnprocessableEventError('Event is not a message event');

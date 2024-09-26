@@ -165,7 +165,7 @@ class UpdateTextMessageEvent extends UpdateMessageEvent {
   });
 
   factory UpdateTextMessageEvent.fromEntity({
-    required RueJaiChatTextEditedEventEntity entity,
+    required RueJaiChatEditTextMessageEventEntity entity,
   }) {
     return UpdateTextMessageEvent(
       id: entity.id,

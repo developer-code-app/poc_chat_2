@@ -49,7 +49,7 @@ class InviteMemberEvent extends RoomEvent {
   });
 
   factory InviteMemberEvent.fromEntity({
-    required RueJaiChatInviteEventEntity entity,
+    required RueJaiChatInviteMemberEventEntity entity,
   }) {
     return InviteMemberEvent(
       id: entity.id,
@@ -72,7 +72,7 @@ class UpdateMemberRoleEvent extends RoomEvent {
   });
 
   factory UpdateMemberRoleEvent.fromEntity({
-    required RueJaiChatRoleEditedEventEntity entity,
+    required RueJaiChatEditMemberRoleEventEntity entity,
   }) {
     return UpdateMemberRoleEvent(
       id: entity.id,
@@ -96,7 +96,7 @@ class RemoveMemberEvent extends RoomEvent {
   });
 
   factory RemoveMemberEvent.fromEntity({
-    required RueJaiChatRejectEventEntity entity,
+    required RueJaiChatRemoveMemberEventEntity entity,
   }) {
     return RemoveMemberEvent(
       id: entity.id,

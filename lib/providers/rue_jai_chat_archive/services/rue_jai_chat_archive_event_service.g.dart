@@ -22,14 +22,14 @@ class _RueJaiChatArchiveEventService implements RueJaiChatArchiveEventService {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<RuejaiResultListResponse<RueJaiChatRecordedEventEntity>>
+  Future<RuejaiListResponse<RueJaiChatRecordedEventEntity>>
       getChatRoomEventsFromUrl(String url) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options =
-        _setStreamType<RuejaiResultListResponse<RueJaiChatRecordedEventEntity>>(
+        _setStreamType<RuejaiListResponse<RueJaiChatRecordedEventEntity>>(
             Options(
       method: 'GET',
       headers: _headers,
@@ -47,9 +47,9 @@ class _RueJaiChatArchiveEventService implements RueJaiChatArchiveEventService {
                   baseUrl,
                 )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late RuejaiResultListResponse<RueJaiChatRecordedEventEntity> _value;
+    late RuejaiListResponse<RueJaiChatRecordedEventEntity> _value;
     try {
-      _value = RuejaiResultListResponse<RueJaiChatRecordedEventEntity>.fromJson(
+      _value = RuejaiListResponse<RueJaiChatRecordedEventEntity>.fromJson(
         _result.data!,
         (json) => RueJaiChatRecordedEventEntity.fromJson(
             json as Map<String, dynamic>),

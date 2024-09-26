@@ -102,7 +102,7 @@ class ChatRoomAction {
   Future<void> _syncChatRoomRoomAndMessageEvent({
     required int lastSyncedEventRecordNumber,
   }) async {
-    _syncChatRoomEvent(
+    await _syncChatRoomEvent(
       lastSyncedEventRecordNumber: lastSyncedEventRecordNumber,
     );
   }

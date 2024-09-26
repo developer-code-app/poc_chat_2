@@ -22,7 +22,6 @@ import 'package:poc_chat_2/broadcaster/broadcaster.dart' as broadcaster;
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_unrecorded_event_action.dart';
 import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
-import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/events/message_event.dart';

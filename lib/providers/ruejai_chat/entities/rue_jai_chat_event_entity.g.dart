@@ -7,13 +7,24 @@ part of 'rue_jai_chat_event_entity.dart';
 // **************************************************************************
 
 Map<String, dynamic> _$RueJaiChatEventEntityToJson(
-        RueJaiChatEventEntity instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'owner': instance.owner,
-      'created_at': instance.createdAt.toIso8601String(),
-      'type': _$EventTypeEnumMap[instance.type]!,
-    };
+    RueJaiChatEventEntity instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('stringify', instance.stringify);
+  val['hash_code'] = instance.hashCode;
+  val['id'] = instance.id;
+  val['owner'] = instance.owner;
+  val['created_at'] = instance.createdAt.toIso8601String();
+  val['type'] = _$EventTypeEnumMap[instance.type]!;
+  val['props'] = instance.props;
+  return val;
+}
 
 const _$EventTypeEnumMap = {
   EventType.createTextMessage: 'CREATE_TEXT_MESSAGE',
@@ -22,13 +33,13 @@ const _$EventTypeEnumMap = {
   EventType.createVideoMessage: 'CREATE_VIDEO_MESSAGE',
   EventType.createFileMessage: 'CREATE_FILE_MESSAGE',
   EventType.createHomeCareMessage: 'CREATE_HOME_CARE_MESSAGE',
-  EventType.textEdited: 'TEXT_EDITED',
+  EventType.editTextMessage: 'EDIT_TEXT_MESSAGE',
   EventType.deleteMessage: 'DELETE_MESSAGE',
   EventType.readMessage: 'READ_MESSAGE',
   EventType.createRoom: 'CREATE_ROOM',
-  EventType.roleEdited: 'ROLE_EDITED',
-  EventType.invite: 'INVITE',
-  EventType.reject: 'REJECT',
+  EventType.editMemberRole: 'EDIT_MEMBER_ROLE',
+  EventType.inviteMember: 'INVITE_MEMBER',
+  EventType.removeMember: 'REMOVE_MEMBER',
 };
 
 RueJaiChatOwnerEntity _$RueJaiChatOwnerEntityFromJson(
@@ -60,6 +71,7 @@ RueJaiChatCreateTextMessageEventEntity
               json['owner'] as Map<String, dynamic>),
           createdAt: DateTime.parse(json['created_at'] as String),
           type: $enumDecode(_$EventTypeEnumMap, json['type']),
+          text: json['text'] as String,
         );
 
 Map<String, dynamic> _$RueJaiChatCreateTextMessageEventEntityToJson(
@@ -69,6 +81,7 @@ Map<String, dynamic> _$RueJaiChatCreateTextMessageEventEntityToJson(
       'owner': instance.owner,
       'created_at': instance.createdAt.toIso8601String(),
       'type': _$EventTypeEnumMap[instance.type]!,
+      'text': instance.text,
     };
 
 RueJaiChatCreateTextReplyMessageEventEntity
@@ -105,6 +118,8 @@ RueJaiChatCreatePhotoMessageEventEntity
               json['owner'] as Map<String, dynamic>),
           createdAt: DateTime.parse(json['created_at'] as String),
           type: $enumDecode(_$EventTypeEnumMap, json['type']),
+          urls:
+              (json['urls'] as List<dynamic>).map((e) => e as String).toList(),
         );
 
 Map<String, dynamic> _$RueJaiChatCreatePhotoMessageEventEntityToJson(
@@ -114,6 +129,7 @@ Map<String, dynamic> _$RueJaiChatCreatePhotoMessageEventEntityToJson(
       'owner': instance.owner,
       'created_at': instance.createdAt.toIso8601String(),
       'type': _$EventTypeEnumMap[instance.type]!,
+      'urls': instance.urls,
     };
 
 RueJaiChatCreateVideoMessageEventEntity
@@ -125,6 +141,7 @@ RueJaiChatCreateVideoMessageEventEntity
               json['owner'] as Map<String, dynamic>),
           createdAt: DateTime.parse(json['created_at'] as String),
           type: $enumDecode(_$EventTypeEnumMap, json['type']),
+          url: json['url'] as String,
         );
 
 Map<String, dynamic> _$RueJaiChatCreateVideoMessageEventEntityToJson(
@@ -134,6 +151,7 @@ Map<String, dynamic> _$RueJaiChatCreateVideoMessageEventEntityToJson(
       'owner': instance.owner,
       'created_at': instance.createdAt.toIso8601String(),
       'type': _$EventTypeEnumMap[instance.type]!,
+      'url': instance.url,
     };
 
 RueJaiChatCreateFileMessageEventEntity
@@ -145,6 +163,7 @@ RueJaiChatCreateFileMessageEventEntity
               json['owner'] as Map<String, dynamic>),
           createdAt: DateTime.parse(json['created_at'] as String),
           type: $enumDecode(_$EventTypeEnumMap, json['type']),
+          url: json['url'] as String,
         );
 
 Map<String, dynamic> _$RueJaiChatCreateFileMessageEventEntityToJson(
@@ -154,6 +173,7 @@ Map<String, dynamic> _$RueJaiChatCreateFileMessageEventEntityToJson(
       'owner': instance.owner,
       'created_at': instance.createdAt.toIso8601String(),
       'type': _$EventTypeEnumMap[instance.type]!,
+      'url': instance.url,
     };
 
 RueJaiChatCreateHomeCareMessageEventEntity
@@ -176,20 +196,20 @@ Map<String, dynamic> _$RueJaiChatCreateHomeCareMessageEventEntityToJson(
       'type': _$EventTypeEnumMap[instance.type]!,
     };
 
-RueJaiChatTextEditedEventEntity _$RueJaiChatTextEditedEventEntityFromJson(
-        Map<String, dynamic> json) =>
-    RueJaiChatTextEditedEventEntity(
-      id: json['id'] as String,
-      owner:
-          RueJaiChatOwnerEntity.fromJson(json['owner'] as Map<String, dynamic>),
-      createdAt: DateTime.parse(json['created_at'] as String),
-      type: $enumDecode(_$EventTypeEnumMap, json['type']),
-      updatedMessageRecordNumber:
-          (json['updated_message_record_number'] as num).toInt(),
-    );
+RueJaiChatEditTextMessageEventEntity
+    _$RueJaiChatEditTextMessageEventEntityFromJson(Map<String, dynamic> json) =>
+        RueJaiChatEditTextMessageEventEntity(
+          id: json['id'] as String,
+          owner: RueJaiChatOwnerEntity.fromJson(
+              json['owner'] as Map<String, dynamic>),
+          createdAt: DateTime.parse(json['created_at'] as String),
+          type: $enumDecode(_$EventTypeEnumMap, json['type']),
+          updatedMessageRecordNumber:
+              (json['updated_message_record_number'] as num).toInt(),
+        );
 
-Map<String, dynamic> _$RueJaiChatTextEditedEventEntityToJson(
-        RueJaiChatTextEditedEventEntity instance) =>
+Map<String, dynamic> _$RueJaiChatEditTextMessageEventEntityToJson(
+        RueJaiChatEditTextMessageEventEntity instance) =>
     <String, dynamic>{
       'id': instance.id,
       'owner': instance.owner,
@@ -250,7 +270,6 @@ RueJaiChatCreateRoomEventEntity _$RueJaiChatCreateRoomEventEntityFromJson(
           RueJaiChatOwnerEntity.fromJson(json['owner'] as Map<String, dynamic>),
       createdAt: DateTime.parse(json['created_at'] as String),
       type: $enumDecode(_$EventTypeEnumMap, json['type']),
-      roomId: json['room_id'] as String,
       name: json['name'] as String,
       members: (json['members'] as List<dynamic>)
           .map((e) =>
@@ -266,7 +285,6 @@ Map<String, dynamic> _$RueJaiChatCreateRoomEventEntityToJson(
     'owner': instance.owner,
     'created_at': instance.createdAt.toIso8601String(),
     'type': _$EventTypeEnumMap[instance.type]!,
-    'room_id': instance.roomId,
     'name': instance.name,
   };
 
@@ -281,21 +299,22 @@ Map<String, dynamic> _$RueJaiChatCreateRoomEventEntityToJson(
   return val;
 }
 
-RueJaiChatRoleEditedEventEntity _$RueJaiChatRoleEditedEventEntityFromJson(
-        Map<String, dynamic> json) =>
-    RueJaiChatRoleEditedEventEntity(
-      id: json['id'] as String,
-      owner:
-          RueJaiChatOwnerEntity.fromJson(json['owner'] as Map<String, dynamic>),
-      createdAt: DateTime.parse(json['created_at'] as String),
-      type: $enumDecode(_$EventTypeEnumMap, json['type']),
-      updatedMemberRecordNumber:
-          (json['updated_member_record_number'] as num).toInt(),
-      memberRole: $enumDecode(_$ChatRoomMemberRoleEnumMap, json['member_role']),
-    );
+RueJaiChatEditMemberRoleEventEntity
+    _$RueJaiChatEditMemberRoleEventEntityFromJson(Map<String, dynamic> json) =>
+        RueJaiChatEditMemberRoleEventEntity(
+          id: json['id'] as String,
+          owner: RueJaiChatOwnerEntity.fromJson(
+              json['owner'] as Map<String, dynamic>),
+          createdAt: DateTime.parse(json['created_at'] as String),
+          type: $enumDecode(_$EventTypeEnumMap, json['type']),
+          updatedMemberRecordNumber:
+              (json['updated_member_record_number'] as num).toInt(),
+          memberRole:
+              $enumDecode(_$ChatRoomMemberRoleEnumMap, json['member_role']),
+        );
 
-Map<String, dynamic> _$RueJaiChatRoleEditedEventEntityToJson(
-        RueJaiChatRoleEditedEventEntity instance) =>
+Map<String, dynamic> _$RueJaiChatEditMemberRoleEventEntityToJson(
+        RueJaiChatEditMemberRoleEventEntity instance) =>
     <String, dynamic>{
       'id': instance.id,
       'owner': instance.owner,
@@ -310,9 +329,9 @@ const _$ChatRoomMemberRoleEnumMap = {
   ChatRoomMemberRole.member: 'MEMBER',
 };
 
-RueJaiChatInviteEventEntity _$RueJaiChatInviteEventEntityFromJson(
+RueJaiChatInviteMemberEventEntity _$RueJaiChatInviteMemberEventEntityFromJson(
         Map<String, dynamic> json) =>
-    RueJaiChatInviteEventEntity(
+    RueJaiChatInviteMemberEventEntity(
       id: json['id'] as String,
       owner:
           RueJaiChatOwnerEntity.fromJson(json['owner'] as Map<String, dynamic>),
@@ -322,8 +341,8 @@ RueJaiChatInviteEventEntity _$RueJaiChatInviteEventEntityFromJson(
           json['member'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$RueJaiChatInviteEventEntityToJson(
-        RueJaiChatInviteEventEntity instance) =>
+Map<String, dynamic> _$RueJaiChatInviteMemberEventEntityToJson(
+        RueJaiChatInviteMemberEventEntity instance) =>
     <String, dynamic>{
       'id': instance.id,
       'owner': instance.owner,
@@ -332,9 +351,9 @@ Map<String, dynamic> _$RueJaiChatInviteEventEntityToJson(
       'member': instance.member,
     };
 
-RueJaiChatRejectEventEntity _$RueJaiChatRejectEventEntityFromJson(
+RueJaiChatRemoveMemberEventEntity _$RueJaiChatRemoveMemberEventEntityFromJson(
         Map<String, dynamic> json) =>
-    RueJaiChatRejectEventEntity(
+    RueJaiChatRemoveMemberEventEntity(
       id: json['id'] as String,
       owner:
           RueJaiChatOwnerEntity.fromJson(json['owner'] as Map<String, dynamic>),
@@ -344,8 +363,8 @@ RueJaiChatRejectEventEntity _$RueJaiChatRejectEventEntityFromJson(
           (json['removed_member_record_number'] as num).toInt(),
     );
 
-Map<String, dynamic> _$RueJaiChatRejectEventEntityToJson(
-        RueJaiChatRejectEventEntity instance) =>
+Map<String, dynamic> _$RueJaiChatRemoveMemberEventEntityToJson(
+        RueJaiChatRemoveMemberEventEntity instance) =>
     <String, dynamic>{
       'id': instance.id,
       'owner': instance.owner,
