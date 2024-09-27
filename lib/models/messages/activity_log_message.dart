@@ -12,6 +12,18 @@ sealed class ActivityLogMessage extends Message {
   });
 }
 
+class ActivityLogCreateRoomMessage extends ActivityLogMessage {
+  ActivityLogCreateRoomMessage({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required super.updatedAt,
+    super.deletedAt,
+    super.addedByEventRecordNumber,
+    super.updatedByEventRecordNumber,
+  });
+}
+
 class ActivityLogInviteMemberMessage extends ActivityLogMessage {
   ActivityLogInviteMemberMessage({
     required super.id,
@@ -25,6 +37,23 @@ class ActivityLogInviteMemberMessage extends ActivityLogMessage {
   });
 
   final ChatRoomMember member;
+}
+
+class ActivityLogEditMemberRoleMessage extends ActivityLogMessage {
+  ActivityLogEditMemberRoleMessage({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required super.updatedAt,
+    required this.member,
+    required this.newRole,
+    super.deletedAt,
+    super.addedByEventRecordNumber,
+    super.updatedByEventRecordNumber,
+  });
+
+  final ChatRoomMember member;
+  final ChatRoomMemberRole newRole;
 }
 
 class ActivityLogRemoveMemberMessage extends ActivityLogMessage {
