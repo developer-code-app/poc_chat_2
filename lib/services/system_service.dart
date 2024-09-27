@@ -33,9 +33,10 @@ class SystemService {
 
   ChatRoomAction _getChatRoomAction({required int chatRoomId}) {
     return ChatRoomAction(
-        chatRoomId: chatRoomId,
-        localChatRepository: localChatRepository,
-        serverChatRepository: serverChatRepository);
+      chatRoomId: chatRoomId,
+      localChatRepository: localChatRepository,
+      serverChatRepository: serverChatRepository,
+    );
   }
 
   final ChatRoomLister _chatRoomLister;

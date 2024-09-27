@@ -43,17 +43,15 @@ extension BasicMemberService on MemberService {
     );
   }
 
-  Future<void> sendMessageEvent({
-    required Event event,
+  Future<void> sendTextMessage({
+    required String text,
   }) async {
-    final eventAction = ChatRoomUnrecordedEventAction(
+    ChatRoomUnrecordedEventAction(
       chatRoomId: chatRoomId,
-      event: event,
+      event: chatRoomEventCreator.createCreateTextMessageEvent(text: text),
       serverChatRepository: serverChatRepository,
       localChatRepository: localChatRepository,
-    );
-
-    unawaited(eventAction.processEvent());
+    ).processEvent();
   }
 
   Future<void> sendTextReplyMessage({

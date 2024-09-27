@@ -234,10 +234,6 @@ class _ChatsPageState extends State<ChatsPage> {
                     serverChatRepository: context.read<ServerChatRepository>(),
                     localChatRepository: context.read<LocalChatRepository>(),
                   ),
-                  chatRoomEventCreator: ChatRoomEventCreator(
-                    chatRoomId: chatRoom.id,
-                    rueJaiUser: MockData.currentRueJaiUser,
-                  ),
                 )..add(chat_room_bloc.StartedEvent()),
               ),
             ],
