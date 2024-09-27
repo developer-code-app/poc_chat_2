@@ -81,6 +81,9 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     );
   }
 
+  final textEditingController = TextEditingController();
+  final scrollController = ScrollController();
+
   final ChatRoom chatRoom;
   final AssetsPickerCubit assetsPickerCubit;
   final AlertDialogCubit alertDialogCubit;
@@ -88,8 +91,6 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   final PhotosClipboardCubit photosClipboardCubit;
   final UIBlockingCubit uiBlockingCubit;
   final MemberService memberService;
-
-  final textEditingController = TextEditingController();
 
   StreamSubscription? _broadcasterSubscription;
 
@@ -113,11 +114,26 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   ) async {
     try {
       if (textEditingController.text.isNotEmpty) {
-        memberService.sendTextMessage(text: textEditingController.text);
+        unawaited(memberService.sendTextMessage(
+          text: textEditingController.text,
+        ));
+        clearKeyboard();
       }
     } on Exception catch (error) {
       alertDialogCubit.snackBar(title: error.toString());
     }
+  }
+
+  void clearKeyboard() {
+    scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+
+    FocusManager.instance.primaryFocus?.unfocus();
+    textEditingController.clear();
+    replyMessageCubit.clear();
   }
 
   Future<void> _onChatRoomBasicInfoUpdatedEvent(

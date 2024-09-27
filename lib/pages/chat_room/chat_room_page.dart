@@ -32,30 +32,6 @@ class ChatRoomPage extends StatefulWidget {
 }
 
 class _ChatRoomPageState extends State<ChatRoomPage> {
-  final scrollController = ScrollController();
-
-  void _onMessageSubmitted() {
-    final bloc = context.read<ChatRoomPageBloc>();
-
-    bloc.add(MessageSentEvent());
-
-    clearKeyboard();
-  }
-
-  void clearKeyboard() {
-    final bloc = context.read<ChatRoomPageBloc>();
-
-    scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
-
-    FocusScope.of(context).unfocus();
-    bloc.textEditingController.clear();
-    bloc.replyMessageCubit.clear();
-  }
-
   bool _shouldShowUserAvatar({
     required List<MessagePresenter> messages,
     required MessagePresenter message,
@@ -158,11 +134,13 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     BuildContext context,
     LoadSuccessState state,
   ) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
     return Expanded(
       child: Align(
         alignment: Alignment.topCenter,
         child: ListView(
-          controller: scrollController,
+          controller: bloc.scrollController,
           shrinkWrap: true,
           reverse: true,
           children: [
@@ -264,11 +242,13 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   }
 
   Widget _buildSubmitMessageButton(BuildContext context) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
     return SizedBox(
       width: 80,
       height: 80,
       child: GestureDetector(
-        onTap: _onMessageSubmitted,
+        onTap: () => bloc.add(MessageSentEvent()),
         child: Icon(
           Icons.send,
           color: Colors.grey.shade700,
