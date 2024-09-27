@@ -9,7 +9,6 @@ import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/extensions/extended_date_time.dart';
 import 'package:poc_chat_2/extensions/extended_nullable.dart';
 import 'package:poc_chat_2/mock_data.dart';
-import 'package:poc_chat_2/model_services/chat_room/event/chat_room_event_creator.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart'
     as chat_room_bloc;
