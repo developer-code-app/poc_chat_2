@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/broadcaster/broadcaster.dart' as broadcaster;
+import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/preference_keys.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_recorded_event_entity.dart';
@@ -20,7 +21,10 @@ typedef _Event = WebSocketEvent;
 typedef _State = WebSocketState;
 
 class WebSocketBloc extends Bloc<_Event, _State> {
-  WebSocketBloc({required this.url}) : super(InitialState()) {
+  WebSocketBloc({
+    required this.url,
+    required this.alertDialogCubit,
+  }) : super(InitialState()) {
     on<ConnectingRequestedEvent>(_onConnectingRequestedEvent);
     on<ConnectedEvent>(_onConnectedEvent);
     on<ErrorOccurredEvent>(_onErrorOccurredEvent);
@@ -31,6 +35,7 @@ class WebSocketBloc extends Bloc<_Event, _State> {
   }
 
   final String url;
+  final AlertDialogCubit alertDialogCubit;
 
   bool get isConnected {
     final state = this.state;
@@ -77,6 +82,7 @@ class WebSocketBloc extends Bloc<_Event, _State> {
     final webSocket = event.webSocket;
     emit(ConnectionSuccessState(webSocket));
 
+    alertDialogCubit.snackBar(title: 'Web Socket Connected');
     broadcaster.Broadcaster.instance.add(broadcaster.WebSocketConnected());
 
     webSocket.listen(
@@ -92,7 +98,7 @@ class WebSocketBloc extends Bloc<_Event, _State> {
   ) async {
     emit(ConnectionFailureState(event.error));
 
-    print('Error: ${event.error.toString()}');
+    alertDialogCubit.snackBar(title: event.error.toString());
   }
 
   Future<void> _reconnect(WebSocket webSocket) async {
@@ -121,16 +127,20 @@ class WebSocketBloc extends Bloc<_Event, _State> {
   }
 
   void _handleWebSocketListener(String data) {
-    final json = jsonDecode(data) as Json;
-    final response = WebSocketResponse.fromJson(
-      json,
-      (fromJson) => RueJaiChatRecordedEventEntity.fromJson(fromJson as Json),
-    );
-    final recordedEvent = RecordedEvent.fromEntity(entity: response.payload);
+    try {
+      final json = jsonDecode(data) as Json;
+      final response = WebSocketResponse.fromJson(
+        json,
+        (fromJson) => RueJaiChatRecordedEventEntity.fromJson(fromJson as Json),
+      );
+      final recordedEvent = RecordedEvent.fromEntity(entity: response.payload);
 
-    broadcaster.Broadcaster.instance.add(broadcaster.WebSocketMessageReceived(
-      chatRoomId: response.chatRoomId,
-      recordedEvent: recordedEvent,
-    ));
+      broadcaster.Broadcaster.instance.add(broadcaster.WebSocketMessageReceived(
+        chatRoomId: response.chatRoomId,
+        recordedEvent: recordedEvent,
+      ));
+    } on Exception catch (error) {
+      alertDialogCubit.snackBar(title: error.toString());
+    }
   }
 }
