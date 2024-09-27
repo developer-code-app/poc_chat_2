@@ -120,23 +120,26 @@ class ActivityLogMessagePresenter extends MessagePresenter {
 
   factory ActivityLogMessagePresenter.fromModel(ActivityLogMessage message) {
     switch (message) {
-      case ActivityLogInviteMemberMessage():
-        final role = MemberPresenter.getUserRoleValue(
-          message.member.rueJaiUser.rueJaiUserRole,
-        );
-
+      case ActivityLogCreateRoomMessage():
         return ActivityLogMessagePresenter(
           id: message.id,
-          log: '${message.member.name} ($role) Joined the Chat',
+          log: '${message.owner.name} created the chat room',
+        );
+      case ActivityLogInviteMemberMessage():
+        return ActivityLogMessagePresenter(
+          id: message.id,
+          log: '${message.owner.name} added ${message.member.name}',
+        );
+      case ActivityLogEditMemberRoleMessage():
+        return ActivityLogMessagePresenter(
+          id: message.id,
+          log:
+              '${message.owner.name} updated ${message.member.name} to ${message.newRole}',
         );
       case ActivityLogRemoveMemberMessage():
-        final role = MemberPresenter.getUserRoleValue(
-          message.member.rueJaiUser.rueJaiUserRole,
-        );
-
         return ActivityLogMessagePresenter(
           id: message.id,
-          log: '${message.member.name} ($role) Leave the Chat',
+          log: '${message.owner.name} removed ${message.member.name}',
         );
     }
   }
