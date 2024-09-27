@@ -1,4 +1,6 @@
+import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/model_services/chat_room/chat_room_inquiry.dart';
+import 'package:poc_chat_2/model_services/chat_room/event/chat_room_event_creator.dart';
 import 'package:poc_chat_2/model_services/chat_room/member/chat_room_member_lister.dart';
 import 'package:poc_chat_2/model_services/chat_room/member/inquiry.dart';
 import 'package:poc_chat_2/model_services/chat_room/message/chat_room_message_lister.dart';
@@ -27,6 +29,10 @@ class MemberService {
         chatRoomInquiry = ChatRoomInquiry(
           chatRoomId: chatRoomId,
           localChatRepository: localChatRepository,
+        ),
+        chatRoomEventCreator = ChatRoomEventCreator(
+          chatRoomId: chatRoomId,
+          rueJaiUser: MockData.currentRueJaiUser,
         );
 
   final int memberId;
@@ -38,4 +44,5 @@ class MemberService {
   final ChatRoomMessageLister chatRoomMessageLister;
   final ChatRoomMemberInquiry chatRoomMemberInquiry;
   final ChatRoomInquiry chatRoomInquiry;
+  final ChatRoomEventCreator chatRoomEventCreator;
 }

@@ -13,7 +13,6 @@ import 'package:poc_chat_2/cubits/ui_blocking_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/extensions/extended_data_reader.dart';
 import 'package:poc_chat_2/extensions/extended_permission_handler.dart';
-import 'package:poc_chat_2/model_services/chat_room/event/chat_room_event_creator.dart';
 import 'package:poc_chat_2/services/member/member_service.dart';
 import 'package:poc_chat_2/services/member/roles/basic_member_service.dart';
 import 'package:super_clipboard/super_clipboard.dart';
@@ -44,7 +43,6 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     required this.photosClipboardCubit,
     required this.uiBlockingCubit,
     required this.memberService,
-    required this.chatRoomEventCreator,
   }) : super(InitialState()) {
     on<StartedEvent>(_onStartedEvent);
     on<MessageSentEvent>(_onMessageSentEvent);
@@ -83,6 +81,9 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     );
   }
 
+  final textEditingController = TextEditingController();
+  final scrollController = ScrollController();
+
   final ChatRoom chatRoom;
   final AssetsPickerCubit assetsPickerCubit;
   final AlertDialogCubit alertDialogCubit;
@@ -90,9 +91,6 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   final PhotosClipboardCubit photosClipboardCubit;
   final UIBlockingCubit uiBlockingCubit;
   final MemberService memberService;
-  final ChatRoomEventCreator chatRoomEventCreator;
-
-  final textEditingController = TextEditingController();
 
   StreamSubscription? _broadcasterSubscription;
 
@@ -116,15 +114,26 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   ) async {
     try {
       if (textEditingController.text.isNotEmpty) {
-        final messageEvent = chatRoomEventCreator.createCreateTextMessageEvent(
+        unawaited(memberService.sendTextMessage(
           text: textEditingController.text,
-        );
-
-        memberService.sendMessageEvent(event: messageEvent);
+        ));
+        clearKeyboard();
       }
     } on Exception catch (error) {
       alertDialogCubit.snackBar(title: error.toString());
     }
+  }
+
+  void clearKeyboard() {
+    scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+
+    FocusManager.instance.primaryFocus?.unfocus();
+    textEditingController.clear();
+    replyMessageCubit.clear();
   }
 
   Future<void> _onChatRoomBasicInfoUpdatedEvent(
