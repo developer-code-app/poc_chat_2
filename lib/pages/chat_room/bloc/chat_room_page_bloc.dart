@@ -25,7 +25,7 @@ import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
-import 'package:poc_chat_2/models/message.dart';
+import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
 

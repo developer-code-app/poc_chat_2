@@ -1,7 +1,7 @@
 import 'package:dfunc/dfunc.dart';
 
 import 'package:poc_chat_2/models/chat_room.dart';
-import 'package:poc_chat_2/models/message.dart';
+import 'package:poc_chat_2/models/messages/message.dart';
 
 class ChatsPagePresenter {
   ChatsPagePresenter({required this.chatRooms});

@@ -1,5 +1,5 @@
 import 'package:poc_chat_2/models/chat_room_member.dart';
-import 'package:poc_chat_2/models/message.dart';
+import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_entity.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_room_entity.dart';

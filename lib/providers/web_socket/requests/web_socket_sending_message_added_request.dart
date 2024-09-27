@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:poc_chat_2/models/event_type.dart';
-import 'package:poc_chat_2/models/message.dart';
+import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/models/web_socket_type.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/requests/ruejai_chat_create_chat_room_request.dart';
 

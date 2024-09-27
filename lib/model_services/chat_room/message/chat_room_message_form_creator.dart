@@ -5,7 +5,8 @@ import 'package:poc_chat_2/models/events/event.dart';
 import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/models/events/room_event.dart' as room_event;
-import 'package:poc_chat_2/models/forms/message_form.dart';
+import 'package:poc_chat_2/models/forms/message/member_message_form.dart';
+import 'package:poc_chat_2/models/forms/message/message_form.dart';
 import 'package:poc_chat_2/models/mini_app.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 

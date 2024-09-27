@@ -1,4 +1,4 @@
-import 'package:poc_chat_2/models/message_type.dart';
+import 'package:poc_chat_2/models/messages/message_type.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_member_entity.dart';
 import 'package:isar/isar.dart';

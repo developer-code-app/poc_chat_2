@@ -1,6 +1,6 @@
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
-import 'package:poc_chat_2/models/message.dart';
+import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 
 class ChatRoomPagePresenter {
