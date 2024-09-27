@@ -11,26 +11,23 @@ import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/cubits/ui_blocking_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
-import 'package:poc_chat_2/model_services/chat_room/event/chat_room_event_creator.dart';
 import 'package:poc_chat_2/extensions/extended_data_reader.dart';
 import 'package:poc_chat_2/extensions/extended_permission_handler.dart';
+import 'package:poc_chat_2/model_services/chat_room/event/chat_room_event_creator.dart';
+import 'package:poc_chat_2/services/member/member_service.dart';
+import 'package:poc_chat_2/services/member/roles/basic_member_service.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 import 'package:poc_chat_2/app/image_picker/image_picker.dart';
 import 'package:poc_chat_2/app/image_picker/ruejai_camera_picker_text_delegate.dart';
 import 'package:poc_chat_2/broadcaster/broadcaster.dart' as broadcaster;
-import 'package:poc_chat_2/model_services/chat_room/event/chat_room_unrecorded_event_action.dart';
 import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
-import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
-import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
-import 'package:poc_chat_2/repositories/local_chat_repository.dart';
-import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 
 part 'chat_room_page_event.dart';
 part 'chat_room_page_state.dart';
@@ -40,15 +37,14 @@ typedef _State = ChatRoomPageState;
 
 class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   ChatRoomPageBloc({
-    required this.currentRueJaiUser,
-    required this.serverChatRepository,
-    required this.localChatRepository,
     required this.chatRoom,
     required this.assetsPickerCubit,
     required this.alertDialogCubit,
     required this.replyMessageCubit,
     required this.photosClipboardCubit,
     required this.uiBlockingCubit,
+    required this.memberService,
+    required this.chatRoomEventCreator,
   }) : super(InitialState()) {
     on<StartedEvent>(_onStartedEvent);
     on<MessageSentEvent>(_onMessageSentEvent);
@@ -87,15 +83,16 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     );
   }
 
-  final RueJaiUser currentRueJaiUser;
-  final ServerChatRepository serverChatRepository;
-  final LocalChatRepository localChatRepository;
   final ChatRoom chatRoom;
   final AssetsPickerCubit assetsPickerCubit;
   final AlertDialogCubit alertDialogCubit;
   final ReplyMessageCubit replyMessageCubit;
   final PhotosClipboardCubit photosClipboardCubit;
   final UIBlockingCubit uiBlockingCubit;
+  final MemberService memberService;
+  final ChatRoomEventCreator chatRoomEventCreator;
+
+  final textEditingController = TextEditingController();
 
   StreamSubscription? _broadcasterSubscription;
 
@@ -110,8 +107,6 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     StartedEvent event,
     Emitter<_State> emit,
   ) async {
-    // final chatRoom = MockData.chatRoom2;
-
     emit(LoadSuccessState(chatRoom: chatRoom));
   }
 
@@ -119,12 +114,17 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     MessageSentEvent event,
     Emitter<_State> emit,
   ) async {
-    final messageEvent = ChatRoomEventCreator(
-      chatRoomId: chatRoom.id,
-      rueJaiUser: currentRueJaiUser,
-    ).createCreateTextMessageEvent(text: event.text);
+    try {
+      if (textEditingController.text.isNotEmpty) {
+        final messageEvent = chatRoomEventCreator.createCreateTextMessageEvent(
+          text: textEditingController.text,
+        );
 
-    unawaited(_processEvent(messageEvent));
+        memberService.sendMessageEvent(event: messageEvent);
+      }
+    } on Exception catch (error) {
+      alertDialogCubit.snackBar(title: error.toString());
+    }
   }
 
   Future<void> _onChatRoomBasicInfoUpdatedEvent(
@@ -411,7 +411,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
       final message = state.chatRoom.confirmedMessages
           .whereType<MemberMessage>()
           .firstWhere((message) => message.id == event.messageId);
-      final isOwner = currentRueJaiUser.id == message.owner.id;
+      final isOwner = memberService.memberId == message.owner.id;
 
       alertDialogCubit.alertActionSheet(
         actions: [
@@ -638,19 +638,6 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     final Uint8List data = (imageByteData).buffer.asUint8List();
 
     return data.buffer.asUint8List();
-  }
-
-  Future<void> _processEvent(MessageEvent event) async {
-    try {
-      await ChatRoomUnrecordedEventAction(
-        chatRoomId: chatRoom.id,
-        event: event,
-        serverChatRepository: serverChatRepository,
-        localChatRepository: localChatRepository,
-      ).processEvent();
-    } catch (error) {
-      print(error);
-    }
   }
 
   void onBroadcasterMessageReceived(broadcaster.BroadcasterMessage message) {

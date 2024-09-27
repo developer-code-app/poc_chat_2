@@ -7,6 +7,9 @@ import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/cubits/ui_blocking_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/extensions/extended_date_time.dart';
+import 'package:poc_chat_2/extensions/extended_nullable.dart';
+import 'package:poc_chat_2/mock_data.dart';
+import 'package:poc_chat_2/model_services/chat_room/event/chat_room_event_creator.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart'
     as chat_room_bloc;
@@ -16,6 +19,7 @@ import 'package:poc_chat_2/pages/chats/chats_page_presenter.dart';
 import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
+import 'package:poc_chat_2/services/member/member_service.dart';
 
 class ChatsPage extends StatefulWidget {
   const ChatsPage({super.key});
@@ -188,6 +192,11 @@ class _ChatsPageState extends State<ChatsPage> {
 
   void _navigationToChatRoomPage(ChatRoom chatRoom) {
     final bloc = context.read<ChatsPageBloc>();
+    final memberId = chatRoom.members
+        .where((member) => member.id == MockData.currentRueJaiUser.id)
+        .firstOrNull
+        .getOrThrow(errorMessage: 'Member not found.')
+        .id;
 
     Navigator.push(
       context,
@@ -213,15 +222,22 @@ class _ChatsPageState extends State<ChatsPage> {
             providers: [
               BlocProvider<chat_room_bloc.ChatRoomPageBloc>(
                 create: (context) => chat_room_bloc.ChatRoomPageBloc(
-                  serverChatRepository: context.read<ServerChatRepository>(),
-                  localChatRepository: context.read<LocalChatRepository>(),
                   assetsPickerCubit: context.read<AssetsPickerCubit>(),
                   alertDialogCubit: bloc.alertDialogCubit,
                   replyMessageCubit: context.read<ReplyMessageCubit>(),
                   photosClipboardCubit: context.read<PhotosClipboardCubit>(),
                   uiBlockingCubit: context.read<UIBlockingCubit>(),
                   chatRoom: chatRoom,
-                  currentRueJaiUser: bloc.currentRueJaiUser,
+                  memberService: MemberService(
+                    memberId: memberId,
+                    chatRoomId: chatRoom.id,
+                    serverChatRepository: context.read<ServerChatRepository>(),
+                    localChatRepository: context.read<LocalChatRepository>(),
+                  ),
+                  chatRoomEventCreator: ChatRoomEventCreator(
+                    chatRoomId: chatRoom.id,
+                    rueJaiUser: MockData.currentRueJaiUser,
+                  ),
                 )..add(chat_room_bloc.StartedEvent()),
               ),
             ],

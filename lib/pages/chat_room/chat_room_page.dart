@@ -32,13 +32,12 @@ class ChatRoomPage extends StatefulWidget {
 }
 
 class _ChatRoomPageState extends State<ChatRoomPage> {
-  final textEditingController = TextEditingController();
   final scrollController = ScrollController();
 
   void _onMessageSubmitted() {
     final bloc = context.read<ChatRoomPageBloc>();
 
-    bloc.add(MessageSentEvent(text: textEditingController.text));
+    bloc.add(MessageSentEvent());
 
     clearKeyboard();
   }
@@ -53,7 +52,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     );
 
     FocusScope.of(context).unfocus();
-    textEditingController.clear();
+    bloc.textEditingController.clear();
     bloc.replyMessageCubit.clear();
   }
 
@@ -77,7 +76,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     final bloc = context.read<ChatRoomPageBloc>();
 
     if (message is MemberMessagePresenter) {
-      return bloc.currentRueJaiUser.id == message.owner.id
+      return bloc.memberService.memberId == message.owner.id
           ? MessageAlignment.right
           : MessageAlignment.left;
     } else {
@@ -233,7 +232,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     final bloc = context.read<ChatRoomPageBloc>();
 
     return TextField(
-      controller: textEditingController,
+      controller: bloc.textEditingController,
       decoration: const InputDecoration(hintText: 'Aa'),
       contextMenuBuilder: (context, textState) {
         return AdaptiveTextSelectionToolbar.editable(
@@ -497,7 +496,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     required MemberTextMessagePresenter textMessage,
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
-    final isOwner = bloc.currentRueJaiUser.id == textMessage.owner.id;
+    final isOwner = bloc.memberService.memberId == textMessage.owner.id;
     final text = textMessage.text;
 
     return text == null
@@ -522,7 +521,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
     final text = textReplyMessage.text;
-    final isOwner = bloc.currentRueJaiUser.id == textReplyMessage.owner.id;
+    final isOwner = bloc.memberService.memberId == textReplyMessage.owner.id;
 
     return text == null
         ? _buildTextReplyMessageSkeletonView(context)
@@ -630,7 +629,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     required MemberPresenter member,
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
-    final isOwner = bloc.currentRueJaiUser.id == member.id;
+    final isOwner = bloc.memberService.memberId == member.id;
     final thumbnail = member.thumbnail;
 
     if (isOwner) return Container();

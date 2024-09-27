@@ -40,7 +40,7 @@ abstract class Event {
       case RueJaiChatRejectEventEntity():
         return RemoveMemberEvent.fromEntity(entity: entity);
       default:
-        throw Exception();
+        throw Exception('Unsupported event: ${entity.type}');
     }
   }
 

@@ -9,7 +9,8 @@
     "unawaited",
     "unfocus",
     "Unsend",
-    "unsynced"
+    "unsynced",
+    "wechat"
   ],
   "java.project.sourcePaths": [
     "lib/models"

@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:collection/collection.dart';
-import 'package:poc_chat_2/extensions/extended_nullable.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/forms/message_form.dart';
@@ -144,14 +142,10 @@ class IsarChatService {
       }
 
       await isar.writeTxn(() async {
-        try {
-          await isar.isarSendingMessageEntitys.put(message);
+        await isar.isarSendingMessageEntitys.put(message);
 
-          await message.owner.save();
-          await message.room.save();
-        } catch (e) {
-          print(e);
-        }
+        await message.owner.save();
+        await message.room.save();
       });
 
       return message;

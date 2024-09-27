@@ -27,7 +27,7 @@ class LocalChatRepository {
     return provider.chat
         .getChatRoomLatestEventRecordInfo()
         .then(ChatRoomLatestEventRecordInfo.fromIsarEntity)
-        .onError<Error>((error, _) => throw Exception());
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<List<ChatRoom>> getChatRooms() async {
@@ -70,7 +70,7 @@ class LocalChatRepository {
 
     return provider.chat
         .addChatRoom(request)
-        .onError<Error>((error, _) => throw Exception());
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<List<Message>> searchMessages(
@@ -215,7 +215,7 @@ extension LocalChatRoomTemporaryMessageRepository on LocalChatRepository {
     return provider.chat
         .createUnconfirmedMessage()
         .then((message) => Message.fromUnconfirmedMessageEntity(message))
-        .onError<Error>((error, _) => throw Exception());
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<Message> createSendingMessage({
@@ -225,7 +225,7 @@ extension LocalChatRoomTemporaryMessageRepository on LocalChatRepository {
     return provider.chat
         .createSendingMessage(targetChatRoomId: targetChatRoomId, form: form)
         .then((message) => Message.fromSendingMessageEntity(message))
-        .onError<Error>((error, _) => throw Exception());
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<void> createFailedMessage({
