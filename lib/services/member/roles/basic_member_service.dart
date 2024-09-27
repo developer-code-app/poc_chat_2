@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_unrecorded_event_action.dart';
 import 'package:poc_chat_2/models/attachment.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
-import 'package:poc_chat_2/models/events/event.dart';
 import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/services/member/member_service.dart';
 
@@ -43,12 +42,12 @@ extension BasicMemberService on MemberService {
     );
   }
 
-  Future<void> sendMessageEvent({
-    required Event event,
+  Future<void> sendTextMessage({
+    required String text,
   }) async {
     final eventAction = ChatRoomUnrecordedEventAction(
       chatRoomId: chatRoomId,
-      event: event,
+      event: chatRoomEventCreator.createCreateTextMessageEvent(text: text),
       serverChatRepository: serverChatRepository,
       localChatRepository: localChatRepository,
     );
