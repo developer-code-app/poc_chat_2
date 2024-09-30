@@ -1,6 +1,5 @@
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
-import 'package:poc_chat_2/models/chat_room_latest_event_record_info.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/events/room_event.dart'
     as room_management_event;
@@ -21,12 +20,13 @@ class LocalChatRepository {
     return false;
   }
 
-  Future<ChatRoomLatestEventRecordInfo> getChatRoomLatestEventRecordInfo({
+  Future<int?> getChatRoomLastSyncedRoomAndMessageEventRecordNumber({
     required int chatRoomId,
   }) async {
     return provider.chat
-        .getChatRoomLatestEventRecordInfo()
-        .then(ChatRoomLatestEventRecordInfo.fromIsarEntity)
+        .getChatRoomLastSyncedRoomAndMessageEventRecordNumber(
+          chatRoomId: chatRoomId,
+        )
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 

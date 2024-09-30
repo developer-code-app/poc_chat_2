@@ -7,7 +7,6 @@ import 'package:poc_chat_2/models/forms/message/message_form.dart';
 import 'package:poc_chat_2/models/messages/message_type.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_entity.dart';
-import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_latest_event_record_info_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_member_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_confirmed_message_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_failed_message_entity.dart';
@@ -95,12 +94,13 @@ class IsarChatService {
     });
   }
 
-  Future<IsarChatRoomLatestEventRecordInfo>
-      getChatRoomLatestEventRecordInfo() async {
-    return isar.then((isar) async {
-      return const IsarChatRoomLatestEventRecordInfo(
-        latestRoomAndMessageEventRecordNumber: 0,
-      );
+  Future<int?> getChatRoomLastSyncedRoomAndMessageEventRecordNumber({
+    required int chatRoomId,
+  }) async {
+    return isar.then((isar) {
+      return isar.isarChatRoomEntitys
+          .getByRoomId(chatRoomId)
+          .then((room) => room?.lastSyncedRoomAndMessageEventRecordNumber);
     });
   }
 
