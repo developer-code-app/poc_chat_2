@@ -42,6 +42,19 @@ class IsarChatService {
     );
   }
 
+  Future<IsarChatRoomEntity?> getChatRoom({
+    required int chatRoomId,
+  }) async {
+    return isar.then(
+      (isar) async {
+        return isar.isarChatRoomEntitys
+            .filter()
+            .roomIdEqualTo(chatRoomId)
+            .findFirst();
+      },
+    );
+  }
+
   Future<void> addChatRoom(IsarAddChatRoomRequest request) async {
     return isar.then((isar) async {
       final rueJaiUserEntity = await _createRueJaiUserIfExists();
@@ -150,6 +163,54 @@ class IsarChatService {
       });
 
       return message;
+    });
+  }
+
+  Future<List<int>> findTimeoutSendingMessageIds({
+    required Duration timeout,
+  }) {
+    return isar.then((isar) async {
+      final messages = await isar.isarSendingMessageEntitys
+          .filter()
+          .createdAtLessThan(DateTime.now().subtract(timeout))
+          .findAll();
+
+      return messages.map((message) => message.id).toList();
+    });
+  }
+
+  Future<void> updateSendingMessagesToFailedMessages({
+    required List<int> messageIds,
+  }) async {
+    return isar.then((isar) async {
+      final sendingMessageEntitys =
+          await isar.isarSendingMessageEntitys.where().findAll();
+
+      final failedMessageEntitys = sendingMessageEntitys
+          .where((message) => messageIds.contains(message.id))
+          .map(
+            (sendingMessageEntity) => IsarFailedMessageEntity()
+              ..createdAt = sendingMessageEntity.createdAt
+              ..updatedAt = sendingMessageEntity.createdAt
+              ..createdByEventId = sendingMessageEntity.createdByEventId
+              ..type = sendingMessageEntity.type
+              ..content = sendingMessageEntity.content
+              ..owner.value = sendingMessageEntity.owner.value
+              ..room.value = sendingMessageEntity.room.value,
+          )
+          .toList();
+
+      await isar.writeTxn(() async {
+        await isar.isarSendingMessageEntitys.deleteAll(messageIds);
+        await isar.isarFailedMessageEntitys.putAll(failedMessageEntitys);
+
+        failedMessageEntitys.forEach((failedMessageEntity) async {
+          await Future.wait([
+            failedMessageEntity.room.save(),
+            failedMessageEntity.owner.save()
+          ]);
+        });
+      });
     });
   }
 

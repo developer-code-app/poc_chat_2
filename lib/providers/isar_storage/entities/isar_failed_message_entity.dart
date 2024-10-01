@@ -17,7 +17,7 @@ class IsarFailedMessageEntity {
   @Index(unique: true)
   late String createdByEventId;
 
-  late byte content;
+  late List<byte> content;
 
   @Enumerated(EnumType.name)
   late MessageType type;

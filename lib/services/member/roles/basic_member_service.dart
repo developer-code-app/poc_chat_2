@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_unrecorded_event_action.dart';
 import 'package:poc_chat_2/models/attachment.dart';
+import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/services/member/member_service.dart';

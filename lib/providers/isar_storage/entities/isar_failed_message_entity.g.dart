@@ -21,7 +21,7 @@ const IsarFailedMessageEntitySchema = CollectionSchema(
     r'content': PropertySchema(
       id: 0,
       name: r'content',
-      type: IsarType.byte,
+      type: IsarType.byteList,
     ),
     r'createdAt': PropertySchema(
       id: 1,
@@ -98,6 +98,7 @@ int _isarFailedMessageEntityEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.content.length;
   bytesCount += 3 + object.createdByEventId.length * 3;
   bytesCount += 3 + object.type.name.length * 3;
   return bytesCount;
@@ -109,7 +110,7 @@ void _isarFailedMessageEntitySerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeByte(offsets[0], object.content);
+  writer.writeByteList(offsets[0], object.content);
   writer.writeDateTime(offsets[1], object.createdAt);
   writer.writeString(offsets[2], object.createdByEventId);
   writer.writeDateTime(offsets[3], object.deletedAt);
@@ -124,7 +125,7 @@ IsarFailedMessageEntity _isarFailedMessageEntityDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = IsarFailedMessageEntity();
-  object.content = reader.readByte(offsets[0]);
+  object.content = reader.readByteList(offsets[0]) ?? [];
   object.createdAt = reader.readDateTime(offsets[1]);
   object.createdByEventId = reader.readString(offsets[2]);
   object.deletedAt = reader.readDateTimeOrNull(offsets[3]);
@@ -144,7 +145,7 @@ P _isarFailedMessageEntityDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readByte(offset)) as P;
+      return (reader.readByteList(offset) ?? []) as P;
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
@@ -386,7 +387,7 @@ extension IsarFailedMessageEntityQueryWhere on QueryBuilder<
 extension IsarFailedMessageEntityQueryFilter on QueryBuilder<
     IsarFailedMessageEntity, IsarFailedMessageEntity, QFilterCondition> {
   QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity,
-      QAfterFilterCondition> contentEqualTo(int value) {
+      QAfterFilterCondition> contentElementEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'content',
@@ -396,7 +397,7 @@ extension IsarFailedMessageEntityQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity,
-      QAfterFilterCondition> contentGreaterThan(
+      QAfterFilterCondition> contentElementGreaterThan(
     int value, {
     bool include = false,
   }) {
@@ -410,7 +411,7 @@ extension IsarFailedMessageEntityQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity,
-      QAfterFilterCondition> contentLessThan(
+      QAfterFilterCondition> contentElementLessThan(
     int value, {
     bool include = false,
   }) {
@@ -424,7 +425,7 @@ extension IsarFailedMessageEntityQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity,
-      QAfterFilterCondition> contentBetween(
+      QAfterFilterCondition> contentElementBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -438,6 +439,95 @@ extension IsarFailedMessageEntityQueryFilter on QueryBuilder<
         upper: upper,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity,
+      QAfterFilterCondition> contentLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'content',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity,
+      QAfterFilterCondition> contentIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'content',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity,
+      QAfterFilterCondition> contentIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'content',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity,
+      QAfterFilterCondition> contentLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'content',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity,
+      QAfterFilterCondition> contentLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'content',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity,
+      QAfterFilterCondition> contentLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'content',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 
@@ -997,20 +1087,6 @@ extension IsarFailedMessageEntityQueryLinks on QueryBuilder<
 extension IsarFailedMessageEntityQuerySortBy
     on QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity, QSortBy> {
   QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity, QAfterSortBy>
-      sortByContent() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity, QAfterSortBy>
-      sortByContentDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.desc);
-    });
-  }
-
-  QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity, QAfterSortBy>
       sortByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
@@ -1083,20 +1159,6 @@ extension IsarFailedMessageEntityQuerySortBy
 
 extension IsarFailedMessageEntityQuerySortThenBy on QueryBuilder<
     IsarFailedMessageEntity, IsarFailedMessageEntity, QSortThenBy> {
-  QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity, QAfterSortBy>
-      thenByContent() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity, QAfterSortBy>
-      thenByContentDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.desc);
-    });
-  }
-
   QueryBuilder<IsarFailedMessageEntity, IsarFailedMessageEntity, QAfterSortBy>
       thenByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
@@ -1236,7 +1298,7 @@ extension IsarFailedMessageEntityQueryProperty on QueryBuilder<
     });
   }
 
-  QueryBuilder<IsarFailedMessageEntity, int, QQueryOperations>
+  QueryBuilder<IsarFailedMessageEntity, List<int>, QQueryOperations>
       contentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'content');

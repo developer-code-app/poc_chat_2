@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:poc_chat_2/broadcaster/broadcaster.dart' as broadcaster;
+import 'package:poc_chat_2/cubits/alert_dialog_cubit.dart';
 import 'package:poc_chat_2/model_services/chat_room/chat_room_action.dart';
 import 'package:poc_chat_2/model_services/chat_room/chat_room_creator.dart';
 import 'package:poc_chat_2/model_services/chat_room/chat_room_lister.dart';
+import 'package:poc_chat_2/model_services/message/message_action.dart';
 import 'package:poc_chat_2/model_services/user_profile/inquiry.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
@@ -13,6 +17,7 @@ class SystemService {
   SystemService({
     required this.localChatRepository,
     required this.serverChatRepository,
+    required this.alertDialogCubit,
   })  : _chatRoomLister = ChatRoomLister(
           localChatRepository: localChatRepository,
           serverChatRepository: serverChatRepository,
@@ -22,14 +27,25 @@ class SystemService {
         ),
         _userProfileInquiry = UserProfileInquiry(
           serverChatRepository: serverChatRepository,
+        ),
+        _messageAction = MessageAction(
+          localChatRepository: localChatRepository,
         ) {
     broadcaster.Broadcaster.instance.stream.listen(
       onBroadcasterMessageReceived,
     );
+
+    Timer.periodic(
+      timeoutSendingMessage,
+      (timer) => _updateTimeoutSendingMessageToFailed(),
+    );
   }
+
+  static const timeoutSendingMessage = Duration(seconds: 10);
 
   final LocalChatRepository localChatRepository;
   final ServerChatRepository serverChatRepository;
+  final AlertDialogCubit alertDialogCubit;
 
   ChatRoomAction _getChatRoomAction({required int chatRoomId}) {
     return ChatRoomAction(
@@ -41,6 +57,8 @@ class SystemService {
 
   final ChatRoomLister _chatRoomLister;
   final ChatRoomCreator _chatRoomCreator;
+  final MessageAction _messageAction;
+
   final UserProfileInquiry _userProfileInquiry;
 
   void onBroadcasterMessageReceived(broadcaster.BroadcasterMessage message) {
@@ -53,6 +71,12 @@ class SystemService {
           recordedEvent: message.recordedEvent,
         );
     }
+  }
+
+  Future<void> _updateTimeoutSendingMessageToFailed() async {
+    _messageAction.updateTimeoutSendingMessageToFailed(
+      timeout: timeoutSendingMessage,
+    );
   }
 
   Future<void> syncChatRooms() async {
