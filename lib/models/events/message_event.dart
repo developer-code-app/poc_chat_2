@@ -9,7 +9,7 @@ abstract class MessageEvent extends Event {
   });
 }
 
-abstract class CreateMessageEvent extends MessageEvent {
+sealed class CreateMessageEvent extends MessageEvent {
   CreateMessageEvent({
     required super.id,
     required super.owner,

@@ -4,18 +4,13 @@ class MessageForm {
   MessageForm({
     required this.owner,
     required this.createdAt,
-    required this.updatedAt,
     required this.createdByEventId,
-    this.deletedAt,
-    this.addedByEventRecordNumber,
-    this.updatedByEventRecordNumber,
+    this.createdByEventRecordNumber,
   });
 
   final ChatRoomMember owner;
   final DateTime createdAt;
-  final DateTime updatedAt;
   final String createdByEventId;
-  final DateTime? deletedAt;
-  final int? addedByEventRecordNumber;
-  final int? updatedByEventRecordNumber;
+
+  final int? createdByEventRecordNumber;
 }

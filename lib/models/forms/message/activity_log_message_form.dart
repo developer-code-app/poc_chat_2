@@ -5,11 +5,8 @@ sealed class ActivityLogMessageForm extends MessageForm {
   ActivityLogMessageForm({
     required super.owner,
     required super.createdAt,
-    required super.updatedAt,
     required super.createdByEventId,
-    super.deletedAt,
-    super.addedByEventRecordNumber,
-    super.updatedByEventRecordNumber,
+    required super.createdByEventRecordNumber,
   });
 }
 
@@ -17,11 +14,17 @@ class ActivityLogCreateRoomMessageForm extends ActivityLogMessageForm {
   ActivityLogCreateRoomMessageForm({
     required super.owner,
     required super.createdAt,
-    required super.updatedAt,
     required super.createdByEventId,
-    super.deletedAt,
-    super.addedByEventRecordNumber,
-    super.updatedByEventRecordNumber,
+    required super.createdByEventRecordNumber,
+  });
+}
+
+class ActivityLogUpdateRoomMessageForm extends ActivityLogMessageForm {
+  ActivityLogUpdateRoomMessageForm({
+    required super.owner,
+    required super.createdAt,
+    required super.createdByEventId,
+    required super.createdByEventRecordNumber,
   });
 }
 
@@ -29,31 +32,25 @@ class ActivityLogInviteMemberMessageForm extends ActivityLogMessageForm {
   ActivityLogInviteMemberMessageForm({
     required super.owner,
     required super.createdAt,
-    required super.updatedAt,
     required super.createdByEventId,
-    required this.member,
-    super.deletedAt,
-    super.addedByEventRecordNumber,
-    super.updatedByEventRecordNumber,
+    required super.createdByEventRecordNumber,
+    required this.invitedMember,
   });
 
-  final ChatRoomMember member;
+  final ChatRoomMember invitedMember;
 }
 
 class ActivityLogEditMemberRoleMessageForm extends ActivityLogMessageForm {
   ActivityLogEditMemberRoleMessageForm({
     required super.owner,
     required super.createdAt,
-    required super.updatedAt,
     required super.createdByEventId,
-    required this.member,
+    required super.createdByEventRecordNumber,
+    required this.editedMember,
     required this.newRole,
-    super.deletedAt,
-    super.addedByEventRecordNumber,
-    super.updatedByEventRecordNumber,
   });
 
-  final ChatRoomMember member;
+  final ChatRoomMember editedMember;
   final ChatRoomMemberRole newRole;
 }
 
@@ -61,13 +58,10 @@ class ActivityLogRemoveMemberMessageForm extends ActivityLogMessageForm {
   ActivityLogRemoveMemberMessageForm({
     required super.owner,
     required super.createdAt,
-    required super.updatedAt,
     required super.createdByEventId,
-    required this.member,
-    super.deletedAt,
-    super.addedByEventRecordNumber,
-    super.updatedByEventRecordNumber,
+    required super.createdByEventRecordNumber,
+    required this.removedMember,
   });
 
-  final ChatRoomMember member;
+  final ChatRoomMember removedMember;
 }

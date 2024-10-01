@@ -1,6 +1,6 @@
 import 'package:poc_chat_2/broadcaster/broadcaster.dart';
 import 'package:poc_chat_2/error.dart';
-import 'package:poc_chat_2/model_services/chat_room/message/chat_room_message_form_creator.dart';
+import 'package:poc_chat_2/model_services/chat_room/message/forms/chat_room_message_form_creator.dart';
 import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
@@ -200,16 +200,19 @@ extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
 
     final event = recordedEvent.event;
 
-    if (event is CreateRoomEvent) {
-      throw UnimplementedError();
-    } else if (event is InviteMemberEvent) {
-      throw UnimplementedError();
-    } else if (event is UpdateMemberRoleEvent) {
-      throw UnimplementedError();
-    } else if (event is RemoveMemberEvent) {
-      throw UnimplementedError();
-    } else {
+    if (event is! RoomEvent) {
       throw UnprocessableEventError('Event is not a room management event');
+    }
+
+    switch (event) {
+      case CreateRoomEvent():
+    
+      case InviteMemberEvent():
+      // TODO: Handle this case.
+      case UpdateMemberRoleEvent():
+      // TODO: Handle this case.
+      case RemoveMemberEvent():
+      // TODO: Handle this case.
     }
   }
 

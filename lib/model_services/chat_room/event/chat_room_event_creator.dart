@@ -26,7 +26,7 @@ class ChatRoomEventCreator {
       id: generateEventId(),
       owner: owner,
       createdAt: getCreatedAt(),
-      member: member,
+      invitedMember: member,
     );
   }
 

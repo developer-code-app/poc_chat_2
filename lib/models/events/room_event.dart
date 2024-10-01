@@ -3,7 +3,7 @@ import 'package:poc_chat_2/models/events/event.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_event_entity.dart';
 
-abstract class RoomEvent extends Event {
+sealed class RoomEvent extends Event {
   RoomEvent({
     required super.id,
     required super.owner,
@@ -45,7 +45,7 @@ class InviteMemberEvent extends RoomEvent {
     required super.id,
     required super.owner,
     required super.createdAt,
-    required this.member,
+    required this.invitedMember,
   });
 
   factory InviteMemberEvent.fromEntity({
@@ -55,11 +55,11 @@ class InviteMemberEvent extends RoomEvent {
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
-      member: ChatRoomMember.fromEntity(entity: entity.member),
+      invitedMember: ChatRoomMember.fromEntity(entity: entity.invitedMember),
     );
   }
 
-  final ChatRoomMember member;
+  final ChatRoomMember invitedMember;
 }
 
 class UpdateMemberRoleEvent extends RoomEvent {
@@ -67,8 +67,7 @@ class UpdateMemberRoleEvent extends RoomEvent {
     required super.id,
     required super.owner,
     required super.createdAt,
-    required this.updatedMemberRecordNumber,
-    required this.memberRole,
+    required this.updatedMember,
   });
 
   factory UpdateMemberRoleEvent.fromEntity({
@@ -78,13 +77,11 @@ class UpdateMemberRoleEvent extends RoomEvent {
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
-      updatedMemberRecordNumber: entity.updatedMemberRecordNumber,
-      memberRole: entity.memberRole,
+      updatedMember: ChatRoomMember.fromEntity(entity: entity.updatedMember),
     );
   }
 
-  final int updatedMemberRecordNumber;
-  final ChatRoomMemberRole memberRole;
+  final ChatRoomMember updatedMember;
 }
 
 class RemoveMemberEvent extends RoomEvent {
@@ -92,7 +89,7 @@ class RemoveMemberEvent extends RoomEvent {
     required super.id,
     required super.owner,
     required super.createdAt,
-    required this.removedMemberRecordNumber,
+    required this.removedMember,
   });
 
   factory RemoveMemberEvent.fromEntity({
@@ -102,11 +99,11 @@ class RemoveMemberEvent extends RoomEvent {
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
-      removedMemberRecordNumber: entity.removedMemberRecordNumber,
+      removedMember: ChatRoomMember.fromEntity(entity: entity.removedMember),
     );
   }
 
-  final int removedMemberRecordNumber;
+  final ChatRoomMember removedMember;
 }
 
 class ChatRoomMember {
@@ -117,7 +114,7 @@ class ChatRoomMember {
   });
 
   factory ChatRoomMember.fromEntity({
-    required RueJaiChatMemberEventEntity entity,
+    required RueJaiChatRoomMemberEventEntity entity,
   }) {
     return ChatRoomMember(
       role: entity.role,

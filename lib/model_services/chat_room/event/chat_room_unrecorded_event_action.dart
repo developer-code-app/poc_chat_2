@@ -1,6 +1,6 @@
 import 'package:poc_chat_2/broadcaster/broadcaster.dart';
 import 'package:poc_chat_2/error.dart';
-import 'package:poc_chat_2/model_services/chat_room/message/chat_room_message_form_creator.dart';
+import 'package:poc_chat_2/model_services/chat_room/message/forms/chat_room_message_form_creator.dart';
 import 'package:poc_chat_2/models/events/event.dart';
 import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';

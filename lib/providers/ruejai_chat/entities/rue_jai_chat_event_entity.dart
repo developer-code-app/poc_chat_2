@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
+
 import 'package:poc_chat_2/models/event_type.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 
@@ -103,7 +104,8 @@ class RueJaiChatCreateTextMessageEventEntity extends RueJaiChatEventEntity {
   });
 
   factory RueJaiChatCreateTextMessageEventEntity.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$RueJaiChatCreateTextMessageEventEntityFromJson(json);
 
   @override
@@ -134,7 +136,8 @@ class RueJaiChatCreateTextReplyMessageEventEntity
   });
 
   factory RueJaiChatCreateTextReplyMessageEventEntity.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$RueJaiChatCreateTextReplyMessageEventEntityFromJson(json);
 
   @override
@@ -164,7 +167,8 @@ class RueJaiChatCreatePhotoMessageEventEntity extends RueJaiChatEventEntity {
   });
 
   factory RueJaiChatCreatePhotoMessageEventEntity.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$RueJaiChatCreatePhotoMessageEventEntityFromJson(json);
 
   @override
@@ -193,7 +197,8 @@ class RueJaiChatCreateVideoMessageEventEntity extends RueJaiChatEventEntity {
       required this.url});
 
   factory RueJaiChatCreateVideoMessageEventEntity.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$RueJaiChatCreateVideoMessageEventEntityFromJson(json);
 
   @override
@@ -223,7 +228,8 @@ class RueJaiChatCreateFileMessageEventEntity extends RueJaiChatEventEntity {
   });
 
   factory RueJaiChatCreateFileMessageEventEntity.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$RueJaiChatCreateFileMessageEventEntityFromJson(json);
 
   @override
@@ -252,7 +258,8 @@ class RueJaiChatCreateHomeCareMessageEventEntity extends RueJaiChatEventEntity {
   });
 
   factory RueJaiChatCreateHomeCareMessageEventEntity.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$RueJaiChatCreateHomeCareMessageEventEntityFromJson(json);
 
   @override
@@ -279,7 +286,8 @@ class RueJaiChatEditTextMessageEventEntity extends RueJaiChatEventEntity {
   });
 
   factory RueJaiChatEditTextMessageEventEntity.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$RueJaiChatEditTextMessageEventEntityFromJson(json);
 
   @override
@@ -309,7 +317,8 @@ class RueJaiChatDeleteMessageEventEntity extends RueJaiChatEventEntity {
   });
 
   factory RueJaiChatDeleteMessageEventEntity.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$RueJaiChatDeleteMessageEventEntityFromJson(json);
 
   @override
@@ -339,7 +348,8 @@ class RueJaiChatReadMessageEventEntity extends RueJaiChatEventEntity {
   });
 
   factory RueJaiChatReadMessageEventEntity.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$RueJaiChatReadMessageEventEntityFromJson(json);
 
   @override
@@ -379,7 +389,7 @@ class RueJaiChatCreateRoomEventEntity extends RueJaiChatEventEntity {
 
   final String name;
   final String? thumbnailUrl;
-  final List<RueJaiChatMemberEventEntity> members;
+  final List<RueJaiChatRoomMemberEventEntity> members;
 
   @override
   List<Object?> get props => [
@@ -394,57 +404,25 @@ class RueJaiChatCreateRoomEventEntity extends RueJaiChatEventEntity {
 }
 
 @JsonSerializable()
-class RueJaiChatEditMemberRoleEventEntity extends RueJaiChatEventEntity {
-  const RueJaiChatEditMemberRoleEventEntity({
-    required super.id,
-    required super.owner,
-    required super.createdAt,
-    required super.type,
-    required this.updatedMemberRecordNumber,
-    required this.memberRole,
-  });
-
-  factory RueJaiChatEditMemberRoleEventEntity.fromJson(
-          Map<String, dynamic> json) =>
-      _$RueJaiChatEditMemberRoleEventEntityFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson() =>
-      _$RueJaiChatEditMemberRoleEventEntityToJson(this);
-
-  final int updatedMemberRecordNumber;
-  final ChatRoomMemberRole memberRole;
-
-  @override
-  List<Object?> get props => [
-        id,
-        owner,
-        createdAt,
-        type,
-        updatedMemberRecordNumber,
-        memberRole,
-      ];
-}
-
-@JsonSerializable()
 class RueJaiChatInviteMemberEventEntity extends RueJaiChatEventEntity {
   const RueJaiChatInviteMemberEventEntity({
     required super.id,
     required super.owner,
     required super.createdAt,
     required super.type,
-    required this.member,
+    required this.invitedMember,
   });
 
   factory RueJaiChatInviteMemberEventEntity.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$RueJaiChatInviteMemberEventEntityFromJson(json);
 
   @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatInviteMemberEventEntityToJson(this);
 
-  final RueJaiChatMemberEventEntity member;
+  final RueJaiChatRoomMemberEventEntity invitedMember;
 
   @override
   List<Object?> get props => [
@@ -452,7 +430,38 @@ class RueJaiChatInviteMemberEventEntity extends RueJaiChatEventEntity {
         owner,
         createdAt,
         type,
-        member,
+        invitedMember,
+      ];
+}
+
+@JsonSerializable()
+class RueJaiChatEditMemberRoleEventEntity extends RueJaiChatEventEntity {
+  const RueJaiChatEditMemberRoleEventEntity({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    required super.type,
+    required this.updatedMember,
+  });
+
+  factory RueJaiChatEditMemberRoleEventEntity.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      _$RueJaiChatEditMemberRoleEventEntityFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() =>
+      _$RueJaiChatEditMemberRoleEventEntityToJson(this);
+
+  final RueJaiChatRoomMemberEventEntity updatedMember;
+
+  @override
+  List<Object?> get props => [
+        id,
+        owner,
+        createdAt,
+        type,
+        updatedMember,
       ];
 }
 
@@ -463,34 +472,52 @@ class RueJaiChatRemoveMemberEventEntity extends RueJaiChatEventEntity {
     required super.owner,
     required super.createdAt,
     required super.type,
-    required this.removedMemberRecordNumber,
+    required this.removedMember,
   });
 
   factory RueJaiChatRemoveMemberEventEntity.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$RueJaiChatRemoveMemberEventEntityFromJson(json);
 
   @override
   Map<String, dynamic> toJson() =>
       _$RueJaiChatRemoveMemberEventEntityToJson(this);
 
-  final int removedMemberRecordNumber;
+  final RueJaiChatRoomMemberEventEntity removedMember;
+
+  @override
+  List<Object?> get props => [
+        id,
+        owner,
+        createdAt,
+        type,
+        removedMember,
+      ];
 }
 
 @JsonSerializable()
-class RueJaiChatMemberEventEntity {
-  RueJaiChatMemberEventEntity({
+class RueJaiChatRoomMemberEventEntity extends Equatable {
+  const RueJaiChatRoomMemberEventEntity({
     required this.role,
     required this.rueJaiUserId,
     required this.rueJaiUserType,
   });
 
-  factory RueJaiChatMemberEventEntity.fromJson(Map<String, dynamic> json) =>
-      _$RueJaiChatMemberEventEntityFromJson(json);
+  factory RueJaiChatRoomMemberEventEntity.fromJson(Map<String, dynamic> json) =>
+      _$RueJaiChatRoomMemberEventEntityFromJson(json);
 
-  Map<String, dynamic> toJson() => _$RueJaiChatMemberEventEntityToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$RueJaiChatRoomMemberEventEntityToJson(this);
 
   final ChatRoomMemberRole role;
   final String rueJaiUserId;
   final RueJaiUserType rueJaiUserType;
+
+  @override
+  List<Object?> get props => [
+        role,
+        rueJaiUserId,
+        rueJaiUserType,
+      ];
 }
