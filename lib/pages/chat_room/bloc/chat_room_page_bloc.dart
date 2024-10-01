@@ -36,7 +36,7 @@ typedef _State = ChatRoomPageState;
 
 class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   ChatRoomPageBloc({
-    required this.chatRoom,
+    required this.chatRoomId,
     required this.assetsPickerCubit,
     required this.alertDialogCubit,
     required this.replyMessageCubit,
@@ -45,6 +45,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     required this.memberService,
   }) : super(InitialState()) {
     on<StartedEvent>(_onStartedEvent);
+    on<DataLoadedEvent>(_onDataLoadedEvent);
+    on<ErrorOccurredEvent>(_onErrorOccurredEvent);
     on<MessageSentEvent>(_onMessageSentEvent);
     on<ChatRoomBasicInfoUpdatedEvent>(_onChatRoomBasicInfoUpdatedEvent);
     on<ChatRoomMemberAddedEvent>(_onChatRoomMemberAddedEvent);
@@ -63,6 +65,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         _onChatRoomSendingMessageTimeOutEvent);
     on<ChatRoomFailedMessageRetriedEvent>(_onChatRoomFailedMessageRetriedEvent);
     on<ChatRoomFailedMessageRemovedEvent>(_onChatRoomFailedMessageRemovedEvent);
+    on<UpdateSendingMessageToFailedMessageEvent>(
+        _onUpdateSendingMessageToFailedMessageEvent);
     on<AssetsPickerRequestedEvent>(_onAssetsPickerRequestedEvent);
     on<AssetRemovedEvent>(_onAssetRemovedEvent);
     on<ConfirmedMessageSelectActionRequestedEvent>(
@@ -84,7 +88,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   final textEditingController = TextEditingController();
   final scrollController = ScrollController();
 
-  final ChatRoom chatRoom;
+  final int chatRoomId;
   final AssetsPickerCubit assetsPickerCubit;
   final AlertDialogCubit alertDialogCubit;
   final ReplyMessageCubit replyMessageCubit;
@@ -105,7 +109,9 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     StartedEvent event,
     Emitter<_State> emit,
   ) async {
-    emit(LoadSuccessState(chatRoom: chatRoom));
+    emit(LoadInProgressState());
+
+    unawaited(_fetchChatRoom());
   }
 
   Future<void> _onMessageSentEvent(
@@ -124,6 +130,30 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     }
   }
 
+  Future<void> _fetchChatRoom() async {
+    try {
+      final chatRoom = await memberService.chatRoomInquiry.getChatRoom(
+        chatRoomId: chatRoomId,
+      );
+
+      add(DataLoadedEvent(chatRoom: chatRoom));
+    } on Exception catch (error) {
+      add(ErrorOccurredEvent(error: error));
+    }
+  }
+
+  Future<void> _refresh() async {
+    try {
+      final chatRoom = await memberService.chatRoomInquiry.getChatRoom(
+        chatRoomId: chatRoomId,
+      );
+
+      add(DataLoadedEvent(chatRoom: chatRoom));
+    } on Exception catch (error) {
+      alertDialogCubit.snackBar(title: error.toString());
+    }
+  }
+
   void clearKeyboard() {
     scrollController.animateTo(
       0,
@@ -136,123 +166,162 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     replyMessageCubit.clear();
   }
 
+  Future<void> _onDataLoadedEvent(
+    DataLoadedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    emit(LoadSuccessState(chatRoom: event.chatRoom));
+  }
+
+  Future<void> _onErrorOccurredEvent(
+    ErrorOccurredEvent event,
+    Emitter<_State> emit,
+  ) async {
+    emit(LoadFailureState(error: event.error));
+  }
+
   Future<void> _onChatRoomBasicInfoUpdatedEvent(
     ChatRoomBasicInfoUpdatedEvent event,
     Emitter<_State> emit,
   ) async {
-    emit(
-      LoadSuccessState(
-        chatRoom: chatRoom.copyWith(
-          name: event.name,
-          thumbnailUrl: event.thumbnailUrl,
+    final state = this.state;
+
+    if (state is LoadSuccessState) {
+      emit(
+        LoadSuccessState(
+          chatRoom: state.chatRoom.copyWith(
+            name: event.name,
+            thumbnailUrl: event.thumbnailUrl,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _onChatRoomMemberAddedEvent(
     ChatRoomMemberAddedEvent event,
     Emitter<_State> emit,
   ) async {
-    emit(
-      LoadSuccessState(
-        chatRoom: chatRoom.copyWith(
-          members: chatRoom.members..add(event.member),
+    final state = this.state;
+
+    if (state is LoadSuccessState) {
+      emit(
+        LoadSuccessState(
+          chatRoom: state.chatRoom.copyWith(
+            members: state.chatRoom.members..add(event.member),
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _onChatRoomMemberUpdatedEvent(
     ChatRoomMemberUpdatedEvent event,
     Emitter<_State> emit,
   ) async {
-    final members = chatRoom.members;
-    final memberIndex =
-        members.indexWhere((member) => member.id == event.memberId);
-    final member = members[memberIndex].copyWith(role: event.role)
-      ..rueJaiUser.copyWith(
-        name: event.name,
-        thumbnailUrl: event.thumbnailUrl,
+    final state = this.state;
+
+    if (state is LoadSuccessState) {
+      final members = state.chatRoom.members;
+      final memberIndex =
+          members.indexWhere((member) => member.id == event.memberId);
+      final member = members[memberIndex].copyWith(role: event.role)
+        ..rueJaiUser.copyWith(
+          name: event.name,
+          thumbnailUrl: event.thumbnailUrl,
+        );
+
+      members.removeAt(memberIndex);
+      members.insert(memberIndex, member);
+
+      emit(
+        LoadSuccessState(
+          chatRoom: state.chatRoom.copyWith(members: members),
+        ),
       );
-
-    members.removeAt(memberIndex);
-    members.insert(memberIndex, member);
-
-    emit(
-      LoadSuccessState(
-        chatRoom: chatRoom.copyWith(members: members),
-      ),
-    );
+    }
   }
 
   Future<void> _onChatRoomMemberRemovedEvent(
     ChatRoomMemberRemovedEvent event,
     Emitter<_State> emit,
   ) async {
-    emit(
-      LoadSuccessState(
-        chatRoom: chatRoom.copyWith(
-          members: chatRoom.members
-            ..removeWhere((member) => member.id == event.memberId),
+    final state = this.state;
+
+    if (state is LoadSuccessState) {
+      emit(
+        LoadSuccessState(
+          chatRoom: state.chatRoom.copyWith(
+            members: state.chatRoom.members
+              ..removeWhere((member) => member.id == event.memberId),
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _onChatRoomMemberLastReadMessageUpdatedEvent(
     ChatRoomMemberLastReadMessageUpdatedEvent event,
     Emitter<_State> emit,
   ) async {
-    final members = chatRoom.members;
-    final memberIndex =
-        members.indexWhere((member) => member.id == event.memberId);
-    final member = members[memberIndex]
-        .copyWith(lastReadMessageId: event.lastReadMessageId);
+    final state = this.state;
 
-    members.removeAt(memberIndex);
-    members.insert(memberIndex, member);
+    if (state is LoadSuccessState) {
+      final members = state.chatRoom.members;
+      final memberIndex =
+          members.indexWhere((member) => member.id == event.memberId);
+      final member = members[memberIndex]
+          .copyWith(lastReadMessageId: event.lastReadMessageId);
 
-    emit(
-      LoadSuccessState(
-        chatRoom: chatRoom.copyWith(members: members),
-      ),
-    );
+      members.removeAt(memberIndex);
+      members.insert(memberIndex, member);
+
+      emit(
+        LoadSuccessState(
+          chatRoom: state.chatRoom.copyWith(members: members),
+        ),
+      );
+    }
   }
 
   Future<void> _onChatRoomConfirmedMessageAddedEvent(
     ChatRoomConfirmedMessageAddedEvent event,
     Emitter<_State> emit,
   ) async {
-    final confirmedMessages = chatRoom.confirmedMessages;
-    final sendingMessages = chatRoom.sendingMessages;
-    final message = sendingMessages
-        .where((message) => message.id == event.message.id)
-        .firstOrNull;
+    final state = this.state;
 
-    if (message != null) {
-      sendingMessages.remove(message);
-    }
+    if (state is LoadSuccessState) {
+      final confirmedMessages = state.chatRoom.confirmedMessages;
+      final sendingMessages = state.chatRoom.sendingMessages;
+      final message = sendingMessages
+          .where((message) => message.id == event.message.id)
+          .firstOrNull;
 
-    confirmedMessages.add(event.message);
+      if (message != null) {
+        sendingMessages.remove(message);
+      }
 
-    emit(
-      LoadSuccessState(
-        chatRoom: chatRoom.copyWith(
-          confirmedMessages: confirmedMessages,
+      confirmedMessages.add(event.message);
+
+      emit(
+        LoadSuccessState(
+          chatRoom: state.chatRoom.copyWith(
+            confirmedMessages: confirmedMessages,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _onChatRoomConfirmedMessageEditedEvent(
     ChatRoomConfirmedMessageEditedEvent event,
     Emitter<_State> emit,
   ) async {
+    final state = this.state;
     final message = event.message;
 
-    if (message is MemberTextMessage) {
-      final confirmedMessages = chatRoom.confirmedMessages;
+    if (state is LoadSuccessState && message is MemberTextMessage) {
+      final confirmedMessages = state.chatRoom.confirmedMessages;
       final messageIndex = confirmedMessages
           .indexWhere((message) => message.id == event.message.id);
       final confirmedMessage = confirmedMessages[messageIndex];
@@ -266,7 +335,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
 
       emit(
         LoadSuccessState(
-          chatRoom: chatRoom.copyWith(
+          chatRoom: state.chatRoom.copyWith(
             confirmedMessages: confirmedMessages,
           ),
         ),
@@ -280,97 +349,124 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     ChatRoomConfirmedMessageRemovedEvent event,
     Emitter<_State> emit,
   ) async {
-    final confirmedMessages = chatRoom.confirmedMessages;
+    final state = this.state;
 
-    confirmedMessages.removeWhere((message) => message.id == event.messageId);
+    if (state is LoadSuccessState) {
+      final confirmedMessages = state.chatRoom.confirmedMessages;
 
-    emit(
-      LoadSuccessState(
-        chatRoom: chatRoom.copyWith(
-          confirmedMessages: confirmedMessages,
+      confirmedMessages.removeWhere((message) => message.id == event.messageId);
+
+      emit(
+        LoadSuccessState(
+          chatRoom: state.chatRoom.copyWith(
+            confirmedMessages: confirmedMessages,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _onChatRoomSendingMessageAddedEvent(
     ChatRoomSendingMessageAddedEvent event,
     Emitter<_State> emit,
   ) async {
-    final sendingMessages = chatRoom.sendingMessages;
+    final state = this.state;
 
-    sendingMessages.add(event.message);
+    if (state is LoadSuccessState) {
+      final sendingMessages = state.chatRoom.sendingMessages;
 
-    emit(
-      LoadSuccessState(
-        chatRoom: chatRoom.copyWith(
-          sendingMessages: sendingMessages,
+      sendingMessages.add(event.message);
+
+      emit(
+        LoadSuccessState(
+          chatRoom: state.chatRoom.copyWith(
+            sendingMessages: sendingMessages,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _onChatRoomSendingMessageTimeOutEvent(
     ChatRoomSendingMessageTimeOutEvent event,
     Emitter<_State> emit,
   ) async {
-    final sendingMessages = chatRoom.sendingMessages;
-    final failedMessages = chatRoom.failedMessages;
-    final message = sendingMessages.firstWhere(
-      (message) => message.id == event.messageId,
-    );
+    final state = this.state;
 
-    sendingMessages.remove(message);
-    failedMessages.add(message);
+    if (state is LoadSuccessState) {
+      final sendingMessages = state.chatRoom.sendingMessages;
+      final failedMessages = state.chatRoom.failedMessages;
+      final message = sendingMessages.firstWhere(
+        (message) => message.id == event.messageId,
+      );
 
-    emit(
-      LoadSuccessState(
-        chatRoom: chatRoom.copyWith(
-          sendingMessages: sendingMessages,
-          failedMessages: failedMessages,
+      sendingMessages.remove(message);
+      failedMessages.add(message);
+
+      emit(
+        LoadSuccessState(
+          chatRoom: state.chatRoom.copyWith(
+            sendingMessages: sendingMessages,
+            failedMessages: failedMessages,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _onChatRoomFailedMessageRetriedEvent(
     ChatRoomFailedMessageRetriedEvent event,
     Emitter<_State> emit,
   ) async {
-    final failedMessages = chatRoom.failedMessages;
-    final sendingMessages = chatRoom.sendingMessages;
-    final message = failedMessages.firstWhere(
-      (message) => message.id == event.messageId,
-    );
+    final state = this.state;
 
-    failedMessages.remove(message);
-    sendingMessages.add(message);
+    if (state is LoadSuccessState) {
+      final failedMessages = state.chatRoom.failedMessages;
+      final sendingMessages = state.chatRoom.sendingMessages;
+      final message = failedMessages.firstWhere(
+        (message) => message.id == event.messageId,
+      );
 
-    emit(
-      LoadSuccessState(
-        chatRoom: chatRoom.copyWith(
-          sendingMessages: sendingMessages,
-          failedMessages: failedMessages,
+      failedMessages.remove(message);
+      sendingMessages.add(message);
+
+      emit(
+        LoadSuccessState(
+          chatRoom: state.chatRoom.copyWith(
+            sendingMessages: sendingMessages,
+            failedMessages: failedMessages,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _onChatRoomFailedMessageRemovedEvent(
     ChatRoomFailedMessageRemovedEvent event,
     Emitter<_State> emit,
   ) async {
-    final failedMessages = chatRoom.failedMessages;
+    final state = this.state;
 
-    failedMessages.removeWhere((message) => message.id == event.messageId);
+    if (state is LoadSuccessState) {
+      final failedMessages = state.chatRoom.failedMessages;
 
-    emit(
-      LoadSuccessState(
-        chatRoom: chatRoom.copyWith(
-          failedMessages: failedMessages,
+      failedMessages.removeWhere((message) => message.id == event.messageId);
+
+      emit(
+        LoadSuccessState(
+          chatRoom: state.chatRoom.copyWith(
+            failedMessages: failedMessages,
+          ),
         ),
-      ),
-    );
+      );
+    }
+  }
+
+  Future<void> _onUpdateSendingMessageToFailedMessageEvent(
+    UpdateSendingMessageToFailedMessageEvent event,
+    Emitter<_State> emit,
+  ) async {
+    _refresh();
   }
 
   Future<void> _onAssetsPickerRequestedEvent(
@@ -650,18 +746,24 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   }
 
   void onBroadcasterMessageReceived(broadcaster.BroadcasterMessage message) {
-    final isCurrentChatRoomMessage =
-        message is broadcaster.ChatRoom && message.chatRoomId == chatRoom.id;
+    switch (message) {
+      case broadcaster.ChatRoom():
+        onChatRoomMessageReceived(message);
+      case broadcaster.UpdateSendingMessageToFailedMessage():
+        add(UpdateSendingMessageToFailedMessageEvent());
+    }
+  }
 
-    if (isCurrentChatRoomMessage) {
-      switch (message) {
-        case broadcaster.ChatRoomBasicInfo():
-          onChatRoomBasicInfoBroadcasterMessageReceived(message);
-          break;
-        case broadcaster.ChatRoomMessage():
-          onChatRoomMessageBroadcasterMessageReceived(message);
-          break;
-      }
+  void onChatRoomMessageReceived(broadcaster.ChatRoom message) {
+    final isCurrentChatRoomMessage = message.chatRoomId == chatRoomId;
+
+    if (!isCurrentChatRoomMessage) return;
+
+    switch (message) {
+      case broadcaster.ChatRoomBasicInfo():
+        onChatRoomBasicInfoBroadcasterMessageReceived(message);
+      case broadcaster.ChatRoomMessage():
+        onChatRoomMessageBroadcasterMessageReceived(message);
     }
   }
 

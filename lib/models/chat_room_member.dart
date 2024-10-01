@@ -22,7 +22,7 @@ class ChatRoomMember {
     required this.lastReadMessageId,
   });
 
-  factory ChatRoomMember.fromEntity(
+  factory ChatRoomMember.fromIsarEntity(
     member_entity.IsarChatRoomMemberEntity entity,
   ) {
     final rueJaiUser = entity.rueJaiUser.value;
@@ -32,7 +32,7 @@ class ChatRoomMember {
     return ChatRoomMember(
       id: entity.id,
       role: entity.role,
-      rueJaiUser: RueJaiUser.fromEntity(rueJaiUser),
+      rueJaiUser: RueJaiUser.fromIsarEntity(rueJaiUser),
       lastReadMessageId: entity.lastReadMessageId,
     );
   }

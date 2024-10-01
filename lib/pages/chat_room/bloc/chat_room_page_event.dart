@@ -4,6 +4,18 @@ sealed class ChatRoomPageEvent {}
 
 class StartedEvent extends _Event {}
 
+class DataLoadedEvent extends _Event {
+  DataLoadedEvent({required this.chatRoom});
+
+  final ChatRoom chatRoom;
+}
+
+class ErrorOccurredEvent extends _Event {
+  ErrorOccurredEvent({required this.error});
+
+  final Exception error;
+}
+
 class MessageSentEvent extends _Event {}
 
 class ChatRoomBasicInfoUpdatedEvent extends _Event {
@@ -135,6 +147,8 @@ class ChatRoomFailedMessageRemovedEvent extends _Event {
   final int chatRoomId;
   final int messageId;
 }
+
+class UpdateSendingMessageToFailedMessageEvent extends _Event {}
 
 class AssetsPickerRequestedEvent extends _Event {
   AssetsPickerRequestedEvent({
