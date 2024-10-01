@@ -1,28 +1,20 @@
-import 'package:poc_chat_2/models/chat_room_member.dart';
-import 'package:poc_chat_2/models/message.dart';
+import 'package:poc_chat_2/models/forms/message/message_form.dart';
+import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/models/mini_app.dart';
 
-sealed class MessageForm {
-  MessageForm({
-    required this.owner,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.createdByEventId,
-    this.deletedAt,
-    this.addedByEventRecordNumber,
-    this.updatedByEventRecordNumber,
+sealed class MemberMessageForm extends MessageForm {
+  MemberMessageForm({
+    required super.owner,
+    required super.createdAt,
+    required super.updatedAt,
+    required super.createdByEventId,
+    super.deletedAt,
+    super.addedByEventRecordNumber,
+    super.updatedByEventRecordNumber,
   });
-
-  final ChatRoomMember owner;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final String createdByEventId;
-  final DateTime? deletedAt;
-  final int? addedByEventRecordNumber;
-  final int? updatedByEventRecordNumber;
 }
 
-class TextMessageForm extends MessageForm {
+class TextMessageForm extends MemberMessageForm {
   TextMessageForm({
     required super.owner,
     required super.createdAt,
@@ -37,7 +29,7 @@ class TextMessageForm extends MessageForm {
   final String text;
 }
 
-class TextReplyMessageForm extends MessageForm {
+class TextReplyMessageForm extends MemberMessageForm {
   TextReplyMessageForm({
     required super.owner,
     required super.createdAt,
@@ -54,7 +46,7 @@ class TextReplyMessageForm extends MessageForm {
   final String text;
 }
 
-class PhotoMessageForm extends MessageForm {
+class PhotoMessageForm extends MemberMessageForm {
   PhotoMessageForm({
     required super.owner,
     required super.createdAt,
@@ -69,7 +61,7 @@ class PhotoMessageForm extends MessageForm {
   final List<String> urls;
 }
 
-class VideoMessageForm extends MessageForm {
+class VideoMessageForm extends MemberMessageForm {
   VideoMessageForm({
     required super.owner,
     required super.createdAt,
@@ -84,7 +76,7 @@ class VideoMessageForm extends MessageForm {
   final String url;
 }
 
-class FileMessageForm extends MessageForm {
+class FileMessageForm extends MemberMessageForm {
   FileMessageForm({
     required super.owner,
     required super.createdAt,
@@ -99,7 +91,7 @@ class FileMessageForm extends MessageForm {
   final String url;
 }
 
-class MiniAppMessageForm extends MessageForm {
+class MiniAppMessageForm extends MemberMessageForm {
   MiniAppMessageForm({
     required super.owner,
     required super.createdAt,

@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_room_entity.dart';
-import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_room_latest_event_record_info_entity.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/requests/ruejai_chat_create_chat_room_request.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/ruejai_response.dart';
 import 'package:retrofit/error_logger.dart';
@@ -16,9 +15,10 @@ abstract class RueJaiChatService {
   @GET('api/ruejai-chat/chat-rooms')
   Future<RuejaiListResponse<RueJaiChatRoomEntity>> getChatRooms();
 
-  @GET('api/ruejai-chat/chat-rooms/{chatRoomId}/latest-event-record-info')
-  Future<RuejaiResponse<RueJaiChatRoomLatestEventRecordInfoEntity>>
-      getChatRoomLatestEventRecordInfo(
+  @GET(
+    'api/ruejai-chat/chat-rooms/{chatRoomId}/latest-room-and-message-event-record-number',
+  )
+  Future<RuejaiIntResponse> getChatRoomLatestRoomAndMessageEventRecordNumber(
     @Path('chatRoomId') int chatRoomId,
   );
 

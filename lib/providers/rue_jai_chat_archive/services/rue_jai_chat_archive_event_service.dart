@@ -12,7 +12,7 @@ abstract class RueJaiChatArchiveEventService {
       _RueJaiChatArchiveEventService;
 
   @GET('{url}')
-  Future<RuejaiResultListResponse<RueJaiChatRecordedEventEntity>>
+  Future<RuejaiListResponse<RueJaiChatRecordedEventEntity>>
       getChatRoomEventsFromUrl(
     @Path('url') String url,
   );

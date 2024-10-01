@@ -1,9 +1,9 @@
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:poc_chat_2/flavor_constants.dart';
+
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_recorded_event_action.dart';
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_unrecorded_event_action.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
-import 'package:poc_chat_2/models/chat_room_latest_event_record_info.dart';
 import 'package:poc_chat_2/models/events/event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
@@ -55,33 +55,32 @@ class ChatRoomAction {
   }
 
   Future<ChatRoomSyncState> _getChatRoomSyncState() async {
-    final lastSyncedEventRecordInfo =
-        await getChatRoomLastSyncedEventRecordInfo();
-    final serverLatestEventRecordInfo =
-        await getServerChatRoomLatestEventRecordInfo();
+    final lastSyncedRoomAndMessageEventRecordNumber =
+        await getChatRoomLastSyncedRoomAndMessageEventRecordNumber();
+    final serverLatestRoomAndMessageEventRecordNumber =
+        await getServerChatRoomLatestRoomAndMessageEventRecordNumber();
 
     return ChatRoomSyncState(
       roomAndMessageEventSyncState: _getSyncState(
-        latestRecordNumber:
-            lastSyncedEventRecordInfo.roomAndMessageRecordNumber,
-        serverLatestRecordNumber:
-            serverLatestEventRecordInfo.roomAndMessageRecordNumber,
+        latestRecordNumber: lastSyncedRoomAndMessageEventRecordNumber,
+        serverLatestRecordNumber: serverLatestRoomAndMessageEventRecordNumber,
       ),
       latestRoomAndMessageEventRecordNumber:
-          lastSyncedEventRecordInfo.roomAndMessageRecordNumber,
+          lastSyncedRoomAndMessageEventRecordNumber,
     );
   }
 
-  Future<ChatRoomLatestEventRecordInfo>
-      getChatRoomLastSyncedEventRecordInfo() async {
-    return localChatRepository.getChatRoomLatestEventRecordInfo(
-      chatRoomId: chatRoomId,
-    );
+  Future<int> getChatRoomLastSyncedRoomAndMessageEventRecordNumber() async {
+    return (await localChatRepository
+            .getChatRoomLastSyncedRoomAndMessageEventRecordNumber(
+          chatRoomId: chatRoomId,
+        )) ??
+        0;
   }
 
-  Future<ChatRoomLatestEventRecordInfo>
-      getServerChatRoomLatestEventRecordInfo() async {
-    return serverChatRepository.getChatRoomLatestEventRecordInfo(
+  Future<int> getServerChatRoomLatestRoomAndMessageEventRecordNumber() async {
+    return serverChatRepository
+        .getChatRoomLatestRoomAndMessageEventRecordNumber(
       chatRoomId: chatRoomId,
     );
   }
@@ -102,7 +101,7 @@ class ChatRoomAction {
   Future<void> _syncChatRoomRoomAndMessageEvent({
     required int lastSyncedEventRecordNumber,
   }) async {
-    _syncChatRoomEvent(
+    await _syncChatRoomEvent(
       lastSyncedEventRecordNumber: lastSyncedEventRecordNumber,
     );
   }

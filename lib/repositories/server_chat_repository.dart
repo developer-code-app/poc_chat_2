@@ -1,5 +1,4 @@
 import 'package:poc_chat_2/models/chat_room.dart';
-import 'package:poc_chat_2/models/chat_room_latest_event_record_info.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/models/events/room_event.dart';
@@ -16,13 +15,12 @@ class ServerChatRepository {
   final RuejaiChatApiProvider chatApiProvider;
   final RuejaiChatArchiveProvider chatArchiveProvider;
 
-  Future<ChatRoomLatestEventRecordInfo> getChatRoomLatestEventRecordInfo({
+  Future<int> getChatRoomLatestRoomAndMessageEventRecordNumber({
     required int chatRoomId,
   }) async {
     return chatApiProvider.chat
-        .getChatRoomLatestEventRecordInfo(chatRoomId)
-        .then((response) => response.result)
-        .then(ChatRoomLatestEventRecordInfo.fromEntity);
+        .getChatRoomLatestRoomAndMessageEventRecordNumber(chatRoomId)
+        .then((response) => response.result);
   }
 
   Future<List<ChatRoom>> getAllChatRooms() async {

@@ -59,21 +59,20 @@ class _RueJaiChatService implements RueJaiChatService {
   }
 
   @override
-  Future<RuejaiResponse<RueJaiChatRoomLatestEventRecordInfoEntity>>
-      getChatRoomLatestEventRecordInfo(int chatRoomId) async {
+  Future<RuejaiIntResponse> getChatRoomLatestRoomAndMessageEventRecordNumber(
+      int chatRoomId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<
-        RuejaiResponse<RueJaiChatRoomLatestEventRecordInfoEntity>>(Options(
+    final _options = _setStreamType<RuejaiIntResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
         .compose(
           _dio.options,
-          'api/ruejai-chat/chat-rooms/${chatRoomId}/latest-event-record-info',
+          'api/ruejai-chat/chat-rooms/${chatRoomId}/latest-room-and-message-event-record-number',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -83,14 +82,9 @@ class _RueJaiChatService implements RueJaiChatService {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late RuejaiResponse<RueJaiChatRoomLatestEventRecordInfoEntity> _value;
+    late RuejaiIntResponse _value;
     try {
-      _value =
-          RuejaiResponse<RueJaiChatRoomLatestEventRecordInfoEntity>.fromJson(
-        _result.data!,
-        (json) => RueJaiChatRoomLatestEventRecordInfoEntity.fromJson(
-            json as Map<String, dynamic>),
-      );
+      _value = RuejaiIntResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

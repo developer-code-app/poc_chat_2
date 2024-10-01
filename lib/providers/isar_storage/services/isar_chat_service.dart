@@ -1,14 +1,12 @@
 import 'dart:convert';
 
-import 'package:poc_chat_2/extensions/extended_nullable.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
-import 'package:poc_chat_2/models/forms/message_form.dart';
-import 'package:poc_chat_2/models/message.dart';
-import 'package:poc_chat_2/models/message_type.dart';
+import 'package:poc_chat_2/models/forms/message/member_message_form.dart';
+import 'package:poc_chat_2/models/forms/message/message_form.dart';
+import 'package:poc_chat_2/models/messages/message_type.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_entity.dart';
-import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_latest_event_record_info_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_member_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_confirmed_message_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_failed_message_entity.dart';
@@ -17,7 +15,6 @@ import 'package:poc_chat_2/providers/isar_storage/entities/isar_sending_message_
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_unconfirmed_message_entity.dart';
 import 'package:isar/isar.dart';
 import 'package:poc_chat_2/providers/isar_storage/requests/isar_add_chat_room_request.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class IsarChatService {
   IsarChatService(this.isar);
@@ -110,12 +107,13 @@ class IsarChatService {
     });
   }
 
-  Future<IsarChatRoomLatestEventRecordInfo>
-      getChatRoomLatestEventRecordInfo() async {
-    return isar.then((isar) async {
-      return const IsarChatRoomLatestEventRecordInfo(
-        latestRoomAndMessageEventRecordNumber: 0,
-      );
+  Future<int?> getChatRoomLastSyncedRoomAndMessageEventRecordNumber({
+    required int chatRoomId,
+  }) async {
+    return isar.then((isar) {
+      return isar.isarChatRoomEntitys
+          .getByRoomId(chatRoomId)
+          .then((room) => room?.lastSyncedRoomAndMessageEventRecordNumber);
     });
   }
 

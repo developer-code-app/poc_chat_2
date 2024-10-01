@@ -1,4 +1,4 @@
-import 'package:poc_chat_2/models/message.dart';
+import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 
 class ChatRoomMessageLister {

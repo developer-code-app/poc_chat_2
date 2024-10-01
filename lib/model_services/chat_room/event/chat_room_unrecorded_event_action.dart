@@ -5,7 +5,7 @@ import 'package:poc_chat_2/models/events/event.dart';
 import 'package:poc_chat_2/models/events/message_event.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/room_event.dart';
-import 'package:poc_chat_2/models/forms/message_form.dart';
+import 'package:poc_chat_2/models/forms/message/message_form.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 

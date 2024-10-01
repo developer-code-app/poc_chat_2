@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
 import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
-import 'package:poc_chat_2/models/message.dart';
+import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
 import 'package:poc_chat_2/pages/chat_summary/bloc/chat_summary_page_bloc.dart'

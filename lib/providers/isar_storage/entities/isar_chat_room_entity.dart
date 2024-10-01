@@ -14,8 +14,12 @@ class IsarChatRoomEntity {
 
   @Index(unique: true)
   late int roomId;
+
   late String name;
+
   late String? thumbnail;
+
+  late int lastSyncedRoomAndMessageEventRecordNumber;
 
   final confirmedMessages = IsarLinks<IsarConfirmedMessageEntity>();
   final unconfirmedMessages = IsarLinks<IsarUnconfirmedMessageEntity>();

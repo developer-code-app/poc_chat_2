@@ -201,34 +201,13 @@ extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
     final event = recordedEvent.event;
 
     if (event is CreateRoomEvent) {
-      await localChatRepository.updateChatRoom(
-        targetChatRoomId: chatRoomId,
-        newName: event.name,
-        newThumbnailUrl: event.thumbnailUrl,
-      );
-
-      for (var member in event.members) {
-        localChatRepository.createMember(
-          targetChatRoomId: chatRoomId,
-          member: member,
-        );
-      }
+      throw UnimplementedError();
     } else if (event is InviteMemberEvent) {
-      await localChatRepository.createMember(
-        targetChatRoomId: chatRoomId,
-        member: event.member,
-      );
+      throw UnimplementedError();
     } else if (event is UpdateMemberRoleEvent) {
-      await localChatRepository.updateMemberRole(
-        targetChatRoomId: chatRoomId,
-        targetMemberAddedByRecordNumber: event.updatedMemberRecordNumber,
-        newRole: event.memberRole,
-      );
+      throw UnimplementedError();
     } else if (event is RemoveMemberEvent) {
-      await localChatRepository.deleteMember(
-        targetChatRoomId: chatRoomId,
-        targetMemberAddedByRecordNumber: event.removedMemberRecordNumber,
-      );
+      throw UnimplementedError();
     } else {
       throw UnprocessableEventError('Event is not a room management event');
     }
@@ -262,9 +241,11 @@ extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
   Future<int> _getFirstSuccessorOfLastSyncedRoomManagementEventRecordNumber({
     required int chatRoomId,
   }) async {
-    return localChatRepository.getLastSyncedRoomManagementEventRecordNumber(
-      chatRoomId: chatRoomId,
-    );
+    return await localChatRepository
+            .getLastSyncedRoomManagementEventRecordNumber(
+          chatRoomId: chatRoomId,
+        ) +
+        1;
   }
 }
 

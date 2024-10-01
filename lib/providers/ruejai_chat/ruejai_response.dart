@@ -19,6 +19,19 @@ class RuejaiResponse<T extends Equatable> extends Equatable {
   List<Object> get props => [result];
 }
 
+class RuejaiIntResponse extends Equatable {
+  final int result;
+
+  const RuejaiIntResponse({required this.result});
+
+  factory RuejaiIntResponse.fromJson(Map<String, dynamic> json) {
+    return RuejaiIntResponse(result: json['result']);
+  }
+
+  @override
+  List<Object> get props => [result];
+}
+
 @JsonSerializable(createToJson: false, genericArgumentFactories: true)
 class RuejaiListResponse<T extends Equatable> extends Equatable {
   const RuejaiListResponse(this.result);

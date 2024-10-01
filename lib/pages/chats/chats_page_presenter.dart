@@ -1,7 +1,7 @@
 import 'package:dfunc/dfunc.dart';
 
 import 'package:poc_chat_2/models/chat_room.dart';
-import 'package:poc_chat_2/models/message.dart';
+import 'package:poc_chat_2/models/messages/message.dart';
 
 class ChatsPagePresenter {
   ChatsPagePresenter({required this.chatRooms});
@@ -89,7 +89,17 @@ class MessagePresenter {
           text: getDefaultMessageText(message),
           createdAt: message.createdAt,
         );
+      case ActivityLogCreateRoomMessage():
+        return MessagePresenter(
+          text: getDefaultMessageText(message),
+          createdAt: message.createdAt,
+        );
       case ActivityLogInviteMemberMessage():
+        return MessagePresenter(
+          text: getDefaultMessageText(message),
+          createdAt: message.createdAt,
+        );
+      case ActivityLogEditMemberRoleMessage():
         return MessagePresenter(
           text: getDefaultMessageText(message),
           createdAt: message.createdAt,
@@ -118,10 +128,14 @@ class MessagePresenter {
         return "$messageOwnerName sent a file";
       case MemberMiniAppMessage():
         return "$messageOwnerName sent a mini app";
+      case ActivityLogCreateRoomMessage():
+        return "$messageOwnerName created the chat room";
       case ActivityLogInviteMemberMessage():
-        return "$messageOwnerName invite member";
+        return "$messageOwnerName invited a member";
+      case ActivityLogEditMemberRoleMessage():
+        return "$messageOwnerName edited a member's role";
       case ActivityLogRemoveMemberMessage():
-        return "$messageOwnerName remove member";
+        return "$messageOwnerName removed a member";
     }
   }
 

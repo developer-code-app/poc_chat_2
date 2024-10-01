@@ -3,7 +3,6 @@ import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_member_entity.dart'
     as member_entity;
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_member_entity.dart';
 
 part 'chat_room_member.g.dart';
 
