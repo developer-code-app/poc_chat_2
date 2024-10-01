@@ -1,3 +1,4 @@
+import 'package:poc_chat_2/extensions/extended_nullable.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_latest_event_record_info.dart';
@@ -37,12 +38,34 @@ class LocalChatRepository {
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
-  Future<ChatRoom?> getChatRoom() async {
-    return null;
+  Future<ChatRoom> getChatRoom({
+    required int chatRoomId,
+  }) async {
+    return provider.chat
+        .getChatRoom(chatRoomId: chatRoomId)
+        .then((room) => room.getOrThrow(errorMessage: 'Room not found.'))
+        .then(ChatRoom.fromIsarEntity)
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<List<Message>> getMessages() async {
     return List.empty();
+  }
+
+  Future<List<int>> findTimeoutSendingMessageIds({
+    required Duration timeout,
+  }) async {
+    return provider.chat
+        .findTimeoutSendingMessageIds(timeout: timeout)
+        .onError<Error>((error, _) => throw Exception(error.toString()));
+  }
+
+  Future<void> updateSendingMessagesToFailedMessages({
+    required List<int> messageIds,
+  }) async {
+    return provider.chat
+        .updateSendingMessagesToFailedMessages(messageIds: messageIds)
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<int> getMessageCount() async {

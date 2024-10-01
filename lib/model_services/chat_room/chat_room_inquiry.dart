@@ -12,10 +12,10 @@ class ChatRoomInquiry {
   final int chatRoomId;
   final LocalChatRepository localChatRepository;
 
-  Future<ChatRoom?> getChatRoom({
+  Future<ChatRoom> getChatRoom({
     required int chatRoomId,
   }) async {
-    return localChatRepository.getChatRoom();
+    return localChatRepository.getChatRoom(chatRoomId: chatRoomId);
   }
 
   Future<ChatRoomMember> getMemberByRueJaiUser({

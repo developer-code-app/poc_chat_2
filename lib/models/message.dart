@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:poc_chat_2/extensions/extended_nullable.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/message_type.dart';
 import 'package:poc_chat_2/models/mini_app.dart';
@@ -60,11 +61,15 @@ sealed class Message {
   factory Message.fromSendingMessageEntity(
     IsarSendingMessageEntity entity,
   ) {
+    final owner = entity.owner.value;
+
+    if (owner == null) throw Exception('Owner not found');
+
     switch (entity.type) {
       case MessageType.text:
         return MemberTextMessage(
           id: entity.id,
-          owner: MockData.owner,
+          owner: ChatRoomMember.fromIsarEntity(owner),
           createdAt: entity.createdAt,
           updatedAt: entity.updatedAt,
           text: utf8.decode(entity.content),
@@ -83,9 +88,19 @@ sealed class Message {
   factory Message.fromFailedMessageEntity(
     IsarFailedMessageEntity entity,
   ) {
+    final owner = entity.owner.value;
+
+    if (owner == null) throw Exception('Owner not found');
+
     switch (entity.type) {
       case MessageType.text:
-        return MemberTextMessage.fromEntity();
+        return MemberTextMessage(
+          id: entity.id,
+          owner: ChatRoomMember.fromIsarEntity(owner),
+          createdAt: entity.createdAt,
+          updatedAt: entity.updatedAt,
+          text: utf8.decode(entity.content),
+        );
       case MessageType.photo:
         return MemberPhotoMessage.fromEntity();
       case MessageType.video:

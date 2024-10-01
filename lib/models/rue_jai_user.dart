@@ -29,7 +29,7 @@ class RueJaiUser {
     this.thumbnailUrl,
   });
 
-  factory RueJaiUser.fromEntity(IsarRueJaiUserEntity entity) {
+  factory RueJaiUser.fromIsarEntity(IsarRueJaiUserEntity entity) {
     return RueJaiUser(
       id: entity.id,
       rueJaiUserId: entity.rueJaiUserId,

@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:poc_chat_2/extensions/extended_nullable.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/forms/message_form.dart';
+import 'package:poc_chat_2/models/message.dart';
 import 'package:poc_chat_2/models/message_type.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_entity.dart';
@@ -15,6 +17,7 @@ import 'package:poc_chat_2/providers/isar_storage/entities/isar_sending_message_
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_unconfirmed_message_entity.dart';
 import 'package:isar/isar.dart';
 import 'package:poc_chat_2/providers/isar_storage/requests/isar_add_chat_room_request.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class IsarChatService {
   IsarChatService(this.isar);
@@ -38,6 +41,19 @@ class IsarChatService {
               ),
             )
             .findAll();
+      },
+    );
+  }
+
+  Future<IsarChatRoomEntity?> getChatRoom({
+    required int chatRoomId,
+  }) async {
+    return isar.then(
+      (isar) async {
+        return isar.isarChatRoomEntitys
+            .filter()
+            .roomIdEqualTo(chatRoomId)
+            .findFirst();
       },
     );
   }
@@ -149,6 +165,54 @@ class IsarChatService {
       });
 
       return message;
+    });
+  }
+
+  Future<List<int>> findTimeoutSendingMessageIds({
+    required Duration timeout,
+  }) {
+    return isar.then((isar) async {
+      final messages = await isar.isarSendingMessageEntitys
+          .filter()
+          .createdAtLessThan(DateTime.now().subtract(timeout))
+          .findAll();
+
+      return messages.map((message) => message.id).toList();
+    });
+  }
+
+  Future<void> updateSendingMessagesToFailedMessages({
+    required List<int> messageIds,
+  }) async {
+    return isar.then((isar) async {
+      final sendingMessageEntitys =
+          await isar.isarSendingMessageEntitys.where().findAll();
+
+      final failedMessageEntitys = sendingMessageEntitys
+          .where((message) => messageIds.contains(message.id))
+          .map(
+            (sendingMessageEntity) => IsarFailedMessageEntity()
+              ..createdAt = sendingMessageEntity.createdAt
+              ..updatedAt = sendingMessageEntity.createdAt
+              ..createdByEventId = sendingMessageEntity.createdByEventId
+              ..type = sendingMessageEntity.type
+              ..content = sendingMessageEntity.content
+              ..owner.value = sendingMessageEntity.owner.value
+              ..room.value = sendingMessageEntity.room.value,
+          )
+          .toList();
+
+      await isar.writeTxn(() async {
+        await isar.isarSendingMessageEntitys.deleteAll(messageIds);
+        await isar.isarFailedMessageEntitys.putAll(failedMessageEntitys);
+
+        failedMessageEntitys.forEach((failedMessageEntity) async {
+          await Future.wait([
+            failedMessageEntity.room.save(),
+            failedMessageEntity.owner.save()
+          ]);
+        });
+      });
     });
   }
 

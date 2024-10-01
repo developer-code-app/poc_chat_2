@@ -162,6 +162,7 @@ class __BaseAppState extends State<_BaseApp> {
     final systemService = SystemService(
       localChatRepository: context.read<LocalChatRepository>(),
       serverChatRepository: context.read<ServerChatRepository>(),
+      alertDialogCubit: context.read<AlertDialogCubit>(),
     );
     final rueJaiUserService = RueJaiUserService(
       systemService: systemService,

@@ -4,6 +4,8 @@ sealed class ChatRoomPageState {}
 
 final class InitialState extends _State {}
 
+final class LoadInProgressState extends _State {}
+
 final class LoadSuccessState extends _State {
   LoadSuccessState({
     required this.chatRoom,
@@ -11,4 +13,10 @@ final class LoadSuccessState extends _State {
 
   final ChatRoom chatRoom;
   final ChatRoomPagePresenter presenter;
+}
+
+final class LoadFailureState extends _State {
+  LoadFailureState({required this.error});
+
+  final Exception error;
 }

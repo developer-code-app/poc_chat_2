@@ -51,7 +51,7 @@ class ChatRoom {
       id: entity.roomId,
       name: entity.name,
       thumbnailUrl: entity.thumbnail,
-      members: entity.members.map(ChatRoomMember.fromEntity).toList(),
+      members: entity.members.map(ChatRoomMember.fromIsarEntity).toList(),
       confirmedMessages: entity.confirmedMessages
           .map(Message.fromConfirmedMessageEntity)
           .toList(),

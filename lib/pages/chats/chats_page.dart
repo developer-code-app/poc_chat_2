@@ -227,7 +227,7 @@ class _ChatsPageState extends State<ChatsPage> {
                   replyMessageCubit: context.read<ReplyMessageCubit>(),
                   photosClipboardCubit: context.read<PhotosClipboardCubit>(),
                   uiBlockingCubit: context.read<UIBlockingCubit>(),
-                  chatRoom: chatRoom,
+                  chatRoomId: chatRoom.id,
                   memberService: MemberService(
                     memberId: memberId,
                     chatRoomId: chatRoom.id,

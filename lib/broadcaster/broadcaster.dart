@@ -7,6 +7,7 @@ import 'package:poc_chat_2/models/message.dart';
 part 'chat_room.dart';
 part 'chat_room_basic_info.dart';
 part 'chat_room_message.dart';
+part 'chat_message.dart';
 part 'web_socket.dart';
 part 'rue_jai_chat.dart';
 

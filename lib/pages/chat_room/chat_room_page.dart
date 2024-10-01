@@ -70,12 +70,16 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               context,
               child: const Center(child: Text("Initial State")),
             );
+          case LoadInProgressState():
+            return const Center(child: CircularProgressIndicator());
           case LoadSuccessState():
             return _buildScaffold(
               context,
               appBarTitle: state.presenter.name,
               child: _buildLoadSuccess(context, state),
             );
+          case LoadFailureState():
+            return Center(child: Text(state.error.toString()));
         }
       },
     );
