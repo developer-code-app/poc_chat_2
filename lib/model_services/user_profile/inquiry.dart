@@ -1,4 +1,4 @@
-import 'package:poc_chat_2/models/chat_room.dart';
+import 'package:poc_chat_2/models/chat_room_state.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 
 class UserProfileInquiry {
@@ -6,7 +6,7 @@ class UserProfileInquiry {
 
   final ServerChatRepository serverChatRepository;
 
-  Future<List<ChatRoom>> getServerAllChatRooms() async {
-    return serverChatRepository.getAllChatRooms();
+  Future<List<ChatRoomState>> getServerChatRoomStates() async {
+    return serverChatRepository.getServerChatRoomStates();
   }
 }

@@ -17,9 +17,11 @@ class IsarChatRoomEntity {
 
   late String name;
 
-  late String? thumbnail;
-
   late int lastSyncedRoomAndMessageEventRecordNumber;
+
+  String? thumbnail;
+
+  late String profileHash;
 
   final confirmedMessages = IsarLinks<IsarConfirmedMessageEntity>();
   final unconfirmedMessages = IsarLinks<IsarUnconfirmedMessageEntity>();

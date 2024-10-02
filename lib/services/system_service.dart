@@ -80,8 +80,8 @@ class SystemService {
   }
 
   Future<void> syncChatRooms() async {
-    _updateExistingChatRooms();
-    _createAndSyncNewChatRoomsIfExists();
+    // _updateExistingChatRooms();
+    // _createAndSyncNewChatRoomsIfExists();
   }
 
   Future<void> syncChatRoom({
@@ -103,38 +103,38 @@ class SystemService {
     required Notification notification,
   }) async {}
 
-  Future<void> _updateExistingChatRooms() async {
-    final chatRooms = await _chatRoomLister.getAllChatRooms();
+  // Future<void> _updateExistingChatRooms() async {
+  //   final chatRooms = await _chatRoomLister.getChatRooms();
 
-    await Future.wait(
-      chatRooms.map(
-        (chatRoom) async => syncChatRoom(chatRoomId: chatRoom.id),
-      ),
-    );
-  }
+  //   await Future.wait(
+  //     chatRooms.map(
+  //       (chatRoom) async => syncChatRoom(chatRoomId: chatRoom.id),
+  //     ),
+  //   );
+  // }
 
-  Future<void> _createAndSyncNewChatRoomsIfExists() async {
-    final serverChatRooms = await _userProfileInquiry.getServerAllChatRooms();
-    final existingChatRoomIds = await _chatRoomLister
-        .getAllChatRooms()
-        .then((chatRooms) => chatRooms.map((chatRoom) => chatRoom.id).toList());
-    final newChatRooms = serverChatRooms.where(
-      (chatRoom) => !existingChatRoomIds.contains(chatRoom.id),
-    );
+  // Future<void> _createAndSyncNewChatRoomsIfExists() async {
+  //   final serverChatRooms = await _userProfileInquiry.getServerChatRooms();
+  //   final existingChatRoomIds = await _chatRoomLister
+  //       .getChatRooms()
+  //       .then((chatRooms) => chatRooms.map((chatRoom) => chatRoom.id).toList());
+  //   final newChatRooms = serverChatRooms.where(
+  //     (chatRoom) => !existingChatRoomIds.contains(chatRoom.id),
+  //   );
 
-    await Future.wait(newChatRooms.map((chatRoom) async {
-      await _chatRoomCreator.createChatRoom(
-        chatRoomId: chatRoom.id,
-        name: chatRoom.name,
-        thumbnailUrl: chatRoom.thumbnailUrl,
-      );
-      await syncChatRoom(chatRoomId: chatRoom.id);
-    }));
+  //   await Future.wait(newChatRooms.map((chatRoom) async {
+  //     await _chatRoomCreator.createChatRoom(
+  //       chatRoomId: chatRoom.id,
+  //       name: chatRoom.name,
+  //       thumbnailUrl: chatRoom.thumbnailUrl,
+  //     );
+  //     await syncChatRoom(chatRoomId: chatRoom.id);
+  //   }));
 
-    if (newChatRooms.isNotEmpty) {
-      broadcaster.Broadcaster.instance.add(
-        broadcaster.CreatedAndSyncedNewChatRooms(),
-      );
-    }
-  }
+  //   if (newChatRooms.isNotEmpty) {
+  //     broadcaster.Broadcaster.instance.add(
+  //       broadcaster.CreatedAndSyncedNewChatRooms(),
+  //     );
+  //   }
+  // }
 }

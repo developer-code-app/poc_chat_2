@@ -28,13 +28,18 @@ const IsarChatRoomEntitySchema = CollectionSchema(
       name: r'name',
       type: IsarType.string,
     ),
-    r'roomId': PropertySchema(
+    r'profileHash': PropertySchema(
       id: 2,
+      name: r'profileHash',
+      type: IsarType.string,
+    ),
+    r'roomId': PropertySchema(
+      id: 3,
       name: r'roomId',
       type: IsarType.string,
     ),
     r'thumbnail': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'thumbnail',
       type: IsarType.string,
     )
@@ -105,6 +110,7 @@ int _isarChatRoomEntityEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.name.length * 3;
+  bytesCount += 3 + object.profileHash.length * 3;
   bytesCount += 3 + object.roomId.length * 3;
   {
     final value = object.thumbnail;
@@ -124,8 +130,9 @@ void _isarChatRoomEntitySerialize(
   writer.writeLong(
       offsets[0], object.lastSyncedRoomAndMessageEventRecordNumber);
   writer.writeString(offsets[1], object.name);
-  writer.writeString(offsets[2], object.roomId);
-  writer.writeString(offsets[3], object.thumbnail);
+  writer.writeString(offsets[2], object.profileHash);
+  writer.writeString(offsets[3], object.roomId);
+  writer.writeString(offsets[4], object.thumbnail);
 }
 
 IsarChatRoomEntity _isarChatRoomEntityDeserialize(
@@ -139,8 +146,9 @@ IsarChatRoomEntity _isarChatRoomEntityDeserialize(
   object.lastSyncedRoomAndMessageEventRecordNumber =
       reader.readLong(offsets[0]);
   object.name = reader.readString(offsets[1]);
-  object.roomId = reader.readString(offsets[2]);
-  object.thumbnail = reader.readStringOrNull(offsets[3]);
+  object.profileHash = reader.readString(offsets[2]);
+  object.roomId = reader.readString(offsets[3]);
+  object.thumbnail = reader.readStringOrNull(offsets[4]);
   return object;
 }
 
@@ -158,6 +166,8 @@ P _isarChatRoomEntityDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
+      return (reader.readString(offset)) as P;
+    case 4:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -625,6 +635,142 @@ extension IsarChatRoomEntityQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'name',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      profileHashEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'profileHash',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      profileHashGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'profileHash',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      profileHashLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'profileHash',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      profileHashBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'profileHash',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      profileHashStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'profileHash',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      profileHashEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'profileHash',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      profileHashContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'profileHash',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      profileHashMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'profileHash',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      profileHashIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'profileHash',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      profileHashIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'profileHash',
         value: '',
       ));
     });
@@ -1269,6 +1415,20 @@ extension IsarChatRoomEntityQuerySortBy
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
+      sortByProfileHash() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'profileHash', Sort.asc);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
+      sortByProfileHashDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'profileHash', Sort.desc);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
       sortByRoomId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'roomId', Sort.asc);
@@ -1344,6 +1504,20 @@ extension IsarChatRoomEntityQuerySortThenBy
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
+      thenByProfileHash() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'profileHash', Sort.asc);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
+      thenByProfileHashDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'profileHash', Sort.desc);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
       thenByRoomId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'roomId', Sort.asc);
@@ -1389,6 +1563,13 @@ extension IsarChatRoomEntityQueryWhereDistinct
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QDistinct>
+      distinctByProfileHash({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'profileHash', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QDistinct>
       distinctByRoomId({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'roomId', caseSensitive: caseSensitive);
@@ -1422,6 +1603,13 @@ extension IsarChatRoomEntityQueryProperty
   QueryBuilder<IsarChatRoomEntity, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, String, QQueryOperations>
+      profileHashProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'profileHash');
     });
   }
 

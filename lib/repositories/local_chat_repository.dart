@@ -2,6 +2,7 @@ import 'package:poc_chat_2/extensions/extended_nullable.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
+import 'package:poc_chat_2/models/chat_room_state.dart';
 import 'package:poc_chat_2/models/events/room_event.dart'
     as room_management_event;
 import 'package:poc_chat_2/models/forms/message/message_form.dart';
@@ -35,6 +36,14 @@ class LocalChatRepository {
     return provider.chat
         .getChatRooms()
         .then((chatRooms) => chatRooms.map(ChatRoom.fromIsarEntity).toList())
+        .onError<Error>((error, _) => throw Exception(error.toString()));
+  }
+
+  Future<List<ChatRoomState>> getChatRoomStates() async {
+    return provider.chat
+        .getChatRooms()
+        .then((chatRoomState) =>
+            chatRoomState.map(ChatRoomState.fromIsarEntity).toList())
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 

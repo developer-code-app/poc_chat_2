@@ -1,4 +1,5 @@
 import 'package:poc_chat_2/models/chat_room.dart';
+import 'package:poc_chat_2/models/chat_room_state.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/models/events/room_event.dart';
@@ -23,10 +24,9 @@ class ServerChatRepository {
         .then((response) => response.result);
   }
 
-  Future<List<ChatRoom>> getAllChatRooms() async {
-    return chatApiProvider.chat
-        .getChatRooms()
-        .then((response) => response.result.map(ChatRoom.fromEntity).toList());
+  Future<List<ChatRoomState>> getServerChatRoomStates() async {
+    return chatApiProvider.chat.getServerChatRoomStates().then(
+        (response) => response.result.map(ChatRoomState.fromEntity).toList());
   }
 
   Future<List<String>> getChatRoomEventArchiveUrls({
@@ -60,7 +60,14 @@ class ServerChatRepository {
     return chatApiProvider.chat
         .createChatRoom(request)
         .then((response) => response.result)
-        .then(ChatRoom.fromEntity);
+        .then(
+          (entity) => ChatRoom(
+            id: entity.id,
+            name: request.name,
+            thumbnailUrl: request.thumbnailUrl,
+            members: [],
+          ),
+        );
   }
 
   //  WS /chats

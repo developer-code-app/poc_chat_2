@@ -35,7 +35,7 @@ class RueJaiUserService {
   final ChatRoomLister _chatRoomLister;
 
   Future<List<ChatRoom>> getChatRooms() async {
-    return _chatRoomLister.getAllChatRooms();
+    return _chatRoomLister.getChatRooms();
   }
 
   Future<void> createChatRoom({required ChatRoomForm form}) async {
