@@ -36,7 +36,7 @@ class MockData {
   );
 
   static const chatRoom = ChatRoom(
-    id: 1,
+    id: '1',
     name: "name",
     thumbnailUrl: "thumbnailUrl",
     members: [],
@@ -144,7 +144,7 @@ class MockData {
   );
 
   static final chatRoom2 = ChatRoom(
-    id: 2,
+    id: '2',
     name: "ผู้ดูแลโครงการ",
     thumbnailUrl: '',
     members: [khunPatPong, chatRoomAdmin],

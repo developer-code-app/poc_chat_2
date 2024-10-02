@@ -19,12 +19,12 @@ abstract class RueJaiChatService {
     'api/ruejai-chat/chat-rooms/{chatRoomId}/latest-room-and-message-event-record-number',
   )
   Future<RuejaiIntResponse> getChatRoomLatestRoomAndMessageEventRecordNumber(
-    @Path('chatRoomId') int chatRoomId,
+    @Path('chatRoomId') String chatRoomId,
   );
 
   @GET('api/ruejai-chat/chat-rooms/{chatRoomId}/events')
   Future<RuejaiResultListResponse<String>> getChatRoomEventArchiveUrls(
-    @Path('chatRoomId') int chatRoomId,
+    @Path('chatRoomId') String chatRoomId,
     @Query('start') int startEventRecordNumber,
   );
 

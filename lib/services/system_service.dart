@@ -47,7 +47,7 @@ class SystemService {
   final ServerChatRepository serverChatRepository;
   final AlertDialogCubit alertDialogCubit;
 
-  ChatRoomAction _getChatRoomAction({required int chatRoomId}) {
+  ChatRoomAction _getChatRoomAction({required String chatRoomId}) {
     return ChatRoomAction(
       chatRoomId: chatRoomId,
       localChatRepository: localChatRepository,
@@ -85,13 +85,13 @@ class SystemService {
   }
 
   Future<void> syncChatRoom({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return _getChatRoomAction(chatRoomId: chatRoomId).updateChatRoom();
   }
 
   Future<void> processRecordedEvent({
-    required int chatRoomId,
+    required String chatRoomId,
     required RecordedEvent recordedEvent,
   }) async {
     return _getChatRoomAction(chatRoomId: chatRoomId)

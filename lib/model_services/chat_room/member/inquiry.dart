@@ -7,7 +7,7 @@ class ChatRoomMemberInquiry {
     required this.localChatRepository,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final int memberId;
   final LocalChatRepository localChatRepository;
 

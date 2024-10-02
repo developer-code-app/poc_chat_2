@@ -43,7 +43,7 @@ class IsarChatService {
   }
 
   Future<IsarChatRoomEntity?> getChatRoom({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return isar.then(
       (isar) async {
@@ -108,7 +108,7 @@ class IsarChatService {
   }
 
   Future<int?> getChatRoomLastSyncedRoomAndMessageEventRecordNumber({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return isar.then((isar) {
       return isar.isarChatRoomEntitys
@@ -118,7 +118,7 @@ class IsarChatService {
   }
 
   Future<IsarSendingMessageEntity> createSendingMessage({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required MessageForm form,
   }) async {
     return isar.then((isar) async {

@@ -82,7 +82,7 @@ extension ChatRoomActivityLogMessageFormCreator on ChatRoomMessageFormCreator {
   }
 
   Future<ChatRoomMember> _getChatRoomMemberByRoomEventChatRoomMember({
-    required int chatRoomId,
+    required String chatRoomId,
     required room_event.ChatRoomMember member,
   }) async {
     return _chatRoomInquiry.getMemberByRueJaiUser(

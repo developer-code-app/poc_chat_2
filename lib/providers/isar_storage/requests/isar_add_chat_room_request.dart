@@ -17,7 +17,7 @@ class IsarAddChatRoomRequest {
 
   Map<String, dynamic> toJson() => _$IsarAddChatRoomRequestToJson(this);
 
-  final int chatRoomId;
+  final String chatRoomId;
   final String name;
   final String? thumbnailUrl;
 }

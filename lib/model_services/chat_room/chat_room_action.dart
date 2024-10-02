@@ -16,7 +16,7 @@ class ChatRoomAction {
     required this.serverChatRepository,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final LocalChatRepository localChatRepository;
   final ServerChatRepository serverChatRepository;
 

@@ -16,7 +16,7 @@ class RueJaiChatRoomEntity extends Equatable {
 
   Map<String, dynamic> toJson() => _$RueJaiChatRoomEntityToJson(this);
 
-  final int id;
+  final String id;
   final String name;
   final String? thumbnailUrl;
 

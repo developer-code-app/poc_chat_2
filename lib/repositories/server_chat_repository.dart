@@ -16,7 +16,7 @@ class ServerChatRepository {
   final RuejaiChatArchiveProvider chatArchiveProvider;
 
   Future<int> getChatRoomLatestRoomAndMessageEventRecordNumber({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return chatApiProvider.chat
         .getChatRoomLatestRoomAndMessageEventRecordNumber(chatRoomId)
@@ -30,7 +30,7 @@ class ServerChatRepository {
   }
 
   Future<List<String>> getChatRoomEventArchiveUrls({
-    required int chatRoomId,
+    required String chatRoomId,
     required int startEventRecordNumber,
   }) async {
     return chatApiProvider.chat
@@ -65,13 +65,13 @@ class ServerChatRepository {
 
   //  WS /chats
   Future<void> publishReadMessageEvent({
-    required int chatRoomId,
+    required String chatRoomId,
     required ReadMessageEvent event,
   }) async {}
 
   //  WS /chats
   Future<void> publishRoomManagementEvent({
-    required int chatRoomId,
+    required String chatRoomId,
     required RoomEvent event,
   }) async {}
 }

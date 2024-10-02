@@ -60,7 +60,7 @@ class _RueJaiChatService implements RueJaiChatService {
 
   @override
   Future<RuejaiIntResponse> getChatRoomLatestRoomAndMessageEventRecordNumber(
-      int chatRoomId) async {
+      String chatRoomId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -94,7 +94,7 @@ class _RueJaiChatService implements RueJaiChatService {
 
   @override
   Future<RuejaiResultListResponse<String>> getChatRoomEventArchiveUrls(
-    int chatRoomId,
+    String chatRoomId,
     int startEventRecordNumber,
   ) async {
     final _extra = <String, dynamic>{};

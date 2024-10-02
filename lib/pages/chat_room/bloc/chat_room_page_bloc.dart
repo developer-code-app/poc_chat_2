@@ -88,7 +88,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   final textEditingController = TextEditingController();
   final scrollController = ScrollController();
 
-  final int chatRoomId;
+  final String chatRoomId;
   final AssetsPickerCubit assetsPickerCubit;
   final AlertDialogCubit alertDialogCubit;
   final ReplyMessageCubit replyMessageCubit;

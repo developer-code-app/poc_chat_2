@@ -36,7 +36,7 @@ class MemberService {
         );
 
   final int memberId;
-  final int chatRoomId;
+  final String chatRoomId;
   final LocalChatRepository localChatRepository;
   final ServerChatRepository serverChatRepository;
 

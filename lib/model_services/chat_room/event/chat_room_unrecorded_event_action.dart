@@ -17,7 +17,7 @@ class ChatRoomUnrecordedEventAction {
     required this.localChatRepository,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final Event event;
   final ServerChatRepository serverChatRepository;
   final LocalChatRepository localChatRepository;
@@ -37,7 +37,7 @@ class ChatRoomUnrecordedEventAction {
   }
 
   ChatRoomMessageFormCreator _getChatRoomMessageFormCreator({
-    required int chatRoomId,
+    required String chatRoomId,
   }) {
     return ChatRoomMessageFormCreator(
       chatRoomId: chatRoomId,
@@ -82,7 +82,7 @@ extension _UnrecordedMessageEventAction on ChatRoomUnrecordedEventAction {
   }
 
   Future<MessageForm?> _convertUnrecordedEventToMessageForm({
-    required int chatRoomId,
+    required String chatRoomId,
     required Event event,
   }) async {
     if (event is CreateMessageEvent) {

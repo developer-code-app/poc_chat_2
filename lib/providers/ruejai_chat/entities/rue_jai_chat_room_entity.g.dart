@@ -9,7 +9,7 @@ part of 'rue_jai_chat_room_entity.dart';
 RueJaiChatRoomEntity _$RueJaiChatRoomEntityFromJson(
         Map<String, dynamic> json) =>
     RueJaiChatRoomEntity(
-      id: (json['id'] as num).toInt(),
+      id: json['id'] as String,
       name: json['name'] as String,
       thumbnailUrl: json['thumbnail_url'] as String?,
     );

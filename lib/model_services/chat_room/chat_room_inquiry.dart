@@ -9,11 +9,11 @@ class ChatRoomInquiry {
     required this.localChatRepository,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final LocalChatRepository localChatRepository;
 
   Future<ChatRoom> getChatRoom({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return localChatRepository.getChatRoom(chatRoomId: chatRoomId);
   }

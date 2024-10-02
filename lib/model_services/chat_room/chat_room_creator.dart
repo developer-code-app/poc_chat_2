@@ -8,7 +8,7 @@ class ChatRoomCreator {
   final LocalChatRepository localChatRepository;
 
   Future<void> createChatRoom({
-    required int chatRoomId,
+    required String chatRoomId,
     required String name,
     String? thumbnailUrl,
   }) async {

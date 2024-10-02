@@ -16,13 +16,13 @@ class LocalChatRepository {
   IsarStorageProvider provider;
 
   Future<bool> isChatRoomExists({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return false;
   }
 
   Future<int?> getChatRoomLastSyncedRoomAndMessageEventRecordNumber({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return provider.chat
         .getChatRoomLastSyncedRoomAndMessageEventRecordNumber(
@@ -39,7 +39,7 @@ class LocalChatRepository {
   }
 
   Future<ChatRoom> getChatRoom({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return provider.chat
         .getChatRoom(chatRoomId: chatRoomId)
@@ -74,14 +74,14 @@ class LocalChatRepository {
   }
 
   Future<Message?> getMessage({
-    required int chatRoomId,
+    required String chatRoomId,
     required int recordNumber,
   }) async {
     return null;
   }
 
   Future<void> addChatRoom({
-    required int chatRoomId,
+    required String chatRoomId,
     required String name,
     String? thumbnailUrl,
   }) async {
@@ -97,7 +97,7 @@ class LocalChatRepository {
   }
 
   Future<List<Message>> searchMessages(
-    int chatRoomId,
+    String chatRoomId,
     String query,
   ) async {
     return List.empty();
@@ -106,24 +106,24 @@ class LocalChatRepository {
 
 extension LocalChatRoomRepository on LocalChatRepository {
   Future<int> getLastSyncedRoomManagementEventRecordNumber({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return 0;
   }
 
   Future<List<ChatRoomMember>> getMembers({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return List.empty();
   }
 
   Future<void> createMember({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required room_management_event.ChatRoomMember member,
   }) async {}
 
   Future<ChatRoom> updateChatRoom({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required String? newName,
     required String? newThumbnailUrl,
   }) async {
@@ -131,7 +131,7 @@ extension LocalChatRoomRepository on LocalChatRepository {
   }
 
   Future<ChatRoomMember> updateMemberRole({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required int targetMemberAddedByRecordNumber,
     required ChatRoomMemberRole newRole,
   }) async {
@@ -139,7 +139,7 @@ extension LocalChatRoomRepository on LocalChatRepository {
   }
 
   Future<int> deleteMember({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required int targetMemberAddedByRecordNumber,
   }) async {
     return 1;
@@ -148,7 +148,7 @@ extension LocalChatRoomRepository on LocalChatRepository {
 
 extension LocalChatRoomReadRepository on LocalChatRepository {
   Future<int> getMemberLastReadMessageAddedByRecordNumber({
-    required int chatRoomId,
+    required String chatRoomId,
     required String memberRueJaiUserId,
     required RueJaiUserType memberRueJaiUserType,
   }) async {
@@ -156,13 +156,13 @@ extension LocalChatRoomReadRepository on LocalChatRepository {
   }
 
   Future<int> getLastSyncedReadEventRecordNumber({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return 0;
   }
 
   Future<void> updateMemberLastReadMessage({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required String targetMemberRueJaiUserId,
     required RueJaiUserType targetMemberRueJaiUserType,
     required int newLastReadMessageCreatedByRecordNumber,
@@ -171,7 +171,7 @@ extension LocalChatRoomReadRepository on LocalChatRepository {
 
 extension LocalChatRoomConfirmedMessageRepository on LocalChatRepository {
   Future<int> getLastSyncedMessageEventRecordNumber({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return 0;
   }
@@ -191,14 +191,14 @@ extension LocalChatRoomConfirmedMessageRepository on LocalChatRepository {
   }
 
   Future<Message> createConfirmedMessage({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required MessageForm form,
   }) async {
     return MockData.textMessage;
   }
 
   Future<Message> updateConfirmedTextMessage({
-    required int targetMessageChatRoomId,
+    required String targetMessageChatRoomId,
     required int targetMessageCreatedByRecordNumber,
     required String? newText,
     required DateTime newUpdatedAt,
@@ -232,7 +232,7 @@ extension LocalChatRoomTemporaryMessageRepository on LocalChatRepository {
   }
 
   Future<Message> createUnconfirmedMessage({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required MessageForm form,
   }) async {
     return provider.chat
@@ -242,7 +242,7 @@ extension LocalChatRoomTemporaryMessageRepository on LocalChatRepository {
   }
 
   Future<Message> createSendingMessage({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required MessageForm form,
   }) async {
     return provider.chat
@@ -252,26 +252,26 @@ extension LocalChatRoomTemporaryMessageRepository on LocalChatRepository {
   }
 
   Future<void> createFailedMessage({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required MessageForm form,
   }) async {}
 
   Future<int> deleteUnconfirmedMessage({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required int targetMessageCreatedByRecordNumber,
   }) async {
     return MockData.textMessage.id;
   }
 
   Future<int> deleteSendingMessage({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required int targetMessageCreatedByRecordNumber,
   }) async {
     return MockData.textMessage.id;
   }
 
   Future<int> deleteFailedMessage({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required int targetMessageCreatedByRecordNumber,
   }) async {
     return MockData.textMessage.id;

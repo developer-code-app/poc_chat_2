@@ -15,7 +15,7 @@ class WebSocketSendingMessageAddedRequest {
   });
 
   factory WebSocketSendingMessageAddedRequest.fromModel({
-    required int chatRoomId,
+    required String chatRoomId,
     required Message message,
   }) {
     switch (message) {
@@ -38,7 +38,7 @@ class WebSocketSendingMessageAddedRequest {
   Map<String, dynamic> toJson() =>
       _$WebSocketSendingMessageAddedRequestToJson(this);
 
-  final int chatRoomId;
+  final String chatRoomId;
   final WebSocketType type;
   final WebSocketSendingMessagePayload payload;
 }

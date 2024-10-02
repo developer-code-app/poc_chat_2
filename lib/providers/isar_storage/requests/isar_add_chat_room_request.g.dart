@@ -9,7 +9,7 @@ part of 'isar_add_chat_room_request.dart';
 IsarAddChatRoomRequest _$IsarAddChatRoomRequestFromJson(
         Map<String, dynamic> json) =>
     IsarAddChatRoomRequest(
-      chatRoomId: (json['chat_room_id'] as num).toInt(),
+      chatRoomId: json['chat_room_id'] as String,
       name: json['name'] as String,
       thumbnailUrl: json['thumbnail_url'] as String?,
     );

@@ -14,7 +14,7 @@ class ChatRoomEventCreator {
           rueJaiUserType: rueJaiUser.rueJaiUserType,
         );
 
-  final int chatRoomId;
+  final String chatRoomId;
   final Owner owner;
 
   room_management_event.InviteMemberEvent createInviteMemberEvent({

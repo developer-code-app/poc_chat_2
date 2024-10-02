@@ -25,7 +25,7 @@ class ChatRoomBasicInfoUpdatedEvent extends _Event {
     this.thumbnailUrl,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final String? name;
   final String? thumbnailUrl;
 }
@@ -36,7 +36,7 @@ class ChatRoomMemberAddedEvent extends _Event {
     required this.member,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final ChatRoomMember member;
 }
 
@@ -49,7 +49,7 @@ class ChatRoomMemberUpdatedEvent extends _Event {
     this.role,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final int memberId;
   final String? name;
   final String? thumbnailUrl;
@@ -62,7 +62,7 @@ class ChatRoomMemberRemovedEvent extends _Event {
     required this.memberId,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final int memberId;
 }
 
@@ -73,7 +73,7 @@ class ChatRoomMemberLastReadMessageUpdatedEvent extends _Event {
     required this.lastReadMessageId,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final int memberId;
   final int lastReadMessageId;
 }
@@ -84,7 +84,7 @@ class ChatRoomConfirmedMessageAddedEvent extends _Event {
     required this.message,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final Message message;
 }
 
@@ -94,7 +94,7 @@ class ChatRoomConfirmedMessageEditedEvent extends _Event {
     required this.message,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final Message message;
 }
 
@@ -104,7 +104,7 @@ class ChatRoomConfirmedMessageRemovedEvent extends _Event {
     required this.messageId,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final int messageId;
 }
 
@@ -114,7 +114,7 @@ class ChatRoomSendingMessageAddedEvent extends _Event {
     required this.message,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final Message message;
 }
 
@@ -124,7 +124,7 @@ class ChatRoomSendingMessageTimeOutEvent extends _Event {
     required this.messageId,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final int messageId;
 }
 
@@ -134,7 +134,7 @@ class ChatRoomFailedMessageRetriedEvent extends _Event {
     required this.messageId,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final int messageId;
 }
 
@@ -144,7 +144,7 @@ class ChatRoomFailedMessageRemovedEvent extends _Event {
     required this.messageId,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final int messageId;
 }
 

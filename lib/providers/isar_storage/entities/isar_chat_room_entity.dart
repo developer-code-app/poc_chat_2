@@ -13,7 +13,7 @@ class IsarChatRoomEntity {
   Id id = Isar.autoIncrement;
 
   @Index(unique: true)
-  late int roomId;
+  late String roomId;
 
   late String name;
 
