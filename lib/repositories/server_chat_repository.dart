@@ -1,4 +1,3 @@
-import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_state.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
@@ -52,7 +51,7 @@ class ServerChatRepository {
             .toList());
   }
 
-  Future<ChatRoom> publishCreateChatRoomEvent({
+  Future<ChatRoomState> publishCreateChatRoomEvent({
     required CreateRoomEvent event,
   }) async {
     final request = RuejaiChatCreateChatRoomRequest.fromEvent(event);
@@ -60,14 +59,7 @@ class ServerChatRepository {
     return chatApiProvider.chat
         .createChatRoom(request)
         .then((response) => response.result)
-        .then(
-          (entity) => ChatRoom(
-            id: entity.id,
-            name: request.name,
-            thumbnailUrl: request.thumbnailUrl,
-            members: [],
-          ),
-        );
+        .then(ChatRoomState.fromEntity);
   }
 
   //  WS /chats

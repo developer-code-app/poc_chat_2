@@ -100,9 +100,10 @@ class ChatsPageBloc extends Bloc<_Event, _State> {
         name: event.name,
         members: [
           ChatRoomMemberForm(
-            role: ChatRoomMemberRole.member,
+            role: ChatRoomMemberRole.admin,
             rueJaiUserId: currentRueJaiUser.rueJaiUserId,
             rueJaiUserType: currentRueJaiUser.rueJaiUserType,
+            lastReadMessageId: 0,
           ),
         ],
       );

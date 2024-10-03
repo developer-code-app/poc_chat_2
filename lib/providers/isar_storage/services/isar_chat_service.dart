@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:poc_chat_2/mock_data.dart';
-import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/forms/message/member_message_form.dart';
 import 'package:poc_chat_2/models/forms/message/message_form.dart';
 import 'package:poc_chat_2/models/messages/message_type.dart';
@@ -55,28 +54,39 @@ class IsarChatService {
     );
   }
 
-  Future<void> addChatRoom(IsarAddChatRoomRequest request) async {
+  Future<IsarChatRoomEntity> addChatRoom(IsarAddChatRoomRequest request) async {
     return isar.then((isar) async {
       final rueJaiUserEntity = await _createRueJaiUserIfExists();
+
       final room = IsarChatRoomEntity()
         ..roomId = request.chatRoomId
         ..name = request.name
-        ..thumbnail = request.thumbnailUrl;
-      final member = IsarChatRoomMemberEntity()
-        ..lastReadMessageId = 0
-        ..role = ChatRoomMemberRole.member
-        ..rueJaiUser.value = rueJaiUserEntity;
+        ..thumbnail = request.thumbnailUrl
+        ..lastSyncedRoomAndMessageEventRecordNumber =
+            request.lastSyncedRoomAndMessageEventRecordNumber
+        ..profileHash = request.profileHash;
+      final members = request.members
+          .map(
+            (member) => IsarChatRoomMemberEntity()
+              ..lastReadMessageId = member.lastReadMessageId
+              ..role = member.role
+              ..rueJaiUser.value = rueJaiUserEntity,
+          )
+          .toList();
 
       await isar.writeTxn(() async {
-        await isar.isarChatRoomMemberEntitys.put(member);
-        await member.rueJaiUser.save();
+        await isar.isarChatRoomMemberEntitys.putAll(members);
+
+        members.forEach((member) async => await member.rueJaiUser.save());
 
         await isar.isarChatRoomEntitys.put(room);
 
-        room.members.add(member);
+        room.members.addAll(members);
 
         await room.members.save();
       });
+
+      return room;
     });
   }
 

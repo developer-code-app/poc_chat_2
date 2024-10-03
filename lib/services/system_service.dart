@@ -84,11 +84,11 @@ class SystemService {
     // _createAndSyncNewChatRoomsIfExists();
   }
 
-  Future<void> syncChatRoom({
-    required String chatRoomId,
-  }) async {
-    return _getChatRoomAction(chatRoomId: chatRoomId).updateChatRoom();
-  }
+  // Future<void> syncChatRoom({
+  //   required String chatRoomId,
+  // }) async {
+  //   return _getChatRoomAction(chatRoomId: chatRoomId).updateChatRoom();
+  // }
 
   Future<void> processRecordedEvent({
     required String chatRoomId,

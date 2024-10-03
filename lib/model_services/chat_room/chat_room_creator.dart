@@ -1,3 +1,6 @@
+import 'package:poc_chat_2/models/chat_room.dart';
+import 'package:poc_chat_2/models/chat_room_state.dart';
+import 'package:poc_chat_2/models/forms/chat_room_form.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 
 class ChatRoomCreator {
@@ -7,15 +10,13 @@ class ChatRoomCreator {
 
   final LocalChatRepository localChatRepository;
 
-  Future<void> createChatRoom({
-    required String chatRoomId,
-    required String name,
-    String? thumbnailUrl,
+  Future<ChatRoom> createChatRoom({
+    required ChatRoomState chatRoomState,
+    required ChatRoomForm form,
   }) async {
-    await localChatRepository.addChatRoom(
-      chatRoomId: chatRoomId,
-      name: name,
-      thumbnailUrl: thumbnailUrl,
+    return localChatRepository.addChatRoom(
+      chatRoomState: chatRoomState,
+      form: form,
     );
   }
 }

@@ -41,16 +41,15 @@ class RueJaiUserService {
   Future<void> createChatRoom({required ChatRoomForm form}) async {
     final event = _eventCreator.createCreateRoomEventFromForm(form: form);
 
-    final chatRoom = await serverChatRepository.publishCreateChatRoomEvent(
+    final chatRoomState = await serverChatRepository.publishCreateChatRoomEvent(
       event: event,
     );
-
-    await _chatRoomCreator.createChatRoom(
-      chatRoomId: chatRoom.id,
-      name: chatRoom.name,
-      thumbnailUrl: chatRoom.thumbnailUrl,
+    final chatRoom = await _chatRoomCreator.createChatRoom(
+      chatRoomState: chatRoomState,
+      form: form,
     );
-    await systemService.syncChatRoom(chatRoomId: chatRoom.id);
+
+    // await systemService.syncChatRoom(chatRoomId: chatRoom.id);
 
     broadcaster.Broadcaster.instance.add(
       broadcaster.CreatedAndSyncedNewChatRooms(),
