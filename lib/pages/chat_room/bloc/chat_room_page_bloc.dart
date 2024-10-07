@@ -270,8 +270,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
       final members = state.chatRoom.members;
       final memberIndex =
           members.indexWhere((member) => member.id == event.memberId);
-      final member = members[memberIndex]
-          .copyWith(lastReadMessageId: event.lastReadMessageId);
+      final member = members[memberIndex].copyWith(
+          lastReadMessageRecordNumber: event.lastReadMessageRecordNumber);
 
       members.removeAt(memberIndex);
       members.insert(memberIndex, member);
@@ -798,7 +798,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         add(ChatRoomMemberLastReadMessageUpdatedEvent(
           chatRoomId: message.chatRoomId,
           memberId: message.memberId,
-          lastReadMessageId: message.lastReadMessageId,
+          lastReadMessageRecordNumber: message.lastReadMessageId,
         ));
     }
   }

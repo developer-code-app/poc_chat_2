@@ -35,7 +35,7 @@ class ChatRoomMemberUpdated extends ChatRoomBasicInfo {
     this.role,
   });
 
-  final int memberId;
+  final String memberId;
   final String? name;
   final String? thumbnailUrl;
   final ChatRoomMemberRole? role;
@@ -47,7 +47,7 @@ class ChatRoomMemberRemoved extends ChatRoomBasicInfo {
     required this.memberId,
   });
 
-  final int memberId;
+  final String memberId;
 }
 
 class ChatRoomMemberLastReadMessageUpdated extends ChatRoomBasicInfo {
@@ -57,6 +57,6 @@ class ChatRoomMemberLastReadMessageUpdated extends ChatRoomBasicInfo {
     required this.lastReadMessageId,
   });
 
-  final int memberId;
+  final String memberId;
   final int lastReadMessageId;
 }

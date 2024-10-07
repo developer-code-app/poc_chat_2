@@ -23,7 +23,6 @@ class ChatRoomInquiry {
     required RueJaiUserType rueJaiUserType,
   }) async {
     final rueJaiUser = RueJaiUser(
-      id: 1,
       rueJaiUserId: rueJaiUserId,
       rueJaiUserType: rueJaiUserType,
       rueJaiUserRole: RueJaiUserRole.customerService,
@@ -32,10 +31,10 @@ class ChatRoomInquiry {
     );
 
     return ChatRoomMember(
-      id: 1,
+      id: '1',
       role: ChatRoomMemberRole.member,
       rueJaiUser: rueJaiUser,
-      lastReadMessageId: 0,
+      lastReadMessageRecordNumber: 0,
     );
   }
 

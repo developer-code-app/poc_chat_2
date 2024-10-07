@@ -172,7 +172,7 @@ class __BaseAppState extends State<_BaseApp> {
     );
     final memberService = MemberService(
       chatRoomId: '1',
-      memberId: 1,
+      memberId: '1',
       localChatRepository: context.read<LocalChatRepository>(),
       serverChatRepository: context.read<ServerChatRepository>(),
     );

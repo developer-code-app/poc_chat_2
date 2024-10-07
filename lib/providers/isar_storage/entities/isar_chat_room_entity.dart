@@ -19,7 +19,8 @@ class IsarChatRoomEntity {
 
   late int lastSyncedRoomAndMessageEventRecordNumber;
 
-  String? thumbnail;
+  String? thumbnailUrl;
+  DateTime? deletedAt;
 
   late String profileHash;
 

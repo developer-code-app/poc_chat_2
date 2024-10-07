@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:poc_chat_2/flavor_constants.dart';
 
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_recorded_event_action.dart';
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_unrecorded_event_action.dart';
-import 'package:poc_chat_2/models/chat_room.dart';
+import 'package:poc_chat_2/models/chat_room_sync_state.dart';
 import 'package:poc_chat_2/models/events/event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
@@ -41,68 +43,28 @@ class ChatRoomAction {
     ).processEvent();
   }
 
-  Future<void> updateChatRoom() async {
-    final chatRoomSyncState = await _getChatRoomSyncState();
-
-    _updateChatRoomState(
-      currentSyncState: chatRoomSyncState.roomAndMessageEventSyncState,
-      onUnsynced: () => _syncChatRoomRoomAndMessageEvent(
-        lastSyncedEventRecordNumber:
-            chatRoomSyncState.latestRoomAndMessageEventRecordNumber,
+  Future<void> updateChatRoom({
+    required ChatRoomSyncState chatRoomSyncState,
+  }) async {
+    chatRoomSyncState.chatRoomProfileSyncState(
+      onUnsynced: () => _syncChatRoomProfile(),
+    );
+    chatRoomSyncState.roomAndMessageEventSyncState(
+      onUnsynced: (lastSyncedEventRecordNumber) => _syncChatRoomEvent(
+        lastSyncedEventRecordNumber: lastSyncedEventRecordNumber,
       ),
     );
+
     _syncChatRoomReadEvent();
   }
 
-  Future<ChatRoomSyncState> _getChatRoomSyncState() async {
-    final lastSyncedRoomAndMessageEventRecordNumber =
-        await getChatRoomLastSyncedRoomAndMessageEventRecordNumber();
-    final serverLatestRoomAndMessageEventRecordNumber =
-        await getServerChatRoomLatestRoomAndMessageEventRecordNumber();
-
-    return ChatRoomSyncState(
-      roomAndMessageEventSyncState: _getSyncState(
-        latestRecordNumber: lastSyncedRoomAndMessageEventRecordNumber,
-        serverLatestRecordNumber: serverLatestRoomAndMessageEventRecordNumber,
-      ),
-      latestRoomAndMessageEventRecordNumber:
-          lastSyncedRoomAndMessageEventRecordNumber,
-    );
-  }
-
-  Future<int> getChatRoomLastSyncedRoomAndMessageEventRecordNumber() async {
-    return (await localChatRepository
-            .getChatRoomLastSyncedRoomAndMessageEventRecordNumber(
-          chatRoomId: chatRoomId,
-        )) ??
-        0;
-  }
-
-  Future<int> getServerChatRoomLatestRoomAndMessageEventRecordNumber() async {
-    return serverChatRepository
-        .getChatRoomLatestRoomAndMessageEventRecordNumber(
+  Future<void> _syncChatRoomProfile() async {
+    final chatRoomProfile = await serverChatRepository.getServerChatRoomProfile(
       chatRoomId: chatRoomId,
     );
-  }
 
-  SyncState _getSyncState({
-    required int latestRecordNumber,
-    required int serverLatestRecordNumber,
-  }) {
-    if (latestRecordNumber == serverLatestRecordNumber) {
-      return SyncState.synced;
-    } else if (latestRecordNumber < serverLatestRecordNumber) {
-      return SyncState.unsynced;
-    } else {
-      return SyncState.corrupted;
-    }
-  }
-
-  Future<void> _syncChatRoomRoomAndMessageEvent({
-    required int lastSyncedEventRecordNumber,
-  }) async {
-    await _syncChatRoomEvent(
-      lastSyncedEventRecordNumber: lastSyncedEventRecordNumber,
+    await localChatRepository.updateChatRoomProfile(
+      chatRoomProfile: chatRoomProfile,
     );
   }
 
@@ -120,6 +82,12 @@ class ChatRoomAction {
     }
   }
 
+  Future<void> removeChatRoom() async {
+    await localChatRepository.removeChatRoom(
+      chatRoomId: chatRoomId,
+    );
+  }
+
   Future<List<RecordedEvent>> _getServerEventsAfter(
       {required int startAt}) async {
     // TODO: This is for POC only, change to real implementation
@@ -127,24 +95,5 @@ class ChatRoomAction {
         '${FlavorConfig.instance.variables[FlavorVariableKeys.ruejaiChatApiBaseUrl]}api/ruejai-chat/chat-rooms/$chatRoomId/events';
 
     return serverChatRepository.getChatRoomEventsFromUrl(url: url);
-  }
-
-  Future<void> _updateChatRoomState({
-    required SyncState currentSyncState,
-    Function()? onSynced,
-    Function()? onUnsynced,
-    Function()? onCorrupted,
-  }) async {
-    switch (currentSyncState) {
-      case SyncState.synced:
-        onSynced?.call();
-        break;
-      case SyncState.unsynced:
-        onUnsynced?.call();
-        break;
-      case SyncState.corrupted:
-        onCorrupted?.call();
-        break;
-    }
   }
 }

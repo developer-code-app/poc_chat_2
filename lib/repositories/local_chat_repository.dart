@@ -2,7 +2,8 @@ import 'package:poc_chat_2/extensions/extended_nullable.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
-import 'package:poc_chat_2/models/chat_room_state.dart';
+import 'package:poc_chat_2/models/chat_room_profile.dart';
+import 'package:poc_chat_2/models/chat_room_sync_state.dart';
 import 'package:poc_chat_2/models/events/room_event.dart'
     as room_management_event;
 import 'package:poc_chat_2/models/forms/chat_room_form.dart';
@@ -11,6 +12,7 @@ import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
 import 'package:poc_chat_2/providers/isar_storage/requests/isar_add_chat_room_request.dart';
+import 'package:poc_chat_2/providers/isar_storage/requests/isar_update_chat_room_profile_request.dart';
 
 class LocalChatRepository {
   LocalChatRepository({required this.provider});
@@ -90,23 +92,22 @@ class LocalChatRepository {
     return null;
   }
 
-  Future<ChatRoom> addChatRoom({
-    required ChatRoomState chatRoomState,
-    required ChatRoomForm form,
+  Future<ChatRoomState> addChatRoom({
+    required String chatRoomId,
+    String? profileHash,
+    ChatRoomForm? form,
   }) async {
     final request = IsarAddChatRoomRequest(
-      chatRoomId: chatRoomState.id,
-      name: form.name,
-      thumbnailUrl: form.thumbnailUrl,
-      members: form.members,
-      lastSyncedRoomAndMessageEventRecordNumber:
-          chatRoomState.latestRoomAndMessageEventRecordNumber,
-      profileHash: chatRoomState.profileHash,
+      chatRoomId: chatRoomId,
+      name: form?.name ?? '',
+      thumbnailUrl: form?.thumbnailUrl,
+      members: form?.members ?? [],
+      profileHash: profileHash ?? '',
     );
 
     return provider.chat
         .addChatRoom(request)
-        .then(ChatRoom.fromIsarEntity)
+        .then(ChatRoomState.fromIsarEntity)
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
@@ -116,9 +117,33 @@ class LocalChatRepository {
   ) async {
     return List.empty();
   }
+
+  Future<void> updateChatRoomProfile({
+    required ChatRoomProfile chatRoomProfile,
+  }) async {
+    final request = IsarUpdateChatRoomProfileRequest(
+      roomId: chatRoomProfile.id,
+      name: chatRoomProfile.name,
+      profileHash: chatRoomProfile.profileHash,
+      thumbnailUrl: chatRoomProfile.thumbnailUrl,
+      members: chatRoomProfile.members,
+    );
+
+    return provider.chat
+        .updateChatRoomProfile(request)
+        .onError<Error>((error, _) => throw Exception(error.toString()));
+  }
 }
 
 extension LocalChatRoomRepository on LocalChatRepository {
+  Future<void> removeChatRoom({
+    required String chatRoomId,
+  }) async {
+    return provider.chat
+        .removeChatRoom(chatRoomId: chatRoomId)
+        .onError<Error>((error, _) => throw Exception(error.toString()));
+  }
+
   Future<int> getLastSyncedRoomManagementEventRecordNumber({
     required String chatRoomId,
   }) async {

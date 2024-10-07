@@ -35,7 +35,7 @@ class MemberService {
           rueJaiUser: MockData.currentRueJaiUser,
         );
 
-  final int memberId;
+  final String memberId;
   final String chatRoomId;
   final LocalChatRepository localChatRepository;
   final ServerChatRepository serverChatRepository;

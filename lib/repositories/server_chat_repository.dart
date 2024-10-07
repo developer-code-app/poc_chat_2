@@ -1,4 +1,5 @@
-import 'package:poc_chat_2/models/chat_room_state.dart';
+import 'package:poc_chat_2/models/chat_room_profile.dart';
+import 'package:poc_chat_2/models/chat_room_sync_state.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/models/events/room_event.dart';
@@ -23,9 +24,17 @@ class ServerChatRepository {
         .then((response) => response.result);
   }
 
-  Future<List<ChatRoomState>> getServerChatRoomStates() async {
-    return chatApiProvider.chat.getServerChatRoomStates().then(
-        (response) => response.result.map(ChatRoomState.fromEntity).toList());
+  Future<List<ServerChatRoomState>> getServerChatRoomStates() async {
+    return chatApiProvider.chat.getServerChatRoomStates().then((response) =>
+        response.result.map(ServerChatRoomState.fromEntity).toList());
+  }
+
+  Future<ChatRoomProfile> getServerChatRoomProfile({
+    required String chatRoomId,
+  }) async {
+    return chatApiProvider.chat
+        .getServerChatRoomProfile(chatRoomId)
+        .then((response) => ChatRoomProfile.fromEntity(response.result));
   }
 
   Future<List<String>> getChatRoomEventArchiveUrls({
@@ -51,7 +60,7 @@ class ServerChatRepository {
             .toList());
   }
 
-  Future<ChatRoomState> publishCreateChatRoomEvent({
+  Future<ServerChatRoomState> publishCreateChatRoomEvent({
     required CreateRoomEvent event,
   }) async {
     final request = RuejaiChatCreateChatRoomRequest.fromEvent(event);
@@ -59,7 +68,7 @@ class ServerChatRepository {
     return chatApiProvider.chat
         .createChatRoom(request)
         .then((response) => response.result)
-        .then(ChatRoomState.fromEntity);
+        .then(ServerChatRoomState.fromEntity);
   }
 
   //  WS /chats

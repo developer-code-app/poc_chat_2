@@ -61,6 +61,45 @@ class _RueJaiChatService implements RueJaiChatService {
   }
 
   @override
+  Future<RuejaiResponse<RueJaiChatRoomProfileEntity>> getServerChatRoomProfile(
+      String chatRoomId) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options =
+        _setStreamType<RuejaiResponse<RueJaiChatRoomProfileEntity>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'api/ruejai-chat/chat-room/${chatRoomId}/profile',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late RuejaiResponse<RueJaiChatRoomProfileEntity> _value;
+    try {
+      _value = RuejaiResponse<RueJaiChatRoomProfileEntity>.fromJson(
+        _result.data!,
+        (json) =>
+            RueJaiChatRoomProfileEntity.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<RuejaiIntResponse> getChatRoomLatestRoomAndMessageEventRecordNumber(
       String chatRoomId) async {
     final _extra = <String, dynamic>{};

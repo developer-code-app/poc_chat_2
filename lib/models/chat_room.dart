@@ -5,22 +5,6 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 
 part 'chat_room.g.dart';
 
-class ChatRoomSyncState {
-  ChatRoomSyncState({
-    required this.roomAndMessageEventSyncState,
-    required this.latestRoomAndMessageEventRecordNumber,
-  });
-
-  final SyncState roomAndMessageEventSyncState;
-  final int latestRoomAndMessageEventRecordNumber;
-}
-
-enum SyncState {
-  synced,
-  unsynced,
-  corrupted,
-}
-
 @CopyWith()
 class ChatRoom {
   const ChatRoom({
@@ -37,7 +21,7 @@ class ChatRoom {
     return ChatRoom(
       id: entity.roomId,
       name: entity.name,
-      thumbnailUrl: entity.thumbnail,
+      thumbnailUrl: entity.thumbnailUrl,
       members: entity.members.map(ChatRoomMember.fromIsarEntity).toList(),
       confirmedMessages: entity.confirmedMessages
           .map(Message.fromConfirmedMessageEntity)

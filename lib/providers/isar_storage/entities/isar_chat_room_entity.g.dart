@@ -18,29 +18,34 @@ const IsarChatRoomEntitySchema = CollectionSchema(
   name: r'ChatRoom',
   id: 3645375135519982771,
   properties: {
-    r'lastSyncedRoomAndMessageEventRecordNumber': PropertySchema(
+    r'deletedAt': PropertySchema(
       id: 0,
+      name: r'deletedAt',
+      type: IsarType.dateTime,
+    ),
+    r'lastSyncedRoomAndMessageEventRecordNumber': PropertySchema(
+      id: 1,
       name: r'lastSyncedRoomAndMessageEventRecordNumber',
       type: IsarType.long,
     ),
     r'name': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'name',
       type: IsarType.string,
     ),
     r'profileHash': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'profileHash',
       type: IsarType.string,
     ),
     r'roomId': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'roomId',
       type: IsarType.string,
     ),
-    r'thumbnail': PropertySchema(
-      id: 4,
-      name: r'thumbnail',
+    r'thumbnailUrl': PropertySchema(
+      id: 5,
+      name: r'thumbnailUrl',
       type: IsarType.string,
     )
   },
@@ -113,7 +118,7 @@ int _isarChatRoomEntityEstimateSize(
   bytesCount += 3 + object.profileHash.length * 3;
   bytesCount += 3 + object.roomId.length * 3;
   {
-    final value = object.thumbnail;
+    final value = object.thumbnailUrl;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -127,12 +132,13 @@ void _isarChatRoomEntitySerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
+  writer.writeDateTime(offsets[0], object.deletedAt);
   writer.writeLong(
-      offsets[0], object.lastSyncedRoomAndMessageEventRecordNumber);
-  writer.writeString(offsets[1], object.name);
-  writer.writeString(offsets[2], object.profileHash);
-  writer.writeString(offsets[3], object.roomId);
-  writer.writeString(offsets[4], object.thumbnail);
+      offsets[1], object.lastSyncedRoomAndMessageEventRecordNumber);
+  writer.writeString(offsets[2], object.name);
+  writer.writeString(offsets[3], object.profileHash);
+  writer.writeString(offsets[4], object.roomId);
+  writer.writeString(offsets[5], object.thumbnailUrl);
 }
 
 IsarChatRoomEntity _isarChatRoomEntityDeserialize(
@@ -142,13 +148,14 @@ IsarChatRoomEntity _isarChatRoomEntityDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = IsarChatRoomEntity();
+  object.deletedAt = reader.readDateTimeOrNull(offsets[0]);
   object.id = id;
   object.lastSyncedRoomAndMessageEventRecordNumber =
-      reader.readLong(offsets[0]);
-  object.name = reader.readString(offsets[1]);
-  object.profileHash = reader.readString(offsets[2]);
-  object.roomId = reader.readString(offsets[3]);
-  object.thumbnail = reader.readStringOrNull(offsets[4]);
+      reader.readLong(offsets[1]);
+  object.name = reader.readString(offsets[2]);
+  object.profileHash = reader.readString(offsets[3]);
+  object.roomId = reader.readString(offsets[4]);
+  object.thumbnailUrl = reader.readStringOrNull(offsets[5]);
   return object;
 }
 
@@ -160,14 +167,16 @@ P _isarChatRoomEntityDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -392,6 +401,80 @@ extension IsarChatRoomEntityQueryWhere
 
 extension IsarChatRoomEntityQueryFilter
     on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QFilterCondition> {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      deletedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'deletedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      deletedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'deletedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      deletedAtEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'deletedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      deletedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'deletedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      deletedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'deletedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
+      deletedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'deletedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
       idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -913,31 +996,31 @@ extension IsarChatRoomEntityQueryFilter
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
-      thumbnailIsNull() {
+      thumbnailUrlIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'thumbnail',
+        property: r'thumbnailUrl',
       ));
     });
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
-      thumbnailIsNotNull() {
+      thumbnailUrlIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'thumbnail',
+        property: r'thumbnailUrl',
       ));
     });
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
-      thumbnailEqualTo(
+      thumbnailUrlEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'thumbnail',
+        property: r'thumbnailUrl',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -945,7 +1028,7 @@ extension IsarChatRoomEntityQueryFilter
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
-      thumbnailGreaterThan(
+      thumbnailUrlGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -953,7 +1036,7 @@ extension IsarChatRoomEntityQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'thumbnail',
+        property: r'thumbnailUrl',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -961,7 +1044,7 @@ extension IsarChatRoomEntityQueryFilter
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
-      thumbnailLessThan(
+      thumbnailUrlLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -969,7 +1052,7 @@ extension IsarChatRoomEntityQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'thumbnail',
+        property: r'thumbnailUrl',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -977,7 +1060,7 @@ extension IsarChatRoomEntityQueryFilter
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
-      thumbnailBetween(
+      thumbnailUrlBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -986,7 +1069,7 @@ extension IsarChatRoomEntityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'thumbnail',
+        property: r'thumbnailUrl',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -997,13 +1080,13 @@ extension IsarChatRoomEntityQueryFilter
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
-      thumbnailStartsWith(
+      thumbnailUrlStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'thumbnail',
+        property: r'thumbnailUrl',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -1011,13 +1094,13 @@ extension IsarChatRoomEntityQueryFilter
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
-      thumbnailEndsWith(
+      thumbnailUrlEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'thumbnail',
+        property: r'thumbnailUrl',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -1025,10 +1108,10 @@ extension IsarChatRoomEntityQueryFilter
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
-      thumbnailContains(String value, {bool caseSensitive = true}) {
+      thumbnailUrlContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'thumbnail',
+        property: r'thumbnailUrl',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -1036,10 +1119,10 @@ extension IsarChatRoomEntityQueryFilter
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
-      thumbnailMatches(String pattern, {bool caseSensitive = true}) {
+      thumbnailUrlMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'thumbnail',
+        property: r'thumbnailUrl',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
@@ -1047,20 +1130,20 @@ extension IsarChatRoomEntityQueryFilter
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
-      thumbnailIsEmpty() {
+      thumbnailUrlIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'thumbnail',
+        property: r'thumbnailUrl',
         value: '',
       ));
     });
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterFilterCondition>
-      thumbnailIsNotEmpty() {
+      thumbnailUrlIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'thumbnail',
+        property: r'thumbnailUrl',
         value: '',
       ));
     });
@@ -1385,6 +1468,20 @@ extension IsarChatRoomEntityQueryLinks
 extension IsarChatRoomEntityQuerySortBy
     on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QSortBy> {
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
+      sortByDeletedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deletedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
+      sortByDeletedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deletedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
       sortByLastSyncedRoomAndMessageEventRecordNumber() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(
@@ -1443,22 +1540,36 @@ extension IsarChatRoomEntityQuerySortBy
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
-      sortByThumbnail() {
+      sortByThumbnailUrl() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'thumbnail', Sort.asc);
+      return query.addSortBy(r'thumbnailUrl', Sort.asc);
     });
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
-      sortByThumbnailDesc() {
+      sortByThumbnailUrlDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'thumbnail', Sort.desc);
+      return query.addSortBy(r'thumbnailUrl', Sort.desc);
     });
   }
 }
 
 extension IsarChatRoomEntityQuerySortThenBy
     on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QSortThenBy> {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
+      thenByDeletedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deletedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
+      thenByDeletedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deletedAt', Sort.desc);
+    });
+  }
+
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
       thenById() {
     return QueryBuilder.apply(this, (query) {
@@ -1532,22 +1643,29 @@ extension IsarChatRoomEntityQuerySortThenBy
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
-      thenByThumbnail() {
+      thenByThumbnailUrl() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'thumbnail', Sort.asc);
+      return query.addSortBy(r'thumbnailUrl', Sort.asc);
     });
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QAfterSortBy>
-      thenByThumbnailDesc() {
+      thenByThumbnailUrlDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'thumbnail', Sort.desc);
+      return query.addSortBy(r'thumbnailUrl', Sort.desc);
     });
   }
 }
 
 extension IsarChatRoomEntityQueryWhereDistinct
     on QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QDistinct> {
+  QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QDistinct>
+      distinctByDeletedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'deletedAt');
+    });
+  }
+
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QDistinct>
       distinctByLastSyncedRoomAndMessageEventRecordNumber() {
     return QueryBuilder.apply(this, (query) {
@@ -1577,9 +1695,9 @@ extension IsarChatRoomEntityQueryWhereDistinct
   }
 
   QueryBuilder<IsarChatRoomEntity, IsarChatRoomEntity, QDistinct>
-      distinctByThumbnail({bool caseSensitive = true}) {
+      distinctByThumbnailUrl({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'thumbnail', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'thumbnailUrl', caseSensitive: caseSensitive);
     });
   }
 }
@@ -1589,6 +1707,13 @@ extension IsarChatRoomEntityQueryProperty
   QueryBuilder<IsarChatRoomEntity, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<IsarChatRoomEntity, DateTime?, QQueryOperations>
+      deletedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'deletedAt');
     });
   }
 
@@ -1620,9 +1745,9 @@ extension IsarChatRoomEntityQueryProperty
   }
 
   QueryBuilder<IsarChatRoomEntity, String?, QQueryOperations>
-      thumbnailProperty() {
+      thumbnailUrlProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'thumbnail');
+      return query.addPropertyName(r'thumbnailUrl');
     });
   }
 }

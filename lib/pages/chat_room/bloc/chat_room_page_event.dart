@@ -50,7 +50,7 @@ class ChatRoomMemberUpdatedEvent extends _Event {
   });
 
   final String chatRoomId;
-  final int memberId;
+  final String memberId;
   final String? name;
   final String? thumbnailUrl;
   final ChatRoomMemberRole? role;
@@ -63,19 +63,19 @@ class ChatRoomMemberRemovedEvent extends _Event {
   });
 
   final String chatRoomId;
-  final int memberId;
+  final String memberId;
 }
 
 class ChatRoomMemberLastReadMessageUpdatedEvent extends _Event {
   ChatRoomMemberLastReadMessageUpdatedEvent({
     required this.chatRoomId,
     required this.memberId,
-    required this.lastReadMessageId,
+    required this.lastReadMessageRecordNumber,
   });
 
   final String chatRoomId;
-  final int memberId;
-  final int lastReadMessageId;
+  final String memberId;
+  final int lastReadMessageRecordNumber;
 }
 
 class ChatRoomConfirmedMessageAddedEvent extends _Event {

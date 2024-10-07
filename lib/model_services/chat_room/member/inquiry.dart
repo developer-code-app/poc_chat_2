@@ -8,7 +8,7 @@ class ChatRoomMemberInquiry {
   });
 
   final String chatRoomId;
-  final int memberId;
+  final String memberId;
   final LocalChatRepository localChatRepository;
 
   Future<int> getLastReadMessageId() async {
