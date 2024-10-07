@@ -10,7 +10,7 @@ class WebSocketMessageReceived extends WebSocket {
     required this.recordedEvent,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final RecordedEvent recordedEvent;
 }
 
@@ -20,6 +20,6 @@ class WebSocketMessageSent extends WebSocket {
     required this.message,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final Message message;
 }

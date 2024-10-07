@@ -14,7 +14,7 @@ class ChatRoomRecordedEventAction {
     required this.localChatRepository,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final RecordedEvent recordedEvent;
   final LocalChatRepository localChatRepository;
 
@@ -33,7 +33,7 @@ class ChatRoomRecordedEventAction {
   }
 
   ChatRoomMessageFormCreator _getChatRoomMessageFormCreator({
-    required int chatRoomId,
+    required String chatRoomId,
   }) {
     return ChatRoomMessageFormCreator(
       chatRoomId: chatRoomId,
@@ -59,7 +59,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
   }
 
   Future<void> _updateChatRoomPersistentMessage({
-    required int chatRoomId,
+    required String chatRoomId,
     required RecordedEvent recordedEvent,
   }) async {
     if (!await _canEventUpdateChatRoomPersistentMessage(
@@ -114,7 +114,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
   }
 
   Future<void> _updateChatRoomTemporaryMessage({
-    required int chatRoomId,
+    required String chatRoomId,
     required RecordedEvent recordedEvent,
   }) async {
     final event = recordedEvent.event;
@@ -159,7 +159,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
   }
 
   Future<bool> _canEventUpdateChatRoomPersistentMessage({
-    required int chatRoomId,
+    required String chatRoomId,
     required RecordedEvent recordedEvent,
   }) async {
     return (recordedEvent.event is MessageEvent) &&
@@ -170,7 +170,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
   }
 
   Future<bool> _isEventFirstSuccessorOfLastSyncedMessageEvent({
-    required int chatRoomId,
+    required String chatRoomId,
     required RecordedEvent recordedEvent,
   }) async {
     final recordNumber = recordedEvent.recordNumber;
@@ -183,7 +183,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
   }
 
   Future<int> _getFirstSuccessorOfLastSyncedMessageEventRecordNumber({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return localChatRepository.getLastSyncedMessageEventRecordNumber(
       chatRoomId: chatRoomId,
@@ -206,7 +206,6 @@ extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
 
     switch (event) {
       case CreateRoomEvent():
-    
       case InviteMemberEvent():
       // TODO: Handle this case.
       case UpdateMemberRoleEvent():
@@ -217,7 +216,7 @@ extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
   }
 
   Future<bool> _canEventUpdateChatRoom({
-    required int chatRoomId,
+    required String chatRoomId,
     required RecordedEvent recordedEvent,
   }) async {
     return (recordedEvent.event is RoomEvent) &&
@@ -228,7 +227,7 @@ extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
   }
 
   Future<bool> _isEventFirstSuccessorOfLastSyncedRoomManagementEvent({
-    required int chatRoomId,
+    required String chatRoomId,
     required RecordedEvent recordedEvent,
   }) async {
     final recordNumber = recordedEvent.recordNumber;
@@ -242,7 +241,7 @@ extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
   }
 
   Future<int> _getFirstSuccessorOfLastSyncedRoomManagementEventRecordNumber({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return await localChatRepository
             .getLastSyncedRoomManagementEventRecordNumber(
@@ -274,7 +273,7 @@ extension RecordedReadMessageEventAction on ChatRoomRecordedEventAction {
   }
 
   Future<bool> _canEventUpdateReadMessage({
-    required int chatRoomId,
+    required String chatRoomId,
     required RecordedEvent recordedEvent,
   }) async {
     final event = recordedEvent.event;

@@ -3,6 +3,7 @@ import 'package:poc_chat_2/model_services/chat_room/chat_room_creator.dart';
 import 'package:poc_chat_2/model_services/chat_room/chat_room_lister.dart';
 import 'package:poc_chat_2/model_services/event/creator.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
+import 'package:poc_chat_2/models/chat_room_sync_state.dart';
 import 'package:poc_chat_2/models/forms/chat_room_form.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
@@ -35,22 +36,24 @@ class RueJaiUserService {
   final ChatRoomLister _chatRoomLister;
 
   Future<List<ChatRoom>> getChatRooms() async {
-    return _chatRoomLister.getAllChatRooms();
+    return _chatRoomLister.getChatRooms();
   }
 
   Future<void> createChatRoom({required ChatRoomForm form}) async {
     final event = _eventCreator.createCreateRoomEventFromForm(form: form);
-
-    final chatRoom = await serverChatRepository.publishCreateChatRoomEvent(
-      event: event,
+    final serverChatRoomState =
+        await serverChatRepository.publishCreateChatRoomEvent(event: event);
+    final chatRoomState = await _chatRoomCreator.createChatRoom(
+      chatRoomId: serverChatRoomState.id,
+      profileHash: serverChatRoomState.profileHash,
+      form: form,
+    );
+    final chatRoomSyncState = ChatRoomSyncState.fromState(
+      chatRoomState: chatRoomState,
+      serverChatRoomState: serverChatRoomState,
     );
 
-    await _chatRoomCreator.createChatRoom(
-      chatRoomId: chatRoom.id,
-      name: chatRoom.name,
-      thumbnailUrl: chatRoom.thumbnailUrl,
-    );
-    await systemService.syncChatRoom(chatRoomId: chatRoom.id);
+    await systemService.syncChatRoom(chatRoomSyncState: chatRoomSyncState);
 
     broadcaster.Broadcaster.instance.add(
       broadcaster.CreatedAndSyncedNewChatRooms(),

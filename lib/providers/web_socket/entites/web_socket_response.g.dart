@@ -12,7 +12,7 @@ WebSocketResponse<T> _$WebSocketResponseFromJson<T extends Equatable>(
 ) =>
     WebSocketResponse<T>(
       $enumDecode(_$TypeEnumMap, json['type']),
-      (json['chat_room_id'] as num).toInt(),
+      json['chat_room_id'] as String,
       fromJsonT(json['payload']),
     );
 

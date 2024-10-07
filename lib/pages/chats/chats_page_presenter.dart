@@ -44,7 +44,7 @@ class ChatRoomPresenter {
     );
   }
 
-  final int id;
+  final String id;
   final String name;
   final String? thumbnailUrl;
   final MessagePresenter? latestMessage;

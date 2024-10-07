@@ -7,8 +7,6 @@ part of 'rue_jai_user.dart';
 // **************************************************************************
 
 abstract class _$RueJaiUserCWProxy {
-  RueJaiUser id(int id);
-
   RueJaiUser rueJaiUserId(String rueJaiUserId);
 
   RueJaiUser rueJaiUserType(RueJaiUserType rueJaiUserType);
@@ -26,7 +24,6 @@ abstract class _$RueJaiUserCWProxy {
   /// RueJaiUser(...).copyWith(id: 12, name: "My name")
   /// ````
   RueJaiUser call({
-    int? id,
     String? rueJaiUserId,
     RueJaiUserType? rueJaiUserType,
     RueJaiUserRole? rueJaiUserRole,
@@ -40,9 +37,6 @@ class _$RueJaiUserCWProxyImpl implements _$RueJaiUserCWProxy {
   const _$RueJaiUserCWProxyImpl(this._value);
 
   final RueJaiUser _value;
-
-  @override
-  RueJaiUser id(int id) => this(id: id);
 
   @override
   RueJaiUser rueJaiUserId(String rueJaiUserId) =>
@@ -72,7 +66,6 @@ class _$RueJaiUserCWProxyImpl implements _$RueJaiUserCWProxy {
   /// RueJaiUser(...).copyWith(id: 12, name: "My name")
   /// ````
   RueJaiUser call({
-    Object? id = const $CopyWithPlaceholder(),
     Object? rueJaiUserId = const $CopyWithPlaceholder(),
     Object? rueJaiUserType = const $CopyWithPlaceholder(),
     Object? rueJaiUserRole = const $CopyWithPlaceholder(),
@@ -80,10 +73,6 @@ class _$RueJaiUserCWProxyImpl implements _$RueJaiUserCWProxy {
     Object? thumbnailUrl = const $CopyWithPlaceholder(),
   }) {
     return RueJaiUser(
-      id: id == const $CopyWithPlaceholder() || id == null
-          ? _value.id
-          // ignore: cast_nullable_to_non_nullable
-          : id as int,
       rueJaiUserId:
           rueJaiUserId == const $CopyWithPlaceholder() || rueJaiUserId == null
               ? _value.rueJaiUserId

@@ -7,7 +7,7 @@ part of 'chat_room.dart';
 // **************************************************************************
 
 abstract class _$ChatRoomCWProxy {
-  ChatRoom id(int id);
+  ChatRoom id(String id);
 
   ChatRoom name(String name);
 
@@ -28,7 +28,7 @@ abstract class _$ChatRoomCWProxy {
   /// ChatRoom(...).copyWith(id: 12, name: "My name")
   /// ````
   ChatRoom call({
-    int? id,
+    String? id,
     String? name,
     List<ChatRoomMember>? members,
     List<Message>? confirmedMessages,
@@ -45,7 +45,7 @@ class _$ChatRoomCWProxyImpl implements _$ChatRoomCWProxy {
   final ChatRoom _value;
 
   @override
-  ChatRoom id(int id) => this(id: id);
+  ChatRoom id(String id) => this(id: id);
 
   @override
   ChatRoom name(String name) => this(name: name);
@@ -90,7 +90,7 @@ class _$ChatRoomCWProxyImpl implements _$ChatRoomCWProxy {
       id: id == const $CopyWithPlaceholder() || id == null
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
-          : id as int,
+          : id as String,
       name: name == const $CopyWithPlaceholder() || name == null
           ? _value.name
           // ignore: cast_nullable_to_non_nullable

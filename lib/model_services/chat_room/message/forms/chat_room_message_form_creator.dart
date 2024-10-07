@@ -23,7 +23,7 @@ class ChatRoomMessageFormCreator {
           localChatRepository: localChatRepository,
         );
 
-  final int chatRoomId;
+  final String chatRoomId;
   final LocalChatRepository localChatRepository;
 
   final ChatRoomInquiry _chatRoomInquiry;

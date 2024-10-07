@@ -87,7 +87,7 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
 
   Future<TextReplyMessageForm> _createTextReplyMessageFormFromEvent(
     CreateTextReplyMessageEvent event, {
-    required int chatRoomId,
+    required String chatRoomId,
     required ChatRoomMember member,
     int? recordNumber,
     DateTime? recordedAt,
@@ -186,7 +186,7 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
   }
 
   Future<ChatRoomMember> _getChatRoomMemberByEventOwner({
-    required int chatRoomId,
+    required String chatRoomId,
     required Owner owner,
   }) async {
     return _chatRoomInquiry.getMemberByRueJaiUser(

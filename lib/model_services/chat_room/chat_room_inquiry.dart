@@ -9,11 +9,11 @@ class ChatRoomInquiry {
     required this.localChatRepository,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final LocalChatRepository localChatRepository;
 
   Future<ChatRoom> getChatRoom({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return localChatRepository.getChatRoom(chatRoomId: chatRoomId);
   }
@@ -23,7 +23,6 @@ class ChatRoomInquiry {
     required RueJaiUserType rueJaiUserType,
   }) async {
     final rueJaiUser = RueJaiUser(
-      id: 1,
       rueJaiUserId: rueJaiUserId,
       rueJaiUserType: rueJaiUserType,
       rueJaiUserRole: RueJaiUserRole.customerService,
@@ -32,10 +31,10 @@ class ChatRoomInquiry {
     );
 
     return ChatRoomMember(
-      id: 1,
+      id: '1',
       role: ChatRoomMemberRole.member,
       rueJaiUser: rueJaiUser,
-      lastReadMessageId: 0,
+      lastReadMessageRecordNumber: 0,
     );
   }
 

@@ -7,7 +7,7 @@ class ChatRoomMemberLister {
     required this.localChatRepository,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final LocalChatRepository localChatRepository;
 
   Future<List<ChatRoomMember>> getChatRoomMembers() async {

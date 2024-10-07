@@ -15,11 +15,13 @@ class ChatRoomForm {
 
 class ChatRoomMemberForm {
   ChatRoomMemberForm({
+    required this.lastReadMessageId,
     required this.role,
     required this.rueJaiUserId,
     required this.rueJaiUserType,
   });
 
+  final int lastReadMessageId;
   final ChatRoomMemberRole role;
   final String rueJaiUserId;
   final RueJaiUserType rueJaiUserType;

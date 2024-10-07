@@ -20,7 +20,7 @@ class WebSocketResponse<T extends Equatable> extends Equatable {
       _$WebSocketResponseFromJson(json, fromJson);
 
   final Type type;
-  final int chatRoomId;
+  final String chatRoomId;
   final T payload;
 
   @override

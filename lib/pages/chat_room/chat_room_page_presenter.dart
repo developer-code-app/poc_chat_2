@@ -59,7 +59,7 @@ class MemberPresenter {
     }
   }
 
-  final int id;
+  final String id;
   final String name;
   final String? thumbnail;
   final String userRole;

@@ -9,7 +9,6 @@ class MockData {
   static final currentRueJaiUser = _mongAccount;
 
   static final _noteAccount = RueJaiUser(
-    id: 1,
     rueJaiUserId: '1',
     rueJaiUserType: RueJaiUserType.rueJaiAppUser,
     rueJaiUserRole: RueJaiUserRole.homeOwner,
@@ -18,7 +17,6 @@ class MockData {
   );
 
   static final _mongAccount = RueJaiUser(
-    id: 2,
     rueJaiUserId: '2',
     rueJaiUserType: RueJaiUserType.rueJaiAppUser,
     rueJaiUserRole: RueJaiUserRole.homeOwner,
@@ -27,7 +25,6 @@ class MockData {
   );
 
   static final _kornSiwatRueJaiUser = RueJaiUser(
-    id: 3,
     rueJaiUserId: 'KornSiwat',
     rueJaiUserType: RueJaiUserType.rueJaiAppUser,
     rueJaiUserRole: RueJaiUserRole.homeOwner,
@@ -36,7 +33,7 @@ class MockData {
   );
 
   static const chatRoom = ChatRoom(
-    id: 1,
+    id: '1',
     name: "name",
     thumbnailUrl: "thumbnailUrl",
     members: [],
@@ -46,10 +43,10 @@ class MockData {
   );
 
   static final owner = ChatRoomMember(
-    id: 1,
+    id: '1',
     role: ChatRoomMemberRole.member,
     rueJaiUser: _mongAccount,
-    lastReadMessageId: 10,
+    lastReadMessageRecordNumber: 10,
   );
 
   static final textMessage = MemberTextMessage(
@@ -102,49 +99,46 @@ class MockData {
   );
 
   static final chatRoomAdmin = ChatRoomMember(
-    id: 3,
+    id: '3',
     role: ChatRoomMemberRole.admin,
     rueJaiUser: RueJaiUser(
-      id: 3,
       rueJaiUserId: '3',
       rueJaiUserType: RueJaiUserType.rueJaiAdmin,
       rueJaiUserRole: RueJaiUserRole.customerService,
       name: 'สุพิชชา (น้ำฝน)',
       thumbnailUrl: 'https://picsum.photos/600/600.jpg',
     ),
-    lastReadMessageId: 5,
+    lastReadMessageRecordNumber: 5,
   );
 
   static final khunPatPong = ChatRoomMember(
-    id: 2,
+    id: '2',
     role: ChatRoomMemberRole.member,
     rueJaiUser: RueJaiUser(
-      id: 2,
       rueJaiUserId: '2',
       rueJaiUserType: RueJaiUserType.rueJaiAppUser,
       rueJaiUserRole: RueJaiUserRole.renter,
       name: 'พัฒพงษ์',
       thumbnailUrl: 'https://picsum.photos/600/600.jpg',
     ),
-    lastReadMessageId: 5,
+    lastReadMessageRecordNumber: 5,
   );
 
   static final siteEngineer = ChatRoomMember(
-    id: 4,
+    id: '4',
     role: ChatRoomMemberRole.member,
     rueJaiUser: RueJaiUser(
-      id: 4,
       rueJaiUserId: '4',
       rueJaiUserType: RueJaiUserType.rueJaiAdmin,
       rueJaiUserRole: RueJaiUserRole.customerService,
       name: 'พีระ',
       thumbnailUrl: 'https://picsum.photos/800/800.jpg',
     ),
-    lastReadMessageId: 5,
+    lastReadMessageRecordNumber: 5,
   );
 
   static final chatRoom2 = ChatRoom(
-    id: 2,
+    id: '2',
     name: "ผู้ดูแลโครงการ",
     thumbnailUrl: '',
     members: [khunPatPong, chatRoomAdmin],

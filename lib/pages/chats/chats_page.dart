@@ -192,7 +192,7 @@ class _ChatsPageState extends State<ChatsPage> {
   void _navigationToChatRoomPage(ChatRoom chatRoom) {
     final bloc = context.read<ChatsPageBloc>();
     final memberId = chatRoom.members
-        .where((member) => member.id == MockData.currentRueJaiUser.id)
+        .where((member) => member.id == MockData.currentRueJaiUser.rueJaiUserId)
         .firstOrNull
         .getOrThrow(errorMessage: 'Member not found.')
         .id;

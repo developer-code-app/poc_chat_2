@@ -1,4 +1,5 @@
-import 'package:poc_chat_2/models/chat_room.dart';
+import 'package:poc_chat_2/models/chat_room_profile.dart';
+import 'package:poc_chat_2/models/chat_room_sync_state.dart';
 import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/recorded_event.dart';
 import 'package:poc_chat_2/models/events/room_event.dart';
@@ -16,21 +17,28 @@ class ServerChatRepository {
   final RuejaiChatArchiveProvider chatArchiveProvider;
 
   Future<int> getChatRoomLatestRoomAndMessageEventRecordNumber({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return chatApiProvider.chat
         .getChatRoomLatestRoomAndMessageEventRecordNumber(chatRoomId)
         .then((response) => response.result);
   }
 
-  Future<List<ChatRoom>> getAllChatRooms() async {
+  Future<List<ServerChatRoomState>> getServerChatRoomStates() async {
+    return chatApiProvider.chat.getServerChatRoomStates().then((response) =>
+        response.result.map(ServerChatRoomState.fromEntity).toList());
+  }
+
+  Future<ChatRoomProfile> getServerChatRoomProfile({
+    required String chatRoomId,
+  }) async {
     return chatApiProvider.chat
-        .getChatRooms()
-        .then((response) => response.result.map(ChatRoom.fromEntity).toList());
+        .getServerChatRoomProfile(chatRoomId)
+        .then((response) => ChatRoomProfile.fromEntity(response.result));
   }
 
   Future<List<String>> getChatRoomEventArchiveUrls({
-    required int chatRoomId,
+    required String chatRoomId,
     required int startEventRecordNumber,
   }) async {
     return chatApiProvider.chat
@@ -52,7 +60,7 @@ class ServerChatRepository {
             .toList());
   }
 
-  Future<ChatRoom> publishCreateChatRoomEvent({
+  Future<ServerChatRoomState> publishCreateChatRoomEvent({
     required CreateRoomEvent event,
   }) async {
     final request = RuejaiChatCreateChatRoomRequest.fromEvent(event);
@@ -60,18 +68,18 @@ class ServerChatRepository {
     return chatApiProvider.chat
         .createChatRoom(request)
         .then((response) => response.result)
-        .then(ChatRoom.fromEntity);
+        .then(ServerChatRoomState.fromEntity);
   }
 
   //  WS /chats
   Future<void> publishReadMessageEvent({
-    required int chatRoomId,
+    required String chatRoomId,
     required ReadMessageEvent event,
   }) async {}
 
   //  WS /chats
   Future<void> publishRoomManagementEvent({
-    required int chatRoomId,
+    required String chatRoomId,
     required RoomEvent event,
   }) async {}
 }

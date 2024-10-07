@@ -18,9 +18,9 @@ const IsarChatRoomMemberEntitySchema = CollectionSchema(
   name: r'ChatRoomMember',
   id: -5949278034160924675,
   properties: {
-    r'lastReadMessageId': PropertySchema(
+    r'lastReadMessageRecordNumber': PropertySchema(
       id: 0,
-      name: r'lastReadMessageId',
+      name: r'lastReadMessageRecordNumber',
       type: IsarType.long,
     ),
     r'role': PropertySchema(
@@ -67,7 +67,7 @@ void _isarChatRoomMemberEntitySerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLong(offsets[0], object.lastReadMessageId);
+  writer.writeLong(offsets[0], object.lastReadMessageRecordNumber);
   writer.writeString(offsets[1], object.role.name);
 }
 
@@ -79,7 +79,7 @@ IsarChatRoomMemberEntity _isarChatRoomMemberEntityDeserialize(
 ) {
   final object = IsarChatRoomMemberEntity();
   object.id = id;
-  object.lastReadMessageId = reader.readLong(offsets[0]);
+  object.lastReadMessageRecordNumber = reader.readLong(offsets[0]);
   object.role = _IsarChatRoomMemberEntityroleValueEnumMap[
           reader.readStringOrNull(offsets[1])] ??
       ChatRoomMemberRole.admin;
@@ -269,45 +269,45 @@ extension IsarChatRoomMemberEntityQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
-      QAfterFilterCondition> lastReadMessageIdEqualTo(int value) {
+      QAfterFilterCondition> lastReadMessageRecordNumberEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'lastReadMessageId',
+        property: r'lastReadMessageRecordNumber',
         value: value,
       ));
     });
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
-      QAfterFilterCondition> lastReadMessageIdGreaterThan(
+      QAfterFilterCondition> lastReadMessageRecordNumberGreaterThan(
     int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'lastReadMessageId',
+        property: r'lastReadMessageRecordNumber',
         value: value,
       ));
     });
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
-      QAfterFilterCondition> lastReadMessageIdLessThan(
+      QAfterFilterCondition> lastReadMessageRecordNumberLessThan(
     int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'lastReadMessageId',
+        property: r'lastReadMessageRecordNumber',
         value: value,
       ));
     });
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
-      QAfterFilterCondition> lastReadMessageIdBetween(
+      QAfterFilterCondition> lastReadMessageRecordNumberBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -315,7 +315,7 @@ extension IsarChatRoomMemberEntityQueryFilter on QueryBuilder<
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'lastReadMessageId',
+        property: r'lastReadMessageRecordNumber',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -486,16 +486,16 @@ extension IsarChatRoomMemberEntityQueryLinks on QueryBuilder<
 extension IsarChatRoomMemberEntityQuerySortBy on QueryBuilder<
     IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QSortBy> {
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
-      sortByLastReadMessageId() {
+      sortByLastReadMessageRecordNumber() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastReadMessageId', Sort.asc);
+      return query.addSortBy(r'lastReadMessageRecordNumber', Sort.asc);
     });
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
-      sortByLastReadMessageIdDesc() {
+      sortByLastReadMessageRecordNumberDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastReadMessageId', Sort.desc);
+      return query.addSortBy(r'lastReadMessageRecordNumber', Sort.desc);
     });
   }
 
@@ -531,16 +531,16 @@ extension IsarChatRoomMemberEntityQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
-      thenByLastReadMessageId() {
+      thenByLastReadMessageRecordNumber() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastReadMessageId', Sort.asc);
+      return query.addSortBy(r'lastReadMessageRecordNumber', Sort.asc);
     });
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
-      thenByLastReadMessageIdDesc() {
+      thenByLastReadMessageRecordNumberDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastReadMessageId', Sort.desc);
+      return query.addSortBy(r'lastReadMessageRecordNumber', Sort.desc);
     });
   }
 
@@ -562,9 +562,9 @@ extension IsarChatRoomMemberEntityQuerySortThenBy on QueryBuilder<
 extension IsarChatRoomMemberEntityQueryWhereDistinct on QueryBuilder<
     IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QDistinct> {
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QDistinct>
-      distinctByLastReadMessageId() {
+      distinctByLastReadMessageRecordNumber() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'lastReadMessageId');
+      return query.addDistinctBy(r'lastReadMessageRecordNumber');
     });
   }
 
@@ -585,9 +585,9 @@ extension IsarChatRoomMemberEntityQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, int, QQueryOperations>
-      lastReadMessageIdProperty() {
+      lastReadMessageRecordNumberProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'lastReadMessageId');
+      return query.addPropertyName(r'lastReadMessageRecordNumber');
     });
   }
 

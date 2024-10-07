@@ -7,8 +7,8 @@ class ChatRoomMemberInquiry {
     required this.localChatRepository,
   });
 
-  final int chatRoomId;
-  final int memberId;
+  final String chatRoomId;
+  final String memberId;
   final LocalChatRepository localChatRepository;
 
   Future<int> getLastReadMessageId() async {

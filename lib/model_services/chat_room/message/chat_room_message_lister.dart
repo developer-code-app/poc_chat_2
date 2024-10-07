@@ -7,11 +7,11 @@ class ChatRoomMessageLister {
     required this.localChatRepository,
   });
 
-  final int chatRoomId;
+  final String chatRoomId;
   final LocalChatRepository localChatRepository;
 
   Future<List<Message>> loadNewerMessages({
-    required int chatRoomId,
+    required String chatRoomId,
     required int start,
     required int size,
   }) async {
@@ -23,7 +23,7 @@ class ChatRoomMessageLister {
   }
 
   Future<List<Message>> loadOlderMessages({
-    required int chatRoomId,
+    required String chatRoomId,
     required int start,
     required int size,
   }) async {
@@ -35,14 +35,14 @@ class ChatRoomMessageLister {
   }
 
   Future<List<Message>> searchMessages({
-    required int chatRoomId,
+    required String chatRoomId,
     required String query,
   }) async {
     return localChatRepository.searchMessages(chatRoomId, query);
   }
 
   Future<List<Message>> _loadMessages({
-    required int chatRoomId,
+    required String chatRoomId,
     required int start,
     required int end,
   }) async {

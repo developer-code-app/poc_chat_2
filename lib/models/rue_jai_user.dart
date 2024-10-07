@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_rue_jai_user_entity.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_room_profile_entity.dart';
 
 part 'rue_jai_user.g.dart';
 
@@ -21,7 +22,6 @@ enum RueJaiUserRole {
 @CopyWith()
 class RueJaiUser {
   RueJaiUser({
-    required this.id,
     required this.rueJaiUserId,
     required this.rueJaiUserType,
     required this.rueJaiUserRole,
@@ -29,9 +29,18 @@ class RueJaiUser {
     this.thumbnailUrl,
   });
 
+  factory RueJaiUser.fromEntity(RueJaiUserEntity entity) {
+    return RueJaiUser(
+      rueJaiUserId: entity.rueJaiUserId,
+      rueJaiUserType: entity.rueJaiUserType,
+      rueJaiUserRole: entity.rueJaiUserRole,
+      name: entity.name,
+      thumbnailUrl: entity.thumbnailUrl,
+    );
+  }
+
   factory RueJaiUser.fromIsarEntity(IsarRueJaiUserEntity entity) {
     return RueJaiUser(
-      id: entity.id,
       rueJaiUserId: entity.rueJaiUserId,
       rueJaiUserType: entity.type,
       rueJaiUserRole: entity.role,
@@ -40,7 +49,6 @@ class RueJaiUser {
     );
   }
 
-  final int id;
   final String rueJaiUserId;
   final RueJaiUserType rueJaiUserType;
   final RueJaiUserRole rueJaiUserRole;

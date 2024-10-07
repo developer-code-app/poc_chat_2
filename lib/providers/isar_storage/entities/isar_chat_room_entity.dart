@@ -13,13 +13,16 @@ class IsarChatRoomEntity {
   Id id = Isar.autoIncrement;
 
   @Index(unique: true)
-  late int roomId;
+  late String roomId;
 
   late String name;
 
-  late String? thumbnail;
-
   late int lastSyncedRoomAndMessageEventRecordNumber;
+
+  String? thumbnailUrl;
+  DateTime? deletedAt;
+
+  late String profileHash;
 
   final confirmedMessages = IsarLinks<IsarConfirmedMessageEntity>();
   final unconfirmedMessages = IsarLinks<IsarUnconfirmedMessageEntity>();

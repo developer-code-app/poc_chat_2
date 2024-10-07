@@ -1,7 +1,8 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
 import 'package:poc_chat_2/mock_data.dart';
-import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/forms/message/member_message_form.dart';
 import 'package:poc_chat_2/models/forms/message/message_form.dart';
 import 'package:poc_chat_2/models/messages/message_type.dart';
@@ -15,6 +16,7 @@ import 'package:poc_chat_2/providers/isar_storage/entities/isar_sending_message_
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_unconfirmed_message_entity.dart';
 import 'package:isar/isar.dart';
 import 'package:poc_chat_2/providers/isar_storage/requests/isar_add_chat_room_request.dart';
+import 'package:poc_chat_2/providers/isar_storage/requests/isar_update_chat_room_profile_request.dart';
 
 class IsarChatService {
   IsarChatService(this.isar);
@@ -23,6 +25,25 @@ class IsarChatService {
 
   Future<RueJaiUser> findRueJaiUser() async {
     return MockData.currentRueJaiUser;
+  }
+
+  Future<void> removeChatRoom({required String chatRoomId}) async {
+    return isar.then(
+      (isar) async {
+        final room = await isar.isarChatRoomEntitys
+            .filter()
+            .roomIdEqualTo(chatRoomId)
+            .findFirst();
+
+        if (room == null) throw Exception('Room not found.');
+
+        await isar.writeTxn(() async {
+          room.deletedAt = DateTime.now();
+
+          await isar.isarChatRoomEntitys.put(room);
+        });
+      },
+    );
   }
 
   Future<List<IsarChatRoomEntity>> getChatRooms() async {
@@ -43,7 +64,7 @@ class IsarChatService {
   }
 
   Future<IsarChatRoomEntity?> getChatRoom({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return isar.then(
       (isar) async {
@@ -55,28 +76,57 @@ class IsarChatService {
     );
   }
 
-  Future<void> addChatRoom(IsarAddChatRoomRequest request) async {
+  Future<void> updateChatRoomProfile(IsarUpdateChatRoomProfileRequest request) {
+    return isar.then((isar) async {
+      final room = await isar.isarChatRoomEntitys
+          .filter()
+          .roomIdEqualTo(request.roomId)
+          .findFirst();
+
+      if (room == null) throw Exception('Room not found.');
+
+      await isar.writeTxn(() async {
+        room.name = request.name;
+        room.thumbnailUrl = request.thumbnailUrl;
+        room.profileHash = request.profileHash;
+
+        await isar.isarChatRoomEntitys.put(room);
+      });
+    });
+  }
+
+  Future<IsarChatRoomEntity> addChatRoom(IsarAddChatRoomRequest request) async {
     return isar.then((isar) async {
       final rueJaiUserEntity = await _createRueJaiUserIfExists();
+
       final room = IsarChatRoomEntity()
         ..roomId = request.chatRoomId
         ..name = request.name
-        ..thumbnail = request.thumbnailUrl;
-      final member = IsarChatRoomMemberEntity()
-        ..lastReadMessageId = 0
-        ..role = ChatRoomMemberRole.member
-        ..rueJaiUser.value = rueJaiUserEntity;
+        ..thumbnailUrl = request.thumbnailUrl
+        ..lastSyncedRoomAndMessageEventRecordNumber = 0
+        ..profileHash = request.profileHash;
+      final members = request.members
+          .map(
+            (member) => IsarChatRoomMemberEntity()
+              ..lastReadMessageRecordNumber = member.lastReadMessageId
+              ..role = member.role
+              ..rueJaiUser.value = rueJaiUserEntity,
+          )
+          .toList();
 
       await isar.writeTxn(() async {
-        await isar.isarChatRoomMemberEntitys.put(member);
-        await member.rueJaiUser.save();
+        await isar.isarChatRoomMemberEntitys.putAll(members);
+
+        members.forEach((member) async => await member.rueJaiUser.save());
 
         await isar.isarChatRoomEntitys.put(room);
 
-        room.members.add(member);
+        room.members.addAll(members);
 
         await room.members.save();
       });
+
+      return room;
     });
   }
 
@@ -108,7 +158,7 @@ class IsarChatService {
   }
 
   Future<int?> getChatRoomLastSyncedRoomAndMessageEventRecordNumber({
-    required int chatRoomId,
+    required String chatRoomId,
   }) async {
     return isar.then((isar) {
       return isar.isarChatRoomEntitys
@@ -118,7 +168,7 @@ class IsarChatService {
   }
 
   Future<IsarSendingMessageEntity> createSendingMessage({
-    required int targetChatRoomId,
+    required String targetChatRoomId,
     required MessageForm form,
   }) async {
     return isar.then((isar) async {
@@ -133,7 +183,9 @@ class IsarChatService {
       final member = await isar.isarChatRoomMemberEntitys
           .filter()
           .rueJaiUser(
-            (query) => query.rueJaiUserIdEqualTo(rueJaiUser.id.toString()),
+            (query) => query.rueJaiUserIdEqualTo(
+              rueJaiUser.rueJaiUserId.toString(),
+            ),
           )
           .and()
           .oneOf(room.members, (query, member) => query.idEqualTo(member.id))

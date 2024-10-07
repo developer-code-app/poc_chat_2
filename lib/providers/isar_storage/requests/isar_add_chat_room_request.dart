@@ -1,23 +1,17 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:poc_chat_2/models/forms/chat_room_form.dart';
 
-part 'isar_add_chat_room_request.g.dart';
-
-@JsonSerializable()
 class IsarAddChatRoomRequest {
   IsarAddChatRoomRequest({
     required this.chatRoomId,
     required this.name,
+    required this.profileHash,
+    required this.members,
     this.thumbnailUrl,
   });
 
-  factory IsarAddChatRoomRequest.fromJson(
-    Map<String, dynamic> json,
-  ) =>
-      _$IsarAddChatRoomRequestFromJson(json);
-
-  Map<String, dynamic> toJson() => _$IsarAddChatRoomRequestToJson(this);
-
-  final int chatRoomId;
+  final String chatRoomId;
   final String name;
   final String? thumbnailUrl;
+  final String profileHash;
+  final List<ChatRoomMemberForm> members;
 }

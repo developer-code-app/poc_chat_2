@@ -9,7 +9,7 @@ part of 'web_socket_sending_message_added_request.dart';
 WebSocketSendingMessageAddedRequest
     _$WebSocketSendingMessageAddedRequestFromJson(Map<String, dynamic> json) =>
         WebSocketSendingMessageAddedRequest(
-          chatRoomId: (json['chat_room_id'] as num).toInt(),
+          chatRoomId: json['chat_room_id'] as String,
           type: $enumDecode(_$WebSocketTypeEnumMap, json['type']),
           payload: WebSocketSendingMessagePayload.fromJson(
               json['payload'] as Map<String, dynamic>),

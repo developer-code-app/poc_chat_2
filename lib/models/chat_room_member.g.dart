@@ -7,13 +7,13 @@ part of 'chat_room_member.dart';
 // **************************************************************************
 
 abstract class _$ChatRoomMemberCWProxy {
-  ChatRoomMember id(int id);
+  ChatRoomMember id(String id);
 
   ChatRoomMember role(ChatRoomMemberRole role);
 
   ChatRoomMember rueJaiUser(RueJaiUser rueJaiUser);
 
-  ChatRoomMember lastReadMessageId(int lastReadMessageId);
+  ChatRoomMember lastReadMessageRecordNumber(int lastReadMessageRecordNumber);
 
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `ChatRoomMember(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
@@ -22,10 +22,10 @@ abstract class _$ChatRoomMemberCWProxy {
   /// ChatRoomMember(...).copyWith(id: 12, name: "My name")
   /// ````
   ChatRoomMember call({
-    int? id,
+    String? id,
     ChatRoomMemberRole? role,
     RueJaiUser? rueJaiUser,
-    int? lastReadMessageId,
+    int? lastReadMessageRecordNumber,
   });
 }
 
@@ -36,7 +36,7 @@ class _$ChatRoomMemberCWProxyImpl implements _$ChatRoomMemberCWProxy {
   final ChatRoomMember _value;
 
   @override
-  ChatRoomMember id(int id) => this(id: id);
+  ChatRoomMember id(String id) => this(id: id);
 
   @override
   ChatRoomMember role(ChatRoomMemberRole role) => this(role: role);
@@ -46,8 +46,8 @@ class _$ChatRoomMemberCWProxyImpl implements _$ChatRoomMemberCWProxy {
       this(rueJaiUser: rueJaiUser);
 
   @override
-  ChatRoomMember lastReadMessageId(int lastReadMessageId) =>
-      this(lastReadMessageId: lastReadMessageId);
+  ChatRoomMember lastReadMessageRecordNumber(int lastReadMessageRecordNumber) =>
+      this(lastReadMessageRecordNumber: lastReadMessageRecordNumber);
 
   @override
 
@@ -61,13 +61,13 @@ class _$ChatRoomMemberCWProxyImpl implements _$ChatRoomMemberCWProxy {
     Object? id = const $CopyWithPlaceholder(),
     Object? role = const $CopyWithPlaceholder(),
     Object? rueJaiUser = const $CopyWithPlaceholder(),
-    Object? lastReadMessageId = const $CopyWithPlaceholder(),
+    Object? lastReadMessageRecordNumber = const $CopyWithPlaceholder(),
   }) {
     return ChatRoomMember(
       id: id == const $CopyWithPlaceholder() || id == null
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
-          : id as int,
+          : id as String,
       role: role == const $CopyWithPlaceholder() || role == null
           ? _value.role
           // ignore: cast_nullable_to_non_nullable
@@ -77,11 +77,12 @@ class _$ChatRoomMemberCWProxyImpl implements _$ChatRoomMemberCWProxy {
               ? _value.rueJaiUser
               // ignore: cast_nullable_to_non_nullable
               : rueJaiUser as RueJaiUser,
-      lastReadMessageId: lastReadMessageId == const $CopyWithPlaceholder() ||
-              lastReadMessageId == null
-          ? _value.lastReadMessageId
-          // ignore: cast_nullable_to_non_nullable
-          : lastReadMessageId as int,
+      lastReadMessageRecordNumber:
+          lastReadMessageRecordNumber == const $CopyWithPlaceholder() ||
+                  lastReadMessageRecordNumber == null
+              ? _value.lastReadMessageRecordNumber
+              // ignore: cast_nullable_to_non_nullable
+              : lastReadMessageRecordNumber as int,
     );
   }
 }
