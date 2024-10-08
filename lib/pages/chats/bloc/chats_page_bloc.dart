@@ -98,6 +98,7 @@ class ChatsPageBloc extends Bloc<_Event, _State> {
     try {
       final form = ChatRoomForm(
         name: event.name,
+        thumbnailUrl: event.thumbnailUrl,
         members: [
           ChatRoomMemberForm(
             role: ChatRoomMemberRole.admin,

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/forms/message/member_message_form.dart';
 import 'package:poc_chat_2/models/forms/message/message_form.dart';
@@ -15,7 +14,6 @@ import 'package:poc_chat_2/providers/isar_storage/entities/isar_rue_jai_user_ent
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_sending_message_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_unconfirmed_message_entity.dart';
 import 'package:isar/isar.dart';
-import 'package:poc_chat_2/providers/isar_storage/requests/isar_add_chat_room_request.dart';
 import 'package:poc_chat_2/providers/isar_storage/requests/isar_update_chat_room_profile_request.dart';
 
 class IsarChatService {
@@ -85,74 +83,107 @@ class IsarChatService {
 
       if (room == null) throw Exception('Room not found.');
 
+      final existingMembers = await room.members.filter().findAll();
+      final removeMembers = existingMembers
+          .where((member) =>
+              !request.members.map((e) => e.id).contains(member.memberId))
+          .toList();
+      final members = await Future.wait(request.members.map((member) async {
+        final existingMember = existingMembers.firstWhereOrNull(
+          (existingMember) => existingMember.memberId == member.id,
+        );
+        final rueJaiUser = await _updateRueJaiUserIfExists(
+          rueJaiUser: member.rueJaiUser,
+        );
+
+        if (existingMember != null) {
+          return existingMember
+            ..role = member.role
+            ..lastReadMessageRecordNumber = member.lastReadMessageRecordNumber
+            ..rueJaiUser.value = rueJaiUser;
+        } else {
+          return IsarChatRoomMemberEntity()
+            ..memberId = member.id
+            ..role = member.role
+            ..lastReadMessageRecordNumber = member.lastReadMessageRecordNumber
+            ..rueJaiUser.value = rueJaiUser;
+        }
+      }));
+
       await isar.writeTxn(() async {
         room.name = request.name;
         room.thumbnailUrl = request.thumbnailUrl;
         room.profileHash = request.profileHash;
 
+        if (members.isNotEmpty) {
+          await isar.isarChatRoomMemberEntitys.putAll(members);
+
+          room.members.addAll(members);
+        }
+
+        if (removeMembers.isNotEmpty) {
+          room.members.removeAll(removeMembers);
+
+          await isar.isarChatRoomMemberEntitys.deleteAll(
+            removeMembers.map((e) => e.id).toList(),
+          );
+        }
+
+        await room.members.save();
         await isar.isarChatRoomEntitys.put(room);
       });
     });
   }
 
-  Future<IsarChatRoomEntity> addChatRoom(IsarAddChatRoomRequest request) async {
+  Future<IsarChatRoomEntity> addChatRoom({required String chatRoomId}) async {
     return isar.then((isar) async {
-      final rueJaiUserEntity = await _createRueJaiUserIfExists();
-
       final room = IsarChatRoomEntity()
-        ..roomId = request.chatRoomId
-        ..name = request.name
-        ..thumbnailUrl = request.thumbnailUrl
+        ..roomId = chatRoomId
+        ..name = ''
         ..lastSyncedRoomAndMessageEventRecordNumber = 0
-        ..profileHash = request.profileHash;
-      final members = request.members
-          .map(
-            (member) => IsarChatRoomMemberEntity()
-              ..lastReadMessageRecordNumber = member.lastReadMessageId
-              ..role = member.role
-              ..rueJaiUser.value = rueJaiUserEntity,
-          )
-          .toList();
+        ..profileHash = '';
 
       await isar.writeTxn(() async {
-        await isar.isarChatRoomMemberEntitys.putAll(members);
-
-        members.forEach((member) async => await member.rueJaiUser.save());
-
         await isar.isarChatRoomEntitys.put(room);
-
-        room.members.addAll(members);
-
-        await room.members.save();
       });
 
       return room;
     });
   }
 
-  Future<IsarRueJaiUserEntity> _createRueJaiUserIfExists() {
+  Future<IsarRueJaiUserEntity> _updateRueJaiUserIfExists({
+    required RueJaiUser rueJaiUser,
+  }) {
     return isar.then((isar) async {
-      final currentRueJaiUser = await findRueJaiUser();
       final rueJaiUserEntity = await isar.isarRueJaiUserEntitys
           .filter()
-          .rueJaiUserIdEqualTo(currentRueJaiUser.rueJaiUserId)
+          .rueJaiUserIdEqualTo(rueJaiUser.rueJaiUserId)
           .findFirst();
 
       if (rueJaiUserEntity == null) {
         final newRueJaiUserEntity = IsarRueJaiUserEntity()
-          ..rueJaiUserId = currentRueJaiUser.rueJaiUserId
-          ..name = currentRueJaiUser.name
-          ..thumbnailUrl = currentRueJaiUser.thumbnailUrl
-          ..type = RueJaiUserType.rueJaiAppUser
-          ..role = RueJaiUserRole.homeOwner;
+          ..rueJaiUserId = rueJaiUser.rueJaiUserId
+          ..name = rueJaiUser.name
+          ..thumbnailUrl = rueJaiUser.thumbnailUrl
+          ..type = rueJaiUser.rueJaiUserType
+          ..role = rueJaiUser.rueJaiUserRole;
 
-        await isar.writeTxn(
-          () => isar.isarRueJaiUserEntitys.put(newRueJaiUserEntity),
-        );
+        await isar.writeTxn(() async {
+          await isar.isarRueJaiUserEntitys.put(newRueJaiUserEntity);
+        });
 
         return newRueJaiUserEntity;
       } else {
-        return rueJaiUserEntity;
+        final newRueJaiUserEntity = rueJaiUserEntity
+          ..name = rueJaiUser.name
+          ..thumbnailUrl = rueJaiUser.thumbnailUrl
+          ..role = rueJaiUser.rueJaiUserRole;
+
+        await isar.writeTxn(() async {
+          await isar.isarRueJaiUserEntitys.put(newRueJaiUserEntity);
+        });
+
+        return newRueJaiUserEntity;
       }
     });
   }

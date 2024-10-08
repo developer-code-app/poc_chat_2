@@ -40,7 +40,7 @@ class ChatRoomMember {
     if (rueJaiUser == null) throw Exception('User not found');
 
     return ChatRoomMember(
-      id: entity.id.toString(),
+      id: entity.memberId,
       role: entity.role,
       rueJaiUser: RueJaiUser.fromIsarEntity(rueJaiUser),
       lastReadMessageRecordNumber: entity.lastReadMessageRecordNumber,

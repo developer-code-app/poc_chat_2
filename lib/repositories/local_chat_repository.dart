@@ -6,12 +6,10 @@ import 'package:poc_chat_2/models/chat_room_profile.dart';
 import 'package:poc_chat_2/models/chat_room_sync_state.dart';
 import 'package:poc_chat_2/models/events/room_event.dart'
     as room_management_event;
-import 'package:poc_chat_2/models/forms/chat_room_form.dart';
 import 'package:poc_chat_2/models/forms/message/message_form.dart';
 import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
-import 'package:poc_chat_2/providers/isar_storage/requests/isar_add_chat_room_request.dart';
 import 'package:poc_chat_2/providers/isar_storage/requests/isar_update_chat_room_profile_request.dart';
 
 class LocalChatRepository {
@@ -94,19 +92,9 @@ class LocalChatRepository {
 
   Future<ChatRoomState> addChatRoom({
     required String chatRoomId,
-    String? profileHash,
-    ChatRoomForm? form,
   }) async {
-    final request = IsarAddChatRoomRequest(
-      chatRoomId: chatRoomId,
-      name: form?.name ?? '',
-      thumbnailUrl: form?.thumbnailUrl,
-      members: form?.members ?? [],
-      profileHash: profileHash ?? '',
-    );
-
     return provider.chat
-        .addChatRoom(request)
+        .addChatRoom(chatRoomId: chatRoomId)
         .then(ChatRoomState.fromIsarEntity)
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }

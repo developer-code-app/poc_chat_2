@@ -25,7 +25,9 @@ class RefreshStartedEvent extends _Event {}
 class CreateRoomRequestedEvent extends _Event {
   CreateRoomRequestedEvent({
     required this.name,
+    this.thumbnailUrl,
   });
 
   final String name;
+  final String? thumbnailUrl;
 }
