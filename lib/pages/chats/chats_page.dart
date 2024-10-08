@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
 import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
+import 'package:poc_chat_2/cubits/preview_metadata_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/cubits/ui_blocking_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
@@ -216,6 +217,9 @@ class _ChatsPageState extends State<ChatsPage> {
             BlocProvider<PhotosClipboardCubit>(
               create: (context) => PhotosClipboardCubit(),
             ),
+            BlocProvider<PreviewMetadataCubit>(
+              create: (context) => PreviewMetadataCubit(),
+            )
           ],
           child: MultiBlocProvider(
             providers: [
@@ -226,6 +230,7 @@ class _ChatsPageState extends State<ChatsPage> {
                   replyMessageCubit: context.read<ReplyMessageCubit>(),
                   photosClipboardCubit: context.read<PhotosClipboardCubit>(),
                   uiBlockingCubit: context.read<UIBlockingCubit>(),
+                  previewMetadataCubit: context.read<PreviewMetadataCubit>(),
                   chatRoomId: chatRoom.id,
                   memberService: MemberService(
                     memberId: memberId,

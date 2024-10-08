@@ -1,11 +1,12 @@
 import 'dart:math';
-
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:linkify/linkify.dart';
 import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
 import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
+import 'package:poc_chat_2/cubits/preview_metadata_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart';
@@ -18,7 +19,10 @@ import 'package:poc_chat_2/pages/chat_summary/photos_and_videos_subpage/bloc/pho
 import 'package:poc_chat_2/pages/chat_summary/topics_subpage/bloc/topics_subpage_bloc.dart'
     as topics_subpage_bloc;
 import 'package:poc_chat_2/pages/photo_view_gallery_page.dart';
+import 'package:poc_chat_2/widgets/link_preview_widget.dart';
+import 'package:poc_chat_2/widgets/linkify_widget.dart';
 import 'package:poc_chat_2/widgets/loading_with_blocking_widget.dart';
+import 'package:poc_chat_2/widgets/mini_app_widget.dart';
 import 'package:poc_chat_2/widgets/shimmer_loading_widget.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
@@ -483,20 +487,28 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     final isOwner = bloc.memberService.memberId == textMessage.owner.id;
     final text = textMessage.text;
 
-    return text == null
-        ? _buildTextMessageSkeletonView(context)
-        : _buildMessageBubble(
-            context,
-            isOwner: isOwner,
-            color: isOwner ? Colors.deepOrangeAccent : Colors.grey.shade200,
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: 16,
-                color: isOwner ? Colors.white : Colors.black,
-              ),
-            ),
-          );
+    if (text == null) {
+      return _buildTextMessageSkeletonView(context);
+    } else {
+      final shouldShowLinkPreview =
+          linkify(text).whereType<UrlElement>().isNotEmpty;
+
+      if (shouldShowLinkPreview) {
+        return _buildMessageBubble(
+          context,
+          isOwner: isOwner,
+          color: isOwner ? Colors.deepOrangeAccent : Colors.grey.shade200,
+          child: _linkPreview(messageId: textMessage.id, text: text),
+        );
+      } else {
+        return _buildMessageBubble(
+          context,
+          isOwner: isOwner,
+          color: isOwner ? Colors.deepOrangeAccent : Colors.grey.shade200,
+          child: LinkifyWidget(text: text),
+        );
+      }
+    }
   }
 
   Widget _buildTextReplyMessage(
@@ -651,6 +663,39 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         ],
       ),
     );
+  }
+
+  Widget _linkPreview({
+    required int messageId,
+    required String text,
+  }) {
+    final bloc = context.read<ChatRoomPageBloc>();
+
+    return BlocBuilder<PreviewMetadataCubit, List<PreviewMetadataCubitState>>(
+        builder: (context, previews) {
+      final preview = previews
+          .where((preview) => preview.messageId == messageId)
+          .firstOrNull;
+      final isMiniApp = preview?.metadata.defaultMessage != null;
+
+      if (preview == null) {
+        bloc.add(
+          AddPreviewMetadataRequestedEvent(
+            messageId: messageId,
+            text: text,
+          ),
+        );
+
+        return LinkPreviewWidget(text: text);
+      } else if (isMiniApp) {
+        return MiniAppWidget(metadata: preview.metadata);
+      } else {
+        return LinkPreviewWidget(
+          metadata: preview.metadata,
+          text: text,
+        );
+      }
+    });
   }
 
   Widget _buildPhotoGallery(
