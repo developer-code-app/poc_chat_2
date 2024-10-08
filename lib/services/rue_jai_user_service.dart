@@ -45,8 +45,6 @@ class RueJaiUserService {
         await serverChatRepository.publishCreateChatRoomEvent(event: event);
     final chatRoomState = await _chatRoomCreator.createChatRoom(
       chatRoomId: serverChatRoomState.id,
-      profileHash: serverChatRoomState.profileHash,
-      form: form,
     );
     final chatRoomSyncState = ChatRoomSyncState.fromState(
       chatRoomState: chatRoomState,

@@ -23,8 +23,13 @@ const IsarChatRoomMemberEntitySchema = CollectionSchema(
       name: r'lastReadMessageRecordNumber',
       type: IsarType.long,
     ),
-    r'role': PropertySchema(
+    r'memberId': PropertySchema(
       id: 1,
+      name: r'memberId',
+      type: IsarType.string,
+    ),
+    r'role': PropertySchema(
+      id: 2,
       name: r'role',
       type: IsarType.string,
       enumMap: _IsarChatRoomMemberEntityroleEnumValueMap,
@@ -35,7 +40,21 @@ const IsarChatRoomMemberEntitySchema = CollectionSchema(
   deserialize: _isarChatRoomMemberEntityDeserialize,
   deserializeProp: _isarChatRoomMemberEntityDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'memberId': IndexSchema(
+      id: 5707689632932325803,
+      name: r'memberId',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'memberId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    )
+  },
   links: {
     r'rueJaiUser': LinkSchema(
       id: -7145962735411436187,
@@ -57,6 +76,7 @@ int _isarChatRoomMemberEntityEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.memberId.length * 3;
   bytesCount += 3 + object.role.name.length * 3;
   return bytesCount;
 }
@@ -68,7 +88,8 @@ void _isarChatRoomMemberEntitySerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.lastReadMessageRecordNumber);
-  writer.writeString(offsets[1], object.role.name);
+  writer.writeString(offsets[1], object.memberId);
+  writer.writeString(offsets[2], object.role.name);
 }
 
 IsarChatRoomMemberEntity _isarChatRoomMemberEntityDeserialize(
@@ -80,8 +101,9 @@ IsarChatRoomMemberEntity _isarChatRoomMemberEntityDeserialize(
   final object = IsarChatRoomMemberEntity();
   object.id = id;
   object.lastReadMessageRecordNumber = reader.readLong(offsets[0]);
+  object.memberId = reader.readString(offsets[1]);
   object.role = _IsarChatRoomMemberEntityroleValueEnumMap[
-          reader.readStringOrNull(offsets[1])] ??
+          reader.readStringOrNull(offsets[2])] ??
       ChatRoomMemberRole.admin;
   return object;
 }
@@ -96,6 +118,8 @@ P _isarChatRoomMemberEntityDeserializeProp<P>(
     case 0:
       return (reader.readLong(offset)) as P;
     case 1:
+      return (reader.readString(offset)) as P;
+    case 2:
       return (_IsarChatRoomMemberEntityroleValueEnumMap[
               reader.readStringOrNull(offset)] ??
           ChatRoomMemberRole.admin) as P;
@@ -127,6 +151,65 @@ void _isarChatRoomMemberEntityAttach(
   object.id = id;
   object.rueJaiUser.attach(
       col, col.isar.collection<IsarRueJaiUserEntity>(), r'rueJaiUser', id);
+}
+
+extension IsarChatRoomMemberEntityByIndex
+    on IsarCollection<IsarChatRoomMemberEntity> {
+  Future<IsarChatRoomMemberEntity?> getByMemberId(String memberId) {
+    return getByIndex(r'memberId', [memberId]);
+  }
+
+  IsarChatRoomMemberEntity? getByMemberIdSync(String memberId) {
+    return getByIndexSync(r'memberId', [memberId]);
+  }
+
+  Future<bool> deleteByMemberId(String memberId) {
+    return deleteByIndex(r'memberId', [memberId]);
+  }
+
+  bool deleteByMemberIdSync(String memberId) {
+    return deleteByIndexSync(r'memberId', [memberId]);
+  }
+
+  Future<List<IsarChatRoomMemberEntity?>> getAllByMemberId(
+      List<String> memberIdValues) {
+    final values = memberIdValues.map((e) => [e]).toList();
+    return getAllByIndex(r'memberId', values);
+  }
+
+  List<IsarChatRoomMemberEntity?> getAllByMemberIdSync(
+      List<String> memberIdValues) {
+    final values = memberIdValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'memberId', values);
+  }
+
+  Future<int> deleteAllByMemberId(List<String> memberIdValues) {
+    final values = memberIdValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'memberId', values);
+  }
+
+  int deleteAllByMemberIdSync(List<String> memberIdValues) {
+    final values = memberIdValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'memberId', values);
+  }
+
+  Future<Id> putByMemberId(IsarChatRoomMemberEntity object) {
+    return putByIndex(r'memberId', object);
+  }
+
+  Id putByMemberIdSync(IsarChatRoomMemberEntity object,
+      {bool saveLinks = true}) {
+    return putByIndexSync(r'memberId', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByMemberId(List<IsarChatRoomMemberEntity> objects) {
+    return putAllByIndex(r'memberId', objects);
+  }
+
+  List<Id> putAllByMemberIdSync(List<IsarChatRoomMemberEntity> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'memberId', objects, saveLinks: saveLinks);
+  }
 }
 
 extension IsarChatRoomMemberEntityQueryWhereSort on QueryBuilder<
@@ -206,6 +289,51 @@ extension IsarChatRoomMemberEntityQueryWhere on QueryBuilder<
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+      QAfterWhereClause> memberIdEqualTo(String memberId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'memberId',
+        value: [memberId],
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+      QAfterWhereClause> memberIdNotEqualTo(String memberId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'memberId',
+              lower: [],
+              upper: [memberId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'memberId',
+              lower: [memberId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'memberId',
+              lower: [memberId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'memberId',
+              lower: [],
+              upper: [memberId],
+              includeUpper: false,
+            ));
+      }
     });
   }
 }
@@ -320,6 +448,144 @@ extension IsarChatRoomMemberEntityQueryFilter on QueryBuilder<
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+      QAfterFilterCondition> memberIdEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'memberId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+      QAfterFilterCondition> memberIdGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'memberId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+      QAfterFilterCondition> memberIdLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'memberId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+      QAfterFilterCondition> memberIdBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'memberId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+      QAfterFilterCondition> memberIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'memberId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+      QAfterFilterCondition> memberIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'memberId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+          QAfterFilterCondition>
+      memberIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'memberId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+          QAfterFilterCondition>
+      memberIdMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'memberId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+      QAfterFilterCondition> memberIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'memberId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+      QAfterFilterCondition> memberIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'memberId',
+        value: '',
       ));
     });
   }
@@ -500,6 +766,20 @@ extension IsarChatRoomMemberEntityQuerySortBy on QueryBuilder<
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
+      sortByMemberId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'memberId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
+      sortByMemberIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'memberId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
       sortByRole() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'role', Sort.asc);
@@ -545,6 +825,20 @@ extension IsarChatRoomMemberEntityQuerySortThenBy on QueryBuilder<
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
+      thenByMemberId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'memberId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
+      thenByMemberIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'memberId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QAfterSortBy>
       thenByRole() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'role', Sort.asc);
@@ -569,6 +863,13 @@ extension IsarChatRoomMemberEntityQueryWhereDistinct on QueryBuilder<
   }
 
   QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QDistinct>
+      distinctByMemberId({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'memberId', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity, QDistinct>
       distinctByRole({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'role', caseSensitive: caseSensitive);
@@ -588,6 +889,13 @@ extension IsarChatRoomMemberEntityQueryProperty on QueryBuilder<
       lastReadMessageRecordNumberProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'lastReadMessageRecordNumber');
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, String, QQueryOperations>
+      memberIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'memberId');
     });
   }
 
