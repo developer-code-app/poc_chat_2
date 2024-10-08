@@ -1,18 +1,22 @@
 import 'dart:async';
 
+import 'package:dfunc/dfunc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
+import 'package:linkify/linkify.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
+import 'package:poc_chat_2/cubits/preview_metadata_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
 import 'package:poc_chat_2/cubits/ui_blocking_cubit.dart';
 import 'package:poc_chat_2/extensions/alert_dialog_convenience_showing.dart';
 import 'package:poc_chat_2/extensions/extended_data_reader.dart';
 import 'package:poc_chat_2/extensions/extended_permission_handler.dart';
+import 'package:poc_chat_2/extensions/ruejai_metadata_fetch.dart';
 import 'package:poc_chat_2/services/member/member_service.dart';
 import 'package:poc_chat_2/services/member/roles/basic_member_service.dart';
 import 'package:super_clipboard/super_clipboard.dart';
@@ -42,6 +46,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     required this.replyMessageCubit,
     required this.photosClipboardCubit,
     required this.uiBlockingCubit,
+    required this.previewMetadataCubit,
     required this.memberService,
   }) : super(InitialState()) {
     on<StartedEvent>(_onStartedEvent);
@@ -79,6 +84,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     on<MessageCopiedEvent>(_onMessageCopiedEvent);
     on<MessagePastedEvent>(_onMessagePastedEvent);
     on<PhotoSelectActionRequestedEvent>(_onPhotoSelectActionRequestedEvent);
+    on<AddPreviewMetadataRequestedEvent>(_onAddPreviewMetadataRequestedEvent);
 
     broadcaster.Broadcaster.instance.stream.listen(
       onBroadcasterMessageReceived,
@@ -94,6 +100,7 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
   final ReplyMessageCubit replyMessageCubit;
   final PhotosClipboardCubit photosClipboardCubit;
   final UIBlockingCubit uiBlockingCubit;
+  final PreviewMetadataCubit previewMetadataCubit;
   final MemberService memberService;
 
   StreamSubscription? _broadcasterSubscription;
@@ -672,6 +679,24 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     uiBlockingCubit.unblock();
 
     alertDialogCubit.alert(message: 'Save image success');
+  }
+
+  Future<void> _onAddPreviewMetadataRequestedEvent(
+    AddPreviewMetadataRequestedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final metadata = await linkify(event.text)
+        .whereType<UrlElement>()
+        .firstOrNull
+        ?.url
+        .let(RuejaiMetadataFetch.extract);
+
+    if (metadata != null) {
+      previewMetadataCubit.addPreviewMetadata(
+        messageId: event.messageId,
+        metadata: metadata,
+      );
+    }
   }
 
   Future _savePhoto(String url) async {

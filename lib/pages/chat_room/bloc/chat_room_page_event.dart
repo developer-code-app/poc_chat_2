@@ -217,3 +217,13 @@ class PhotoSelectActionRequestedEvent extends _Event {
   final List<String> urls;
   final int index;
 }
+
+class AddPreviewMetadataRequestedEvent extends _Event {
+  AddPreviewMetadataRequestedEvent({
+    required this.messageId,
+    required this.text,
+  });
+
+  final int messageId;
+  final String text;
+}
