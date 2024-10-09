@@ -221,7 +221,10 @@ extension LocalChatRoomConfirmedMessageRepository on LocalChatRepository {
     required String targetChatRoomId,
     required MessageForm form,
   }) async {
-    return MockData.textMessage;
+    return provider.chat
+        .createConfirmedMessage(targetChatRoomId: targetChatRoomId, form: form)
+        .then(Message.fromConfirmedMessageEntity)
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<Message> updateConfirmedTextMessage({
@@ -235,9 +238,13 @@ extension LocalChatRoomConfirmedMessageRepository on LocalChatRepository {
   }
 
   Future<int> deleteConfirmedMessage({
-    required int targetMessageCreatedByRecordNumber,
+    required String targetCreatedByEventId,
   }) async {
-    return MockData.textMessage.id;
+    return provider.chat
+        .deleteConfirmedMessage(
+          targetCreatedByEventId: targetCreatedByEventId,
+        )
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 }
 
@@ -263,7 +270,10 @@ extension LocalChatRoomTemporaryMessageRepository on LocalChatRepository {
     required MessageForm form,
   }) async {
     return provider.chat
-        .createUnconfirmedMessage()
+        .createUnconfirmedMessage(
+          targetChatRoomId: targetChatRoomId,
+          form: form,
+        )
         .then((message) => Message.fromUnconfirmedMessageEntity(message))
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }
@@ -278,29 +288,33 @@ extension LocalChatRoomTemporaryMessageRepository on LocalChatRepository {
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
-  Future<void> createFailedMessage({
-    required String targetChatRoomId,
-    required MessageForm form,
-  }) async {}
-
   Future<int> deleteUnconfirmedMessage({
-    required String targetChatRoomId,
-    required int targetMessageCreatedByRecordNumber,
+    required String targetCreatedByEventId,
   }) async {
-    return MockData.textMessage.id;
+    return provider.chat
+        .deleteUnconfirmedMessage(
+          targetCreatedByEventId: targetCreatedByEventId,
+        )
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<int> deleteSendingMessage({
-    required String targetChatRoomId,
-    required int targetMessageCreatedByRecordNumber,
+    required String targetCreatedByEventId,
   }) async {
-    return MockData.textMessage.id;
+    return provider.chat
+        .deleteSendingMessage(
+          targetCreatedByEventId: targetCreatedByEventId,
+        )
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<int> deleteFailedMessage({
-    required String targetChatRoomId,
-    required int targetMessageCreatedByRecordNumber,
+    required String targetCreatedByEventId,
   }) async {
-    return MockData.textMessage.id;
+    return provider.chat
+        .deleteFailedMessage(
+          targetCreatedByEventId: targetCreatedByEventId,
+        )
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 }
