@@ -11,6 +11,7 @@ import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/isar_storage/isar_storage_provider.dart';
 import 'package:poc_chat_2/providers/isar_storage/requests/isar_update_chat_room_profile_request.dart';
+import 'package:poc_chat_2/providers/isar_storage/requests/isar_update_confirmed_text_message_request.dart';
 
 class LocalChatRepository {
   LocalChatRepository({required this.provider});
@@ -246,11 +247,22 @@ extension LocalChatRoomConfirmedMessageRepository on LocalChatRepository {
   Future<Message> updateConfirmedTextMessage({
     required String targetMessageChatRoomId,
     required int targetMessageCreatedByRecordNumber,
-    required String? newText,
+    required String newText,
     required DateTime newUpdatedAt,
     required int newLastUpdatedByRecordNumber,
   }) async {
-    return MockData.textMessage;
+    final request = IsarUpdateConfirmedTextMessageRequest(
+      targetMessageChatRoomId: targetMessageChatRoomId,
+      targetMessageCreatedByRecordNumber: targetMessageCreatedByRecordNumber,
+      newUpdatedAt: newUpdatedAt,
+      newLastUpdatedByRecordNumber: newLastUpdatedByRecordNumber,
+      newText: newText,
+    );
+
+    return provider.chat
+        .updateConfirmedTextMessage(request)
+        .then(Message.fromConfirmedMessageEntity)
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<int> deleteConfirmedMessage({
