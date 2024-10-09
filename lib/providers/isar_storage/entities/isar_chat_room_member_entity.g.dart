@@ -61,6 +61,13 @@ const IsarChatRoomMemberEntitySchema = CollectionSchema(
       name: r'rueJaiUser',
       target: r'RueJaiUser',
       single: true,
+    ),
+    r'room': LinkSchema(
+      id: -263052131625526532,
+      name: r'room',
+      target: r'ChatRoom',
+      single: true,
+      linkName: r'failedMessages',
     )
   },
   embeddedSchemas: {},
@@ -143,7 +150,7 @@ Id _isarChatRoomMemberEntityGetId(IsarChatRoomMemberEntity object) {
 
 List<IsarLinkBase<dynamic>> _isarChatRoomMemberEntityGetLinks(
     IsarChatRoomMemberEntity object) {
-  return [object.rueJaiUser];
+  return [object.rueJaiUser, object.room];
 }
 
 void _isarChatRoomMemberEntityAttach(
@@ -151,6 +158,8 @@ void _isarChatRoomMemberEntityAttach(
   object.id = id;
   object.rueJaiUser.attach(
       col, col.isar.collection<IsarRueJaiUserEntity>(), r'rueJaiUser', id);
+  object.room
+      .attach(col, col.isar.collection<IsarChatRoomEntity>(), r'room', id);
 }
 
 extension IsarChatRoomMemberEntityByIndex
@@ -745,6 +754,20 @@ extension IsarChatRoomMemberEntityQueryLinks on QueryBuilder<
       QAfterFilterCondition> rueJaiUserIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'rueJaiUser', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+      QAfterFilterCondition> room(FilterQuery<IsarChatRoomEntity> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'room');
+    });
+  }
+
+  QueryBuilder<IsarChatRoomMemberEntity, IsarChatRoomMemberEntity,
+      QAfterFilterCondition> roomIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'room', 0, true, 0, true);
     });
   }
 }

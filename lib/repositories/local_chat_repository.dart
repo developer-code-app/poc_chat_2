@@ -48,6 +48,20 @@ class LocalChatRepository {
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
+  Future<ChatRoomMember> getMemberByRueJaiUser({
+    required String chatRoomId,
+    required String rueJaiUserId,
+  }) async {
+    return provider.chat
+        .getMemberByRueJaiUser(
+          chatRoomId: chatRoomId,
+          rueJaiUserId: rueJaiUserId,
+        )
+        .then((member) => member.getOrThrow(errorMessage: 'Member not found.'))
+        .then(ChatRoomMember.fromIsarEntity)
+        .onError<Error>((error, _) => throw Exception(error.toString()));
+  }
+
   Future<ChatRoom> getChatRoom({
     required String chatRoomId,
   }) async {
@@ -200,7 +214,9 @@ extension LocalChatRoomConfirmedMessageRepository on LocalChatRepository {
   Future<int> getLastSyncedMessageEventRecordNumber({
     required String chatRoomId,
   }) async {
-    return 0;
+    return provider.chat
+        .getLastSyncedMessageEventRecordNumber(targetChatRoomId: chatRoomId)
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<int> getConfirmedMessageCount() async {
