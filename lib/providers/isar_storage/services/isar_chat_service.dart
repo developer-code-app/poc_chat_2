@@ -203,7 +203,6 @@ class IsarChatService {
     required MessageForm form,
   }) async {
     return isar.then((isar) async {
-      final rueJaiUser = await findRueJaiUser();
       final room = await isar.isarChatRoomEntitys
           .filter()
           .roomIdEqualTo(targetChatRoomId)
@@ -211,15 +210,13 @@ class IsarChatService {
 
       if (room == null) throw Exception('Room not found.');
 
-      final member = await isar.isarChatRoomMemberEntitys
+      final member = await room.members
           .filter()
           .rueJaiUser(
             (query) => query.rueJaiUserIdEqualTo(
-              rueJaiUser.rueJaiUserId.toString(),
+              form.owner.rueJaiUser.rueJaiUserId.toString(),
             ),
           )
-          .and()
-          .oneOf(room.members, (query, member) => query.idEqualTo(member.id))
           .findFirst();
 
       final message = IsarSendingMessageEntity()
@@ -297,15 +294,185 @@ class IsarChatService {
     });
   }
 
-  Future<IsarConfirmedMessageEntity> createConfirmedMessage() async {
-    return isar.then((isar) async => IsarConfirmedMessageEntity());
+  Future<IsarConfirmedMessageEntity> createConfirmedMessage({
+    required String targetChatRoomId,
+    required MessageForm form,
+  }) async {
+    return isar.then((isar) async {
+      final room = await isar.isarChatRoomEntitys
+          .filter()
+          .roomIdEqualTo(targetChatRoomId)
+          .findFirst();
+
+      if (room == null) throw Exception('Room not found.');
+
+      final member = await room.members
+          .filter()
+          .rueJaiUser(
+            (query) => query.rueJaiUserIdEqualTo(
+              form.owner.rueJaiUser.rueJaiUserId.toString(),
+            ),
+          )
+          .findFirst();
+
+      final message = IsarConfirmedMessageEntity()
+        ..createdAt = form.createdAt
+        ..updatedAt = form.createdAt
+        ..createdByEventId = form.createdByEventId
+        ..createdByRecordNumber = form.createdByEventRecordNumber
+        ..owner.value = member
+        ..room.value = room;
+
+      switch (form) {
+        case TextMessageForm():
+          message
+            ..type = MessageType.text
+            ..content = utf8.encode(form.text);
+        default:
+          break;
+      }
+
+      await isar.writeTxn(() async {
+        await isar.isarConfirmedMessageEntitys.put(message);
+
+        await message.owner.save();
+        await message.room.save();
+      });
+
+      return message;
+    });
   }
 
-  Future<IsarUnconfirmedMessageEntity> createUnconfirmedMessage() async {
-    return isar.then((isar) async => IsarUnconfirmedMessageEntity());
+  Future<int> deleteConfirmedMessage({
+    required String targetCreatedByEventId,
+  }) async {
+    return isar.then(
+      (isar) async {
+        final message = await isar.isarConfirmedMessageEntitys
+            .filter()
+            .createdByEventIdEqualTo(targetCreatedByEventId)
+            .findFirst();
+
+        if (message == null) throw Exception('Message not found');
+
+        await isar.writeTxn(() async {
+          await isar.isarConfirmedMessageEntitys.delete(message.id);
+        });
+
+        return message.id;
+      },
+    );
   }
 
-  Future<IsarFailedMessageEntity> createFailedMessage() async {
-    return isar.then((isar) async => IsarFailedMessageEntity());
+  Future<int> deleteUnconfirmedMessage({
+    required String targetCreatedByEventId,
+  }) async {
+    return isar.then(
+      (isar) async {
+        final message = await isar.isarUnconfirmedMessageEntitys
+            .filter()
+            .createdByEventIdEqualTo(targetCreatedByEventId)
+            .findFirst();
+
+        if (message == null) throw Exception('Message not found');
+
+        await isar.writeTxn(() async {
+          await isar.isarUnconfirmedMessageEntitys.delete(message.id);
+        });
+
+        return message.id;
+      },
+    );
+  }
+
+  Future<int> deleteSendingMessage({
+    required String targetCreatedByEventId,
+  }) async {
+    return isar.then(
+      (isar) async {
+        final message = await isar.isarSendingMessageEntitys
+            .filter()
+            .createdByEventIdEqualTo(targetCreatedByEventId)
+            .findFirst();
+
+        if (message == null) throw Exception('Message not found');
+
+        await isar.writeTxn(() async {
+          await isar.isarSendingMessageEntitys.delete(message.id);
+        });
+
+        return message.id;
+      },
+    );
+  }
+
+  Future<int> deleteFailedMessage({
+    required String targetCreatedByEventId,
+  }) async {
+    return isar.then(
+      (isar) async {
+        final message = await isar.isarFailedMessageEntitys
+            .filter()
+            .createdByEventIdEqualTo(targetCreatedByEventId)
+            .findFirst();
+
+        if (message == null) throw Exception('Message not found');
+
+        await isar.writeTxn(() async {
+          await isar.isarFailedMessageEntitys.delete(message.id);
+        });
+
+        return message.id;
+      },
+    );
+  }
+
+  Future<IsarUnconfirmedMessageEntity> createUnconfirmedMessage({
+    required String targetChatRoomId,
+    required MessageForm form,
+  }) async {
+    return isar.then((isar) async {
+      final room = await isar.isarChatRoomEntitys
+          .filter()
+          .roomIdEqualTo(targetChatRoomId)
+          .findFirst();
+
+      if (room == null) throw Exception('Room not found.');
+
+      final member = await room.members
+          .filter()
+          .rueJaiUser(
+            (query) => query.rueJaiUserIdEqualTo(
+              form.owner.rueJaiUser.rueJaiUserId.toString(),
+            ),
+          )
+          .findFirst();
+
+      final message = IsarUnconfirmedMessageEntity()
+        ..createdAt = form.createdAt
+        ..updatedAt = form.createdAt
+        ..createdByEventId = form.createdByEventId
+        ..owner.value = member
+        ..createdByRecordNumber = form.createdByEventRecordNumber
+        ..room.value = room;
+
+      switch (form) {
+        case TextMessageForm():
+          message
+            ..type = MessageType.text
+            ..content = utf8.encode(form.text);
+        default:
+          break;
+      }
+
+      await isar.writeTxn(() async {
+        await isar.isarUnconfirmedMessageEntitys.put(message);
+
+        await message.owner.save();
+        await message.room.save();
+      });
+
+      return message;
+    });
   }
 }

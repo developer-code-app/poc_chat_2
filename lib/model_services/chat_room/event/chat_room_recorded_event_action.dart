@@ -101,7 +101,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
       );
     } else if (event is DeleteMessageEvent) {
       final messageId = await localChatRepository.deleteConfirmedMessage(
-        targetMessageCreatedByRecordNumber: event.deletedMessageRecordNumber,
+        targetCreatedByEventId: event.id,
       );
 
       Broadcaster.instance.add(
@@ -124,16 +124,13 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
       recordedEvent: recordedEvent,
     )) {
       localChatRepository.deleteUnconfirmedMessage(
-        targetChatRoomId: chatRoomId,
-        targetMessageCreatedByRecordNumber: recordedEvent.recordNumber,
+        targetCreatedByEventId: recordedEvent.event.id,
       );
       localChatRepository.deleteSendingMessage(
-        targetChatRoomId: chatRoomId,
-        targetMessageCreatedByRecordNumber: recordedEvent.recordNumber,
+        targetCreatedByEventId: recordedEvent.event.id,
       );
       localChatRepository.deleteFailedMessage(
-        targetChatRoomId: chatRoomId,
-        targetMessageCreatedByRecordNumber: recordedEvent.recordNumber,
+        targetCreatedByEventId: recordedEvent.event.id,
       );
     } else {
       if (event is CreateMessageEvent) {
@@ -148,12 +145,10 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
       }
 
       localChatRepository.deleteSendingMessage(
-        targetChatRoomId: chatRoomId,
-        targetMessageCreatedByRecordNumber: recordedEvent.recordNumber,
+        targetCreatedByEventId: recordedEvent.event.id,
       );
       localChatRepository.deleteFailedMessage(
-        targetChatRoomId: chatRoomId,
-        targetMessageCreatedByRecordNumber: recordedEvent.recordNumber,
+        targetCreatedByEventId: recordedEvent.event.id,
       );
     }
   }

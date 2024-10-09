@@ -21,7 +21,7 @@ const IsarConfirmedMessageEntitySchema = CollectionSchema(
     r'content': PropertySchema(
       id: 0,
       name: r'content',
-      type: IsarType.byte,
+      type: IsarType.byteList,
     ),
     r'createdAt': PropertySchema(
       id: 1,
@@ -108,6 +108,7 @@ int _isarConfirmedMessageEntityEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.content.length;
   bytesCount += 3 + object.createdByEventId.length * 3;
   bytesCount += 3 + object.type.name.length * 3;
   return bytesCount;
@@ -119,7 +120,7 @@ void _isarConfirmedMessageEntitySerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeByte(offsets[0], object.content);
+  writer.writeByteList(offsets[0], object.content);
   writer.writeDateTime(offsets[1], object.createdAt);
   writer.writeString(offsets[2], object.createdByEventId);
   writer.writeLong(offsets[3], object.createdByRecordNumber);
@@ -136,7 +137,7 @@ IsarConfirmedMessageEntity _isarConfirmedMessageEntityDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = IsarConfirmedMessageEntity();
-  object.content = reader.readByte(offsets[0]);
+  object.content = reader.readByteList(offsets[0]) ?? [];
   object.createdAt = reader.readDateTime(offsets[1]);
   object.createdByEventId = reader.readString(offsets[2]);
   object.createdByRecordNumber = reader.readLongOrNull(offsets[3]);
@@ -158,7 +159,7 @@ P _isarConfirmedMessageEntityDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readByte(offset)) as P;
+      return (reader.readByteList(offset) ?? []) as P;
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
@@ -406,7 +407,7 @@ extension IsarConfirmedMessageEntityQueryWhere on QueryBuilder<
 extension IsarConfirmedMessageEntityQueryFilter on QueryBuilder<
     IsarConfirmedMessageEntity, IsarConfirmedMessageEntity, QFilterCondition> {
   QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
-      QAfterFilterCondition> contentEqualTo(int value) {
+      QAfterFilterCondition> contentElementEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'content',
@@ -416,7 +417,7 @@ extension IsarConfirmedMessageEntityQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
-      QAfterFilterCondition> contentGreaterThan(
+      QAfterFilterCondition> contentElementGreaterThan(
     int value, {
     bool include = false,
   }) {
@@ -430,7 +431,7 @@ extension IsarConfirmedMessageEntityQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
-      QAfterFilterCondition> contentLessThan(
+      QAfterFilterCondition> contentElementLessThan(
     int value, {
     bool include = false,
   }) {
@@ -444,7 +445,7 @@ extension IsarConfirmedMessageEntityQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
-      QAfterFilterCondition> contentBetween(
+      QAfterFilterCondition> contentElementBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -458,6 +459,95 @@ extension IsarConfirmedMessageEntityQueryFilter on QueryBuilder<
         upper: upper,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
+      QAfterFilterCondition> contentLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'content',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
+      QAfterFilterCondition> contentIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'content',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
+      QAfterFilterCondition> contentIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'content',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
+      QAfterFilterCondition> contentLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'content',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
+      QAfterFilterCondition> contentLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'content',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
+      QAfterFilterCondition> contentLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'content',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 
@@ -1165,20 +1255,6 @@ extension IsarConfirmedMessageEntityQueryLinks on QueryBuilder<
 extension IsarConfirmedMessageEntityQuerySortBy on QueryBuilder<
     IsarConfirmedMessageEntity, IsarConfirmedMessageEntity, QSortBy> {
   QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
-      QAfterSortBy> sortByContent() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
-      QAfterSortBy> sortByContentDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.desc);
-    });
-  }
-
-  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
       QAfterSortBy> sortByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
@@ -1279,20 +1355,6 @@ extension IsarConfirmedMessageEntityQuerySortBy on QueryBuilder<
 
 extension IsarConfirmedMessageEntityQuerySortThenBy on QueryBuilder<
     IsarConfirmedMessageEntity, IsarConfirmedMessageEntity, QSortThenBy> {
-  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
-      QAfterSortBy> thenByContent() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
-      QAfterSortBy> thenByContentDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.desc);
-    });
-  }
-
   QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
       QAfterSortBy> thenByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
@@ -1474,7 +1536,7 @@ extension IsarConfirmedMessageEntityQueryProperty on QueryBuilder<
     });
   }
 
-  QueryBuilder<IsarConfirmedMessageEntity, int, QQueryOperations>
+  QueryBuilder<IsarConfirmedMessageEntity, List<int>, QQueryOperations>
       contentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'content');

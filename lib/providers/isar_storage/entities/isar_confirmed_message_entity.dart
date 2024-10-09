@@ -13,7 +13,7 @@ class IsarConfirmedMessageEntity {
   @Enumerated(EnumType.name)
   late MessageType type;
 
-  late byte content;
+  late List<byte> content;
 
   @Index(unique: true)
   late String createdByEventId;

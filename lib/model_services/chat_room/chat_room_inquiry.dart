@@ -22,6 +22,7 @@ class ChatRoomInquiry {
     required String rueJaiUserId,
     required RueJaiUserType rueJaiUserType,
   }) async {
+    // localChatRepository.getMemberByRueJaiUser();
     final rueJaiUser = RueJaiUser(
       rueJaiUserId: rueJaiUserId,
       rueJaiUserType: rueJaiUserType,
