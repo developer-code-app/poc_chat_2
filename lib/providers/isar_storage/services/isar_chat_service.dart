@@ -17,6 +17,7 @@ import 'package:poc_chat_2/providers/isar_storage/entities/isar_sending_message_
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_unconfirmed_message_entity.dart';
 import 'package:isar/isar.dart';
 import 'package:poc_chat_2/providers/isar_storage/requests/isar_update_chat_room_profile_request.dart';
+import 'package:poc_chat_2/providers/isar_storage/requests/isar_update_confirmed_text_message_request.dart';
 
 class IsarChatService {
   IsarChatService(this.isar);
@@ -485,6 +486,28 @@ class IsarChatService {
         ..content = failedMessage.content
         ..owner.value = failedMessage.owner.value
         ..room.value = failedMessage.room.value;
+    });
+  }
+
+  Future<IsarConfirmedMessageEntity> updateConfirmedTextMessage(
+    IsarUpdateConfirmedTextMessageRequest request,
+  ) async {
+    return isar.then((isar) async {
+      final confirmedMessage = await isar.isarConfirmedMessageEntitys
+          .filter()
+          .room((query) => query.roomIdEqualTo(request.targetMessageChatRoomId))
+          .and()
+          .createdByRecordNumberEqualTo(
+            request.targetMessageCreatedByRecordNumber,
+          )
+          .findFirst();
+
+      if (confirmedMessage == null) throw Exception('Message not found');
+
+      return confirmedMessage
+        ..updatedAt = request.newUpdatedAt
+        ..lastUpdatedByRecordNumber = request.newLastUpdatedByRecordNumber
+        ..content = utf8.encode(request.newText);
     });
   }
 }

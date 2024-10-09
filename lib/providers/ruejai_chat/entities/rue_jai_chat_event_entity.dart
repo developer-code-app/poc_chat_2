@@ -283,6 +283,7 @@ class RueJaiChatEditTextMessageEventEntity extends RueJaiChatEventEntity {
     required super.createdAt,
     required super.type,
     required this.updatedMessageRecordNumber,
+    required this.text,
   });
 
   factory RueJaiChatEditTextMessageEventEntity.fromJson(
@@ -295,6 +296,7 @@ class RueJaiChatEditTextMessageEventEntity extends RueJaiChatEventEntity {
       _$RueJaiChatEditTextMessageEventEntityToJson(this);
 
   final int updatedMessageRecordNumber;
+  final String text;
 
   @override
   List<Object?> get props => [

@@ -161,7 +161,7 @@ class UpdateTextMessageEvent extends UpdateMessageEvent {
     required super.owner,
     required super.createdAt,
     required super.updatedMessageRecordNumber,
-    this.text,
+    required this.text,
   });
 
   factory UpdateTextMessageEvent.fromEntity({
@@ -172,10 +172,11 @@ class UpdateTextMessageEvent extends UpdateMessageEvent {
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
       updatedMessageRecordNumber: entity.updatedMessageRecordNumber,
+      text: entity.text,
     );
   }
 
-  final String? text;
+  final String text;
 }
 
 class DeleteMessageEvent extends MessageEvent {

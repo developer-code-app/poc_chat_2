@@ -206,6 +206,7 @@ RueJaiChatEditTextMessageEventEntity
           type: $enumDecode(_$EventTypeEnumMap, json['type']),
           updatedMessageRecordNumber:
               (json['updated_message_record_number'] as num).toInt(),
+          text: json['text'] as String,
         );
 
 Map<String, dynamic> _$RueJaiChatEditTextMessageEventEntityToJson(
@@ -216,6 +217,7 @@ Map<String, dynamic> _$RueJaiChatEditTextMessageEventEntityToJson(
       'created_at': instance.createdAt.toIso8601String(),
       'type': _$EventTypeEnumMap[instance.type]!,
       'updated_message_record_number': instance.updatedMessageRecordNumber,
+      'text': instance.text,
     };
 
 RueJaiChatDeleteMessageEventEntity _$RueJaiChatDeleteMessageEventEntityFromJson(
