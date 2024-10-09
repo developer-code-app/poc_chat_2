@@ -475,4 +475,23 @@ class IsarChatService {
       return message;
     });
   }
+
+  Future<IsarSendingMessageEntity> resendMessage({
+    required int messageId,
+  }) async {
+    return isar.then((isar) async {
+      final failedMessage = await isar.isarFailedMessageEntitys.get(messageId);
+
+      if (failedMessage == null) throw Exception('Message not found');
+
+      return IsarSendingMessageEntity()
+        ..createdAt = failedMessage.createdAt
+        ..updatedAt = failedMessage.createdAt
+        ..createdByEventId = failedMessage.createdByEventId
+        ..type = failedMessage.type
+        ..content = failedMessage.content
+        ..owner.value = failedMessage.owner.value
+        ..room.value = failedMessage.room.value;
+    });
+  }
 }

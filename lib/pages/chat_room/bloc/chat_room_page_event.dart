@@ -227,3 +227,19 @@ class AddPreviewMetadataRequestedEvent extends _Event {
   final int messageId;
   final String text;
 }
+
+class MessageResentEvent extends _Event {
+  MessageResentEvent({
+    required this.messageId,
+  });
+
+  final int messageId;
+}
+
+class MessageUnsendEvent extends _Event {
+  MessageUnsendEvent({
+    required this.messageId,
+  });
+
+  final int messageId;
+}

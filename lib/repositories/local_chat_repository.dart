@@ -317,4 +317,11 @@ extension LocalChatRoomTemporaryMessageRepository on LocalChatRepository {
         )
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }
+
+  Future<Message> resendMessage({required int messageId}) async {
+    return provider.chat
+        .resendMessage(messageId: messageId)
+        .then(Message.fromSendingMessageEntity)
+        .onError<Error>((error, _) => throw Exception(error.toString()));
+  }
 }
