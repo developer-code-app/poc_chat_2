@@ -22,20 +22,9 @@ class ChatRoomInquiry {
     required String rueJaiUserId,
     required RueJaiUserType rueJaiUserType,
   }) async {
-    // localChatRepository.getMemberByRueJaiUser();
-    final rueJaiUser = RueJaiUser(
+    return localChatRepository.getMemberByRueJaiUser(
+      chatRoomId: chatRoomId,
       rueJaiUserId: rueJaiUserId,
-      rueJaiUserType: rueJaiUserType,
-      rueJaiUserRole: RueJaiUserRole.customerService,
-      name: 'name',
-      thumbnailUrl: 'thumbnailUrl',
-    );
-
-    return ChatRoomMember(
-      id: '1',
-      role: ChatRoomMemberRole.member,
-      rueJaiUser: rueJaiUser,
-      lastReadMessageRecordNumber: 0,
     );
   }
 

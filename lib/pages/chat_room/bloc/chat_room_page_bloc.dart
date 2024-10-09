@@ -85,6 +85,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
     on<MessagePastedEvent>(_onMessagePastedEvent);
     on<PhotoSelectActionRequestedEvent>(_onPhotoSelectActionRequestedEvent);
     on<AddPreviewMetadataRequestedEvent>(_onAddPreviewMetadataRequestedEvent);
+    on<MessageResentEvent>(_onMessageResentEvent);
+    on<MessageUnsendEvent>(_onMessageUnsendEvent);
 
     broadcaster.Broadcaster.instance.stream.listen(
       onBroadcasterMessageReceived,
@@ -561,7 +563,12 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
 
       alertDialogCubit.alertActionSheet(
         actions: [
-          AlertAction('Resend'),
+          AlertAction(
+            'Resend',
+            onPressed: () => add(
+              MessageResentEvent(messageId: event.messageId),
+            ),
+          ),
           if (message is MemberPhotoMessage && message.urls != null)
             AlertAction(
               message.urls!.length > 1 ? 'Save all' : 'Save',
@@ -573,7 +580,12 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
             'Copy',
             onPressed: () => add(MessageCopiedEvent(message: message)),
           ),
-          AlertAction('Unsend'),
+          AlertAction(
+            'Unsend',
+            onPressed: () => add(
+              MessageUnsendEvent(messageId: event.messageId),
+            ),
+          ),
         ],
       );
     }
@@ -698,6 +710,34 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
       );
     }
   }
+
+  Future<void> _onMessageResentEvent(
+    MessageResentEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final state = this.state;
+    final message = await memberService.chatRoomMessageAction.resendMessage(
+      messageId: event.messageId,
+    );
+
+    if (state is LoadSuccessState) {
+      final failedMessages = state.chatRoom.failedMessages
+        ..removeWhere((message) => message.id == event.messageId);
+      final sendingMessages = state.chatRoom.sendingMessages..add(message);
+
+      emit(LoadSuccessState(
+        chatRoom: state.chatRoom.copyWith(
+          failedMessages: failedMessages,
+          sendingMessages: sendingMessages,
+        ),
+      ));
+    }
+  }
+
+  Future<void> _onMessageUnsendEvent(
+    MessageUnsendEvent event,
+    Emitter<_State> emit,
+  ) async {}
 
   Future _savePhoto(String url) async {
     final fileName = 'ruejai_chat_${DateFormat('yyyymmdd_HHmmss').format(
