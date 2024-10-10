@@ -8,6 +8,7 @@ import 'package:poc_chat_2/cubits/assets_picker_cubit.dart';
 import 'package:poc_chat_2/cubits/photos_clipboard_cubit.dart';
 import 'package:poc_chat_2/cubits/preview_metadata_cubit.dart';
 import 'package:poc_chat_2/cubits/reply_message_cubit.dart';
+import 'package:poc_chat_2/extensions/extended_date_time.dart';
 import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/pages/chat_room/bloc/chat_room_page_bloc.dart';
 import 'package:poc_chat_2/pages/chat_room/chat_room_page_presenter.dart';
@@ -61,6 +62,31 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           : MessageAlignment.left;
     } else {
       return MessageAlignment.center;
+    }
+  }
+
+  String? _groupMessageDateAndTime({
+    required int index,
+    required List<MessagePresenter> messages,
+  }) {
+    final message = messages[index];
+
+    if ((index == 0 && messages.length == 1) ||
+        (index == messages.length - 1)) {
+      return message.createdAt.toGroupDateAndTime();
+    } else {
+      final createdAt = message.createdAt;
+      final prevCreatedAt = messages[index + 1].createdAt;
+      final date = DateTime(createdAt.year, createdAt.month, createdAt.day);
+      final prevDate = DateTime(
+        prevCreatedAt.year,
+        prevCreatedAt.month,
+        prevCreatedAt.day,
+      );
+
+      return date.isAtSameMomentAs(prevDate)
+          ? null
+          : message.createdAt.toGroupDateAndTime();
     }
   }
 
@@ -148,26 +174,50 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       child: Align(
         alignment: Alignment.topCenter,
         child: ListView(
-          controller: bloc.scrollController,
-          shrinkWrap: true,
-          reverse: true,
-          children: [
-            ...state.presenter.sendingMessages.reversed.map(
-                (message) => _buildSendingMessages(context, message: message)),
-            ...state.presenter.failedMessages.reversed.map(
-                (message) => _buildFailedMessages(context, message: message)),
-            ...state.presenter.confirmedMessages.reversed.mapIndexed(
-              (index, message) => _buildConfirmedMessage(
-                context,
-                message: message,
-                shouldShowUser: _shouldShowUserAvatar(
-                  messages: state.presenter.confirmedMessages.toList(),
-                  message: message,
-                ),
-              ),
-            ),
-          ].intersperse(const SizedBox(height: 8)).toList(),
-        ),
+            controller: bloc.scrollController,
+            shrinkWrap: true,
+            reverse: true,
+            children: [
+              ...state.presenter.sendingMessages.reversed.map((message) =>
+                  _buildSendingMessages(context, message: message)),
+              ...state.presenter.failedMessages.reversed.map((message) =>
+                  (_buildFailedMessages(context, message: message))),
+              ...state.presenter.confirmedMessages.reversed
+                  .mapIndexed((index, message) {
+                final dateAndTime = _groupMessageDateAndTime(
+                  index: index,
+                  messages: state.presenter.confirmedMessages.reversed.toList(),
+                );
+
+                return Column(
+                  children: [
+                    if (dateAndTime != null) ...[
+                      Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xffE3D4EE),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(dateAndTime),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8)
+                    ],
+                    _buildConfirmedMessage(
+                      context,
+                      message: message,
+                      shouldShowUser: _shouldShowUserAvatar(
+                        messages: state.presenter.confirmedMessages.toList(),
+                        message: message,
+                      ),
+                    ),
+                  ],
+                );
+              }),
+            ].intersperse(const SizedBox(height: 8)).toList()),
       ),
     );
   }

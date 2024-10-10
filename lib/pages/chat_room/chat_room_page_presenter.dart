@@ -68,6 +68,7 @@ class MemberPresenter {
 sealed class MessagePresenter {
   MessagePresenter({
     required this.id,
+    required this.createdAt,
   });
 
   factory MessagePresenter.fromModel(Message message) {
@@ -80,13 +81,14 @@ sealed class MessagePresenter {
   }
 
   final int id;
+  final DateTime createdAt;
 }
 
 sealed class MemberMessagePresenter extends MessagePresenter {
   MemberMessagePresenter({
     required super.id,
+    required super.createdAt,
     required this.owner,
-    required this.createdAt,
     this.deletedAt,
   });
 
@@ -108,13 +110,13 @@ sealed class MemberMessagePresenter extends MessagePresenter {
   }
 
   final MemberPresenter owner;
-  final DateTime createdAt;
   final DateTime? deletedAt;
 }
 
 class ActivityLogMessagePresenter extends MessagePresenter {
   ActivityLogMessagePresenter({
     required super.id,
+    required super.createdAt,
     required this.log,
   });
 
@@ -124,22 +126,26 @@ class ActivityLogMessagePresenter extends MessagePresenter {
         return ActivityLogMessagePresenter(
           id: message.id,
           log: '${message.owner.name} created the chat room',
+          createdAt: message.createdAt,
         );
       case ActivityLogInviteMemberMessage():
         return ActivityLogMessagePresenter(
           id: message.id,
           log: '${message.owner.name} added ${message.member.name}',
+          createdAt: message.createdAt,
         );
       case ActivityLogEditMemberRoleMessage():
         return ActivityLogMessagePresenter(
           id: message.id,
           log:
               '${message.owner.name} updated ${message.member.name} to ${message.newRole}',
+          createdAt: message.createdAt,
         );
       case ActivityLogRemoveMemberMessage():
         return ActivityLogMessagePresenter(
           id: message.id,
           log: '${message.owner.name} removed ${message.member.name}',
+          createdAt: message.createdAt,
         );
     }
   }

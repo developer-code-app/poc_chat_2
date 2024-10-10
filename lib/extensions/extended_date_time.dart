@@ -26,6 +26,21 @@ extension ExtendedDateTime on DateTime {
     }
   }
 
+  String toGroupDateAndTime() {
+    final now = ExtendedTZDateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = DateTime(now.year, now.month, now.day - 1);
+    final date = DateTime(year, month, day);
+
+    if (date == today) {
+      return "Today";
+    } else if (date == yesterday) {
+      return "Yesterday";
+    } else {
+      return DateFormat.yMMMd().formatBuddhistCalendar(this);
+    }
+  }
+
   String stringFormat(String pattern, {String? locale}) {
     return DateFormat(pattern, locale)
         .formatBuddhistCalendar(toTZLocal())
