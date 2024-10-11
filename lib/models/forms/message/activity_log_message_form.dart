@@ -40,28 +40,28 @@ class ActivityLogInviteMemberMessageForm extends ActivityLogMessageForm {
   final ChatRoomMember invitedMember;
 }
 
-class ActivityLogEditMemberRoleMessageForm extends ActivityLogMessageForm {
-  ActivityLogEditMemberRoleMessageForm({
+class ActivityLogUpdateMemberRoleMessageForm extends ActivityLogMessageForm {
+  ActivityLogUpdateMemberRoleMessageForm({
     required super.owner,
     required super.createdAt,
     required super.createdByEventId,
     required super.createdByEventRecordNumber,
-    required this.editedMember,
+    required this.updatedMember,
     required this.newRole,
   });
 
-  final ChatRoomMember editedMember;
+  final ChatRoomMember updatedMember;
   final ChatRoomMemberRole newRole;
 }
 
-class ActivityLogRemoveMemberMessageForm extends ActivityLogMessageForm {
-  ActivityLogRemoveMemberMessageForm({
+class ActivityLogUninviteMemberMessageForm extends ActivityLogMessageForm {
+  ActivityLogUninviteMemberMessageForm({
     required super.owner,
     required super.createdAt,
     required super.createdByEventId,
     required super.createdByEventRecordNumber,
-    required this.removedMember,
+    required this.uninvitedMember,
   });
 
-  final ChatRoomMember removedMember;
+  final ChatRoomMember uninvitedMember;
 }
