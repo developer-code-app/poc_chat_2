@@ -26,7 +26,7 @@ extension ExtendedDateTime on DateTime {
     }
   }
 
-  String toGroupDateAndTime() {
+  String toRelativeDate() {
     final now = ExtendedTZDateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = DateTime(now.year, now.month, now.day - 1);

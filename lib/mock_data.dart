@@ -140,7 +140,7 @@ class MockData {
   static final chatRoom2 = ChatRoom(
     id: '2',
     name: "ผู้ดูแลโครงการ",
-    thumbnailUrl: '',
+    thumbnailUrl: 'https://picsum.photos/800/800.jpg',
     members: [khunPatPong, chatRoomAdmin],
     confirmedMessages: [
       MemberTextMessage(
