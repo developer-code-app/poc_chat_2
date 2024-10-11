@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:poc_chat_2/extensions/extended_nullable.dart';
 import 'package:poc_chat_2/mock_data.dart';
+import 'package:poc_chat_2/models/forms/message/activity_log_message_form.dart';
 import 'package:poc_chat_2/models/forms/message/member_message_form.dart';
 import 'package:poc_chat_2/models/forms/message/message_form.dart';
 import 'package:poc_chat_2/models/messages/message_type.dart';
@@ -217,10 +218,16 @@ class IsarChatService {
   }) async {
     return isar.then((isar) async {
       final room = await getChatRoom(chatRoomId: targetChatRoomId);
+
+      if (room == null) throw Exception('Room not found');
+
       final member = await getMemberByRueJaiUser(
         chatRoomId: targetChatRoomId,
         rueJaiUserId: form.owner.rueJaiUser.rueJaiUserId,
       );
+
+      if (member == null) throw Exception('Member not found');
+
       final message = IsarSendingMessageEntity()
         ..createdAt = form.createdAt
         ..updatedAt = form.createdAt
@@ -231,10 +238,18 @@ class IsarChatService {
       switch (form) {
         case TextMessageForm():
           message
-            ..type = MessageType.text
+            ..type = MessageType.memberText
             ..content = utf8.encode(form.text);
-        default:
-          break;
+        case TextReplyMessageForm():
+        // TODO: Handle this case.
+        case PhotoMessageForm():
+        // TODO: Handle this case.
+        case VideoMessageForm():
+        // TODO: Handle this case.
+        case FileMessageForm():
+        // TODO: Handle this case.
+        case MiniAppMessageForm():
+        // TODO: Handle this case.
       }
 
       await isar.writeTxn(() async {
@@ -314,10 +329,15 @@ class IsarChatService {
   }) async {
     return isar.then((isar) async {
       final room = await getChatRoom(chatRoomId: targetChatRoomId);
+
+      if (room == null) throw Exception('Room not found');
+
       final member = await getMemberByRueJaiUser(
         chatRoomId: targetChatRoomId,
         rueJaiUserId: form.owner.rueJaiUser.rueJaiUserId,
       );
+
+      if (member == null) throw Exception('Member not found');
 
       final message = IsarConfirmedMessageEntity()
         ..createdAt = form.createdAt
@@ -327,13 +347,36 @@ class IsarChatService {
         ..owner.value = member.getOrThrow(errorMessage: 'Member not found')
         ..room.value = room.getOrThrow(errorMessage: 'Room not found');
 
-      switch (form) {
-        case TextMessageForm():
-          message
-            ..type = MessageType.text
-            ..content = utf8.encode(form.text);
-        default:
-          break;
+      if (form is MemberMessageForm) {
+        switch (form) {
+          case TextMessageForm():
+            message
+              ..type = MessageType.memberText
+              ..content = utf8.encode(form.text);
+          case TextReplyMessageForm():
+          // TODO: Handle this case.
+          case PhotoMessageForm():
+          // TODO: Handle this case.
+          case VideoMessageForm():
+          // TODO: Handle this case.
+          case FileMessageForm():
+          // TODO: Handle this case.
+          case MiniAppMessageForm():
+          // TODO: Handle this case.
+        }
+      } else if (form is ActivityLogMessageForm) {
+        switch (form) {
+          case ActivityLogCreateRoomMessageForm():
+          // TODO: Handle this case.
+          case ActivityLogUpdateRoomMessageForm():
+          // TODO: Handle this case.
+          case ActivityLogInviteMemberMessageForm():
+          // TODO: Handle this case.
+          case ActivityLogUpdateMemberRoleMessageForm():
+          // TODO: Handle this case.
+          case ActivityLogUninviteMemberMessageForm():
+          // TODO: Handle this case.
+        }
       }
 
       await isar.writeTxn(() async {
@@ -437,10 +480,15 @@ class IsarChatService {
   }) async {
     return isar.then((isar) async {
       final room = await getChatRoom(chatRoomId: targetChatRoomId);
+
+      if (room == null) throw Exception('Room not found');
+
       final member = await getMemberByRueJaiUser(
         chatRoomId: targetChatRoomId,
         rueJaiUserId: form.owner.rueJaiUser.rueJaiUserId,
       );
+
+      if (member == null) throw Exception('Member not found');
 
       final message = IsarUnconfirmedMessageEntity()
         ..createdAt = form.createdAt
@@ -453,10 +501,18 @@ class IsarChatService {
       switch (form) {
         case TextMessageForm():
           message
-            ..type = MessageType.text
+            ..type = MessageType.memberText
             ..content = utf8.encode(form.text);
-        default:
-          break;
+        case TextReplyMessageForm():
+        // TODO: Handle this case.
+        case PhotoMessageForm():
+        // TODO: Handle this case.
+        case VideoMessageForm():
+        // TODO: Handle this case.
+        case FileMessageForm():
+        // TODO: Handle this case.
+        case MiniAppMessageForm():
+        // TODO: Handle this case.
       }
 
       await isar.writeTxn(() async {

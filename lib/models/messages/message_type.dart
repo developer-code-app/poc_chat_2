@@ -1,7 +1,13 @@
 enum MessageType {
-  text,
-  photo,
-  video,
-  file,
-  miniApp,
+  memberText,
+  memberTextReply,
+  memberPhoto,
+  memberVideo,
+  memberFile,
+  memberMiniApp,
+  activityLogCreateRoom,
+  activityLogUpdateRoom,
+  activityLogInviteMember,
+  activityLogUpdateMemberRole,
+  activityLogUninviteMember
 }
