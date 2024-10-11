@@ -22,8 +22,6 @@ abstract class Event {
         return CreateVideoMessageEvent.fromEntity(entity: entity);
       case RueJaiChatCreateFileMessageEventEntity():
         return CreateFileMessageEvent.fromEntity(entity: entity);
-      case RueJaiChatCreateHomeCareMessageEventEntity():
-        return CreateMiniAppMessageEvent.fromEntity(entity: entity);
       case RueJaiChatUpdateTextMessageEventEntity():
         return UpdateTextMessageEvent.fromEntity(entity: entity);
       case RueJaiChatDeleteMessageEventEntity():
@@ -35,7 +33,7 @@ abstract class Event {
       case RueJaiChatInviteMemberEventEntity():
         return InviteMemberEvent.fromEntity(entity: entity);
       case RueJaiChatUninviteMemberEventEntity():
-        return RemoveMemberEvent.fromEntity(entity: entity);
+        return UninviteMemberEvent.fromEntity(entity: entity);
       default:
         throw Exception('Unsupported event: ${entity.type}');
     }

@@ -59,7 +59,7 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
       throw UnimplementedError();
     } else if (event is room_event.UpdateMemberRoleEvent) {
       throw UnimplementedError();
-    } else if (event is room_event.RemoveMemberEvent) {
+    } else if (event is room_event.UninviteMemberEvent) {
       throw UnimplementedError();
     }
 

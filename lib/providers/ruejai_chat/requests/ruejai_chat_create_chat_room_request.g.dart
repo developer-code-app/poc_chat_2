@@ -49,13 +49,14 @@ const _$EventTypeEnumMap = {
   EventType.createVideoMessage: 'CREATE_VIDEO_MESSAGE',
   EventType.createFileMessage: 'CREATE_FILE_MESSAGE',
   EventType.createHomeCareMessage: 'CREATE_HOME_CARE_MESSAGE',
-  EventType.editTextMessage: 'EDIT_TEXT_MESSAGE',
+  EventType.updateTextMessage: 'UPDATE_TEXT_MESSAGE',
   EventType.deleteMessage: 'DELETE_MESSAGE',
-  EventType.readMessage: 'READ_MESSAGE',
   EventType.createRoom: 'CREATE_ROOM',
-  EventType.editMemberRole: 'EDIT_MEMBER_ROLE',
+  EventType.updateRoom: 'UPDATE_ROOM',
   EventType.inviteMember: 'INVITE_MEMBER',
-  EventType.removeMember: 'UNINVITE_MEMBER',
+  EventType.updateMemberRole: 'EDIT_MEMBER_ROLE',
+  EventType.uninviteMember: 'UNINVITE_MEMBER',
+  EventType.readMessage: 'READ_MESSAGE',
 };
 
 OwnerRequest _$OwnerRequestFromJson(Map<String, dynamic> json) => OwnerRequest(

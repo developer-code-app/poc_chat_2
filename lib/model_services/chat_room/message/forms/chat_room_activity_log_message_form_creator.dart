@@ -62,14 +62,14 @@ extension ChatRoomActivityLogMessageFormCreator on ChatRoomMessageFormCreator {
 
   Future<ActivityLogRemoveMemberMessageForm>
       _createActivityLogRemoveMemberMessageFormFromEvent(
-    room_event.RemoveMemberEvent event, {
+    room_event.UninviteMemberEvent event, {
     required ChatRoomMember owner,
     required int recordNumber,
     required DateTime recordedAt,
   }) async {
     final removedMember = await _getChatRoomMemberByRoomEventChatRoomMember(
       chatRoomId: chatRoomId,
-      member: event.removedMember,
+      member: event.uninvitedMember,
     );
 
     return ActivityLogRemoveMemberMessageForm(

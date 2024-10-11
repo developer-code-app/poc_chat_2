@@ -13,18 +13,20 @@ enum EventType {
   createFileMessage,
   @JsonValue('CREATE_HOME_CARE_MESSAGE')
   createHomeCareMessage,
-  @JsonValue('EDIT_TEXT_MESSAGE')
-  editTextMessage,
+  @JsonValue('UPDATE_TEXT_MESSAGE')
+  updateTextMessage,
   @JsonValue('DELETE_MESSAGE')
   deleteMessage,
-  @JsonValue('READ_MESSAGE')
-  readMessage,
   @JsonValue('CREATE_ROOM')
   createRoom,
-  @JsonValue('EDIT_MEMBER_ROLE')
-  editMemberRole,
+  @JsonValue('UPDATE_ROOM')
+  updateRoom,
   @JsonValue('INVITE_MEMBER')
   inviteMember,
+  @JsonValue('EDIT_MEMBER_ROLE')
+  updateMemberRole,
   @JsonValue('UNINVITE_MEMBER')
-  removeMember,
+  uninviteMember,
+  @JsonValue('READ_MESSAGE')
+  readMessage,
 }

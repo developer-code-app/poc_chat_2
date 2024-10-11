@@ -22,10 +22,10 @@ abstract class UpdateMessageEvent extends MessageEvent {
     required super.id,
     required super.owner,
     required super.createdAt,
-    required this.updatedMessageRecordNumber,
+    required this.updatedMessageCreatedByEventRecordNumber,
   });
 
-  int updatedMessageRecordNumber;
+  int updatedMessageCreatedByEventRecordNumber;
 }
 
 class CreateTextMessageEvent extends CreateMessageEvent {
@@ -33,7 +33,7 @@ class CreateTextMessageEvent extends CreateMessageEvent {
     required super.id,
     required super.owner,
     required super.createdAt,
-    this.text,
+    required this.text,
   });
 
   factory CreateTextMessageEvent.fromEntity({
@@ -43,10 +43,11 @@ class CreateTextMessageEvent extends CreateMessageEvent {
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
+      text: entity.text,
     );
   }
 
-  final String? text;
+  final String text;
 }
 
 class CreateTextReplyMessageEvent extends CreateMessageEvent {
@@ -55,7 +56,7 @@ class CreateTextReplyMessageEvent extends CreateMessageEvent {
     required super.owner,
     required super.createdAt,
     required this.repliedMessageCreatedByEventRecordNumber,
-    this.text,
+    required this.text,
   });
 
   factory CreateTextReplyMessageEvent.fromEntity({
@@ -65,13 +66,14 @@ class CreateTextReplyMessageEvent extends CreateMessageEvent {
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
+      text: entity.text,
       repliedMessageCreatedByEventRecordNumber:
           entity.repliedMessageCreatedByEventRecordNumber,
     );
   }
 
   final int repliedMessageCreatedByEventRecordNumber;
-  final String? text;
+  final String text;
 }
 
 class CreatePhotoMessageEvent extends CreateMessageEvent {
@@ -79,7 +81,7 @@ class CreatePhotoMessageEvent extends CreateMessageEvent {
     required super.id,
     required super.owner,
     required super.createdAt,
-    this.urls,
+    required this.urls,
   });
 
   factory CreatePhotoMessageEvent.fromEntity({
@@ -89,10 +91,11 @@ class CreatePhotoMessageEvent extends CreateMessageEvent {
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
+      urls: entity.urls,
     );
   }
 
-  final List<String>? urls;
+  final List<String> urls;
 }
 
 class CreateVideoMessageEvent extends CreateMessageEvent {
@@ -100,7 +103,7 @@ class CreateVideoMessageEvent extends CreateMessageEvent {
     required super.id,
     required super.owner,
     required super.createdAt,
-    this.url,
+    required this.url,
   });
 
   factory CreateVideoMessageEvent.fromEntity({
@@ -110,10 +113,11 @@ class CreateVideoMessageEvent extends CreateMessageEvent {
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
+      url: entity.url,
     );
   }
 
-  final String? url;
+  final String url;
 }
 
 class CreateFileMessageEvent extends CreateMessageEvent {
@@ -121,7 +125,7 @@ class CreateFileMessageEvent extends CreateMessageEvent {
     required super.id,
     required super.owner,
     required super.createdAt,
-    this.url,
+    required this.url,
   });
 
   factory CreateFileMessageEvent.fromEntity({
@@ -131,10 +135,11 @@ class CreateFileMessageEvent extends CreateMessageEvent {
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
+      url: entity.url,
     );
   }
 
-  final String? url;
+  final String url;
 }
 
 class CreateMiniAppMessageEvent extends CreateMessageEvent {
@@ -160,7 +165,7 @@ class UpdateTextMessageEvent extends UpdateMessageEvent {
     required super.id,
     required super.owner,
     required super.createdAt,
-    required super.updatedMessageRecordNumber,
+    required super.updatedMessageCreatedByEventRecordNumber,
     required this.text,
   });
 
@@ -171,7 +176,8 @@ class UpdateTextMessageEvent extends UpdateMessageEvent {
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
-      updatedMessageRecordNumber: entity.updatedMessageCreatedByEventRecordNumber,
+      updatedMessageCreatedByEventRecordNumber:
+          entity.updatedMessageCreatedByEventRecordNumber,
       text: entity.text,
     );
   }
@@ -194,7 +200,8 @@ class DeleteMessageEvent extends MessageEvent {
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
-      deletedMessageRecordNumber: entity.deletedMessageCreatedByEventRecordNumber,
+      deletedMessageRecordNumber:
+          entity.deletedMessageCreatedByEventRecordNumber,
     );
   }
 

@@ -87,7 +87,8 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
     } else if (event is UpdateTextMessageEvent) {
       final message = await localChatRepository.updateConfirmedTextMessage(
         targetMessageChatRoomId: chatRoomId,
-        targetMessageCreatedByRecordNumber: event.updatedMessageRecordNumber,
+        targetMessageCreatedByRecordNumber:
+            event.updatedMessageCreatedByEventRecordNumber,
         newText: event.text,
         newUpdatedAt: recordedEvent.recordedAt,
         newLastUpdatedByRecordNumber: recordedEvent.recordNumber,
@@ -201,11 +202,14 @@ extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
 
     switch (event) {
       case CreateRoomEvent():
+      // TODO: Handle this case.
+      case UpdateRoomEvent():
+      // TODO: Handle this case.
       case InviteMemberEvent():
       // TODO: Handle this case.
       case UpdateMemberRoleEvent():
       // TODO: Handle this case.
-      case RemoveMemberEvent():
+      case UninviteMemberEvent():
       // TODO: Handle this case.
     }
   }

@@ -40,6 +40,31 @@ class CreateRoomEvent extends RoomEvent {
   final List<ChatRoomMember> members;
 }
 
+class UpdateRoomEvent extends RoomEvent {
+  UpdateRoomEvent({
+    required super.id,
+    required super.owner,
+    required super.createdAt,
+    this.name,
+    this.thumbnailUrl,
+  });
+
+  factory UpdateRoomEvent.fromEntity({
+    required RueJaiChatUpdateRoomEventEntity entity,
+  }) {
+    return UpdateRoomEvent(
+      id: entity.id,
+      owner: Owner.fromEntity(entity: entity.owner),
+      createdAt: entity.createdAt,
+      name: entity.name,
+      thumbnailUrl: entity.thumbnailUrl,
+    );
+  }
+
+  final String? name;
+  final String? thumbnailUrl;
+}
+
 class InviteMemberEvent extends RoomEvent {
   InviteMemberEvent({
     required super.id,
@@ -84,26 +109,27 @@ class UpdateMemberRoleEvent extends RoomEvent {
   final ChatRoomMember updatedMember;
 }
 
-class RemoveMemberEvent extends RoomEvent {
-  RemoveMemberEvent({
+class UninviteMemberEvent extends RoomEvent {
+  UninviteMemberEvent({
     required super.id,
     required super.owner,
     required super.createdAt,
-    required this.removedMember,
+    required this.uninvitedMember,
   });
 
-  factory RemoveMemberEvent.fromEntity({
+  factory UninviteMemberEvent.fromEntity({
     required RueJaiChatUninviteMemberEventEntity entity,
   }) {
-    return RemoveMemberEvent(
+    return UninviteMemberEvent(
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
-      removedMember: ChatRoomMember.fromEntity(entity: entity.uninvitedMember),
+      uninvitedMember:
+          ChatRoomMember.fromEntity(entity: entity.uninvitedMember),
     );
   }
 
-  final ChatRoomMember removedMember;
+  final ChatRoomMember uninvitedMember;
 }
 
 class ChatRoomMember {
