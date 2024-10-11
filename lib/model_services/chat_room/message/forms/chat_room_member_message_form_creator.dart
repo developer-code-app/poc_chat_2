@@ -74,8 +74,6 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
   }) {
     final text = event.text;
 
-    if (text == null) throw Exception();
-
     return TextMessageForm(
       owner: member,
       createdAt: recordedAt ?? event.createdAt,
@@ -93,8 +91,6 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
     DateTime? recordedAt,
   }) async {
     final text = event.text;
-
-    if (text == null) throw Exception();
 
     final repliedMessage = await localChatRepository.getMessage(
       chatRoomId: chatRoomId,
@@ -121,8 +117,6 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
   }) {
     final urls = event.urls;
 
-    if (urls == null) throw Exception();
-
     return PhotoMessageForm(
       owner: member,
       createdAt: recordedAt ?? event.createdAt,
@@ -140,8 +134,6 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
   }) {
     final url = event.url;
 
-    if (url == null) throw Exception();
-
     return VideoMessageForm(
       owner: member,
       createdAt: recordedAt ?? event.createdAt,
@@ -158,8 +150,6 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
     DateTime? recordedAt,
   }) {
     final url = event.url;
-
-    if (url == null) throw Exception();
 
     return FileMessageForm(
       owner: member,

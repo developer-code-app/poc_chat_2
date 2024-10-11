@@ -1,12 +1,10 @@
 import 'package:poc_chat_2/mock_data.dart';
-import 'package:poc_chat_2/model_services/chat_room/chat_room_action.dart';
 import 'package:poc_chat_2/model_services/chat_room/chat_room_inquiry.dart';
 import 'package:poc_chat_2/model_services/chat_room/event/chat_room_event_creator.dart';
 import 'package:poc_chat_2/model_services/chat_room/member/chat_room_member_lister.dart';
 import 'package:poc_chat_2/model_services/chat_room/member/inquiry.dart';
 import 'package:poc_chat_2/model_services/chat_room/message/chat_room_message_action.dart';
 import 'package:poc_chat_2/model_services/chat_room/message/chat_room_message_lister.dart';
-import 'package:poc_chat_2/model_services/message/message_action.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 import 'package:poc_chat_2/repositories/server_chat_repository.dart';
 
