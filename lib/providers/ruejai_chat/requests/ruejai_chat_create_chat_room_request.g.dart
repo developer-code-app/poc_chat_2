@@ -55,7 +55,7 @@ const _$EventTypeEnumMap = {
   EventType.createRoom: 'CREATE_ROOM',
   EventType.editMemberRole: 'EDIT_MEMBER_ROLE',
   EventType.inviteMember: 'INVITE_MEMBER',
-  EventType.removeMember: 'REMOVE_MEMBER',
+  EventType.removeMember: 'UNINVITE_MEMBER',
 };
 
 OwnerRequest _$OwnerRequestFromJson(Map<String, dynamic> json) => OwnerRequest(

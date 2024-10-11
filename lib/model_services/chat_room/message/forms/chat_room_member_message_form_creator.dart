@@ -98,7 +98,7 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
 
     final repliedMessage = await localChatRepository.getMessage(
       chatRoomId: chatRoomId,
-      recordNumber: event.repliedMessageAddedByEventRecordNumber,
+      recordNumber: event.repliedMessageCreatedByEventRecordNumber,
     );
 
     if (repliedMessage == null) throw Exception();

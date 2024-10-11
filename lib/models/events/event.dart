@@ -1,5 +1,4 @@
 import 'package:poc_chat_2/models/events/message_event.dart';
-import 'package:poc_chat_2/models/events/read_event.dart';
 import 'package:poc_chat_2/models/events/room_event.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_event_entity.dart';
@@ -25,19 +24,17 @@ abstract class Event {
         return CreateFileMessageEvent.fromEntity(entity: entity);
       case RueJaiChatCreateHomeCareMessageEventEntity():
         return CreateMiniAppMessageEvent.fromEntity(entity: entity);
-      case RueJaiChatEditTextMessageEventEntity():
+      case RueJaiChatUpdateTextMessageEventEntity():
         return UpdateTextMessageEvent.fromEntity(entity: entity);
       case RueJaiChatDeleteMessageEventEntity():
         return DeleteMessageEvent.fromEntity(entity: entity);
-      case RueJaiChatReadMessageEventEntity():
-        return ReadMessageEvent.fromEntity(entity: entity);
       case RueJaiChatCreateRoomEventEntity():
         return CreateRoomEvent.fromEntity(entity: entity);
-      case RueJaiChatEditMemberRoleEventEntity():
+      case RueJaiChatUpdateMemberRoleEventEntity():
         return UpdateMemberRoleEvent.fromEntity(entity: entity);
       case RueJaiChatInviteMemberEventEntity():
         return InviteMemberEvent.fromEntity(entity: entity);
-      case RueJaiChatRemoveMemberEventEntity():
+      case RueJaiChatUninviteMemberEventEntity():
         return RemoveMemberEvent.fromEntity(entity: entity);
       default:
         throw Exception('Unsupported event: ${entity.type}');

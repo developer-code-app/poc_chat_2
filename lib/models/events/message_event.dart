@@ -54,7 +54,7 @@ class CreateTextReplyMessageEvent extends CreateMessageEvent {
     required super.id,
     required super.owner,
     required super.createdAt,
-    required this.repliedMessageAddedByEventRecordNumber,
+    required this.repliedMessageCreatedByEventRecordNumber,
     this.text,
   });
 
@@ -65,12 +65,12 @@ class CreateTextReplyMessageEvent extends CreateMessageEvent {
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
-      repliedMessageAddedByEventRecordNumber:
-          entity.repliedMessageAddedByEventRecordNumber,
+      repliedMessageCreatedByEventRecordNumber:
+          entity.repliedMessageCreatedByEventRecordNumber,
     );
   }
 
-  final int repliedMessageAddedByEventRecordNumber;
+  final int repliedMessageCreatedByEventRecordNumber;
   final String? text;
 }
 
@@ -165,13 +165,13 @@ class UpdateTextMessageEvent extends UpdateMessageEvent {
   });
 
   factory UpdateTextMessageEvent.fromEntity({
-    required RueJaiChatEditTextMessageEventEntity entity,
+    required RueJaiChatUpdateTextMessageEventEntity entity,
   }) {
     return UpdateTextMessageEvent(
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
-      updatedMessageRecordNumber: entity.updatedMessageRecordNumber,
+      updatedMessageRecordNumber: entity.updatedMessageCreatedByEventRecordNumber,
       text: entity.text,
     );
   }
@@ -194,7 +194,7 @@ class DeleteMessageEvent extends MessageEvent {
       id: entity.id,
       owner: Owner.fromEntity(entity: entity.owner),
       createdAt: entity.createdAt,
-      deletedMessageRecordNumber: entity.deletedMessageRecordNumber,
+      deletedMessageRecordNumber: entity.deletedMessageCreatedByEventRecordNumber,
     );
   }
 

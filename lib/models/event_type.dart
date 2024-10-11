@@ -25,6 +25,6 @@ enum EventType {
   editMemberRole,
   @JsonValue('INVITE_MEMBER')
   inviteMember,
-  @JsonValue('REMOVE_MEMBER')
+  @JsonValue('UNINVITE_MEMBER')
   removeMember,
 }
