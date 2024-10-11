@@ -1,32 +1,166 @@
+import 'package:collection/collection.dart';
+import 'package:dfunc/dfunc.dart';
+import 'package:poc_chat_2/extensions/extended_date_time.dart';
 import 'package:poc_chat_2/models/chat_room.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
+import 'package:poc_chat_2/widgets/list_view/presenter/list_view_child.dart';
 
 class ChatRoomPagePresenter {
   ChatRoomPagePresenter({
     required this.name,
-    required this.confirmedMessages,
-    required this.failedMessages,
-    required this.sendingMessages,
+    required this.listViewChildren,
   });
 
   factory ChatRoomPagePresenter.fromModel(ChatRoom chatRoom) {
+    final confirmedMessages =
+        chatRoom.confirmedMessages.expandIndexed<ListViewChild>(
+      (index, message) {
+        final date = relativeDate(
+          messages: chatRoom.confirmedMessages,
+          currentMessageIndex: index,
+        );
+
+        return [
+          if (date != null) Date(title: date),
+          ConfirmedMessage.fromModel(
+            message: message,
+            shouldShowUserAvatar: _shouldShowUserAvatar(
+              messages: chatRoom.confirmedMessages,
+              currentMessageIndex: index,
+            ),
+          ),
+        ];
+      },
+    );
+
     return ChatRoomPagePresenter(
       name: chatRoom.name,
-      confirmedMessages:
-          chatRoom.confirmedMessages.map(MessagePresenter.fromModel).toList(),
-      failedMessages:
-          chatRoom.failedMessages.map(MessagePresenter.fromModel).toList(),
-      sendingMessages:
-          chatRoom.sendingMessages.map(MessagePresenter.fromModel).toList(),
+      listViewChildren: [
+        ...confirmedMessages.intersperse(ListViewSeparator(height: 8)),
+        ListViewSeparator(height: 8),
+        ...chatRoom.failedMessages
+            .map<ListViewChild>(FailedMessage.fromModel)
+            .intersperse(ListViewSeparator(height: 8)),
+        ListViewSeparator(height: 8),
+        ...chatRoom.sendingMessages
+            .map<ListViewChild>(SendingMessage.fromModel)
+            .intersperse(ListViewSeparator(height: 8)),
+      ],
     );
   }
 
+  static bool _shouldShowUserAvatar({
+    required List<Message> messages,
+    required int currentMessageIndex,
+  }) {
+    final currentMessage = messages.elementAtOrNull(currentMessageIndex);
+    final previousMessage = currentMessageIndex > 0
+        ? messages.elementAtOrNull(currentMessageIndex - 1)
+        : null;
+
+    if (previousMessage == null) return currentMessage is MemberMessage;
+
+    if (currentMessage is! MemberMessage) return false;
+
+    if (previousMessage is! MemberMessage) return true;
+
+    return previousMessage.owner.id != currentMessage.owner.id;
+  }
+
+  static String? relativeDate({
+    required List<Message> messages,
+    required int currentMessageIndex,
+  }) {
+    final currentMessage = messages.elementAtOrNull(currentMessageIndex);
+
+    if (currentMessage == null) return null;
+
+    if (currentMessageIndex == 0) {
+      return currentMessage.createdAt.toRelativeDate();
+    } else {
+      final previousMessage = messages.elementAtOrNull(currentMessageIndex - 1);
+
+      if (previousMessage == null) return null;
+
+      final shouldShowDate = _shouldShowDate(
+        previousMessage: previousMessage,
+        currentMessage: currentMessage,
+      );
+
+      return shouldShowDate ? currentMessage.createdAt.toRelativeDate() : null;
+    }
+  }
+
+  static bool _shouldShowDate({
+    required Message previousMessage,
+    required Message currentMessage,
+  }) {
+    final currentCreatedAt = currentMessage.createdAt;
+    final previousCreatedAt = previousMessage.createdAt;
+    final currentDate = DateTime(
+      currentCreatedAt.year,
+      currentCreatedAt.month,
+      currentCreatedAt.day,
+    );
+    final previousDate = DateTime(
+      previousCreatedAt.year,
+      previousCreatedAt.month,
+      previousCreatedAt.day,
+    );
+
+    return !currentDate.isAtSameMomentAs(previousDate);
+  }
+
   final String name;
-  final List<MessagePresenter> confirmedMessages;
-  final List<MessagePresenter> failedMessages;
-  final List<MessagePresenter> sendingMessages;
+  final List<ListViewChild> listViewChildren;
+}
+
+class ConfirmedMessage extends ListViewChild {
+  ConfirmedMessage({
+    required this.message,
+    required this.shouldShowUserAvatar,
+  });
+
+  factory ConfirmedMessage.fromModel({
+    required Message message,
+    required bool shouldShowUserAvatar,
+  }) {
+    return ConfirmedMessage(
+      message: MessagePresenter.fromModel(message),
+      shouldShowUserAvatar: shouldShowUserAvatar,
+    );
+  }
+
+  final MessagePresenter message;
+  final bool shouldShowUserAvatar;
+}
+
+class FailedMessage extends ListViewChild {
+  FailedMessage(this.message);
+
+  factory FailedMessage.fromModel(Message message) {
+    return FailedMessage(MessagePresenter.fromModel(message));
+  }
+
+  final MessagePresenter message;
+}
+
+class SendingMessage extends ListViewChild {
+  SendingMessage(this.message);
+
+  factory SendingMessage.fromModel(Message message) {
+    return SendingMessage(MessagePresenter.fromModel(message));
+  }
+
+  final MessagePresenter message;
+}
+
+class Date extends ListViewChild {
+  Date({required this.title});
+
+  final String title;
 }
 
 class MemberPresenter {
@@ -68,6 +202,7 @@ class MemberPresenter {
 sealed class MessagePresenter {
   MessagePresenter({
     required this.id,
+    required this.createdAt,
   });
 
   factory MessagePresenter.fromModel(Message message) {
@@ -80,13 +215,14 @@ sealed class MessagePresenter {
   }
 
   final int id;
+  final DateTime createdAt;
 }
 
 sealed class MemberMessagePresenter extends MessagePresenter {
   MemberMessagePresenter({
     required super.id,
+    required super.createdAt,
     required this.owner,
-    required this.createdAt,
     this.deletedAt,
   });
 
@@ -108,13 +244,13 @@ sealed class MemberMessagePresenter extends MessagePresenter {
   }
 
   final MemberPresenter owner;
-  final DateTime createdAt;
   final DateTime? deletedAt;
 }
 
 class ActivityLogMessagePresenter extends MessagePresenter {
   ActivityLogMessagePresenter({
     required super.id,
+    required super.createdAt,
     required this.log,
   });
 
@@ -124,22 +260,26 @@ class ActivityLogMessagePresenter extends MessagePresenter {
         return ActivityLogMessagePresenter(
           id: message.id,
           log: '${message.owner.name} created the chat room',
+          createdAt: message.createdAt,
         );
       case ActivityLogInviteMemberMessage():
         return ActivityLogMessagePresenter(
           id: message.id,
           log: '${message.owner.name} added ${message.member.name}',
+          createdAt: message.createdAt,
         );
       case ActivityLogEditMemberRoleMessage():
         return ActivityLogMessagePresenter(
           id: message.id,
           log:
               '${message.owner.name} updated ${message.member.name} to ${message.newRole}',
+          createdAt: message.createdAt,
         );
       case ActivityLogRemoveMemberMessage():
         return ActivityLogMessagePresenter(
           id: message.id,
           log: '${message.owner.name} removed ${message.member.name}',
+          createdAt: message.createdAt,
         );
     }
   }
