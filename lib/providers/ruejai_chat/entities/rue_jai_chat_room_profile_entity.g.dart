@@ -9,7 +9,7 @@ part of 'rue_jai_chat_room_profile_entity.dart';
 RueJaiChatRoomProfileEntity _$RueJaiChatRoomProfileEntityFromJson(
         Map<String, dynamic> json) =>
     RueJaiChatRoomProfileEntity(
-      id: json['id'] as String,
+      id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       members: (json['members'] as List<dynamic>)
           .map((e) =>
@@ -41,7 +41,7 @@ Map<String, dynamic> _$RueJaiChatRoomProfileEntityToJson(
 RueJaiChatRoomMemberEntity _$RueJaiChatRoomMemberEntityFromJson(
         Map<String, dynamic> json) =>
     RueJaiChatRoomMemberEntity(
-      id: json['id'] as String,
+      id: (json['id'] as num).toInt(),
       role: $enumDecode(_$ChatRoomMemberRoleEnumMap, json['role']),
       rueJaiUser: RueJaiUserEntity.fromJson(
           json['rue_jai_user'] as Map<String, dynamic>),
@@ -98,8 +98,8 @@ const _$RueJaiUserTypeEnumMap = {
 };
 
 const _$RueJaiUserRoleEnumMap = {
-  RueJaiUserRole.homeOwner: 'homeOwner',
-  RueJaiUserRole.resident: 'resident',
-  RueJaiUserRole.renter: 'renter',
-  RueJaiUserRole.customerService: 'customerService',
+  RueJaiUserRole.homeOwner: 'HOME_OWNER',
+  RueJaiUserRole.resident: 'RESIDENT',
+  RueJaiUserRole.renter: 'RENTER',
+  RueJaiUserRole.customerService: 'CUSTOMER_SERVICE',
 };

@@ -9,7 +9,7 @@ part of 'rue_jai_chat_room_state_entity.dart';
 RueJaiChatRoomStateEntity _$RueJaiChatRoomStateEntityFromJson(
         Map<String, dynamic> json) =>
     RueJaiChatRoomStateEntity(
-      id: json['id'] as String,
+      id: (json['id'] as num).toInt(),
       latestRoomAndMessageEventRecordNumber:
           (json['latest_room_and_message_event_record_number'] as num).toInt(),
       profileHash: json['profile_hash'] as String,

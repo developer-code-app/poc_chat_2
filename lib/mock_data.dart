@@ -5,7 +5,7 @@ import 'package:poc_chat_2/models/mini_app.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 
 class MockData {
-  static const accessToken = '2:RUE_JAI_APP_USER';
+  static const accessToken = '2';
   static final currentRueJaiUser = _mongAccount;
 
   static final _noteAccount = RueJaiUser(

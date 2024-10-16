@@ -113,9 +113,10 @@ class SystemService {
               );
 
           if (chatRoomSyncState != null) {
-            syncChatRoom(chatRoomSyncState: chatRoomSyncState);
+            await syncChatRoom(chatRoomSyncState: chatRoomSyncState);
           } else {
-            _createAndSyncNewChatRoom(serverChatRoomState: serverChatRoomState);
+            await _createAndSyncNewChatRoom(
+                serverChatRoomState: serverChatRoomState);
           }
         })
       ],

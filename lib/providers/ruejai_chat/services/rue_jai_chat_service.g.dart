@@ -75,7 +75,7 @@ class _RueJaiChatService implements RueJaiChatService {
     )
             .compose(
               _dio.options,
-              'api/ruejai-chat/chat-room/${chatRoomId}/profile',
+              'api/ruejai-chat/chat-rooms/${chatRoomId}/profile',
               queryParameters: queryParameters,
               data: _data,
             )

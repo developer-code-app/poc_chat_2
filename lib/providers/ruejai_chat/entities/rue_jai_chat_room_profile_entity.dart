@@ -20,7 +20,7 @@ class RueJaiChatRoomProfileEntity extends Equatable {
 
   Map<String, dynamic> toJson() => _$RueJaiChatRoomProfileEntityToJson(this);
 
-  final String id;
+  final int id;
   final String name;
   final String? thumbnailUrl;
   final List<RueJaiChatRoomMemberEntity> members;
@@ -49,7 +49,7 @@ class RueJaiChatRoomMemberEntity extends Equatable {
 
   Map<String, dynamic> toJson() => _$RueJaiChatRoomMemberEntityToJson(this);
 
-  final String id;
+  final int id;
   final ChatRoomMemberRole role;
   final RueJaiUserEntity rueJaiUser;
   final int lastReadMessageRecordNumber;

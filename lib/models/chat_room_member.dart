@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_member_entity.dart'
     as member_entity;
@@ -25,7 +26,7 @@ class ChatRoomMember {
 
   factory ChatRoomMember.fromEntity(RueJaiChatRoomMemberEntity entity) {
     return ChatRoomMember(
-      id: entity.id,
+      id: entity.id.toString(),
       role: entity.role,
       rueJaiUser: RueJaiUser.fromEntity(entity.rueJaiUser),
       lastReadMessageRecordNumber: entity.lastReadMessageRecordNumber,

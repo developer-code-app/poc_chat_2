@@ -46,18 +46,7 @@ class IsarChatService {
 
   Future<List<IsarChatRoomEntity>> getChatRooms() async {
     return isar.then(
-      (isar) async {
-        final rueJaiUser = await findRueJaiUser();
-
-        return isar.isarChatRoomEntitys
-            .filter()
-            .members(
-              (query) => query.rueJaiUser(
-                (query) => query.rueJaiUserIdEqualTo(rueJaiUser.rueJaiUserId),
-              ),
-            )
-            .findAll();
-      },
+      (isar) async => isar.isarChatRoomEntitys.where().findAll(),
     );
   }
 
@@ -70,6 +59,19 @@ class IsarChatService {
             .filter()
             .roomIdEqualTo(chatRoomId)
             .findFirst();
+      },
+    );
+  }
+
+  Future<List<IsarChatRoomMemberEntity>> getMembers({
+    required String chatRoomId,
+  }) {
+    return isar.then(
+      (isar) async {
+        return isar.isarChatRoomMemberEntitys
+            .filter()
+            .room((query) => query.roomIdEqualTo(chatRoomId))
+            .findAll();
       },
     );
   }
@@ -132,6 +134,7 @@ class IsarChatService {
           await isar.isarChatRoomMemberEntitys.putAll(members);
 
           room.members.addAll(members);
+          members.forEach((member) async => await member.rueJaiUser.save());
         }
 
         if (removeMembers.isNotEmpty) {

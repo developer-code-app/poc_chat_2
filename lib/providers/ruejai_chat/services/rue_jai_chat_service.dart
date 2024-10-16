@@ -17,7 +17,7 @@ abstract class RueJaiChatService {
   Future<RuejaiListResponse<RueJaiChatRoomStateEntity>>
       getServerChatRoomStates();
 
-  @GET('api/ruejai-chat/chat-room/{chatRoomId}/profile')
+  @GET('api/ruejai-chat/chat-rooms/{chatRoomId}/profile')
   Future<RuejaiResponse<RueJaiChatRoomProfileEntity>> getServerChatRoomProfile(
     @Path('chatRoomId') String chatRoomId,
   );

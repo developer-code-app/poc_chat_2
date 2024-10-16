@@ -16,7 +16,7 @@ class RueJaiChatRoomStateEntity extends Equatable {
 
   Map<String, dynamic> toJson() => _$RueJaiChatRoomStateEntityToJson(this);
 
-  final String id;
+  final int id;
   final int latestRoomAndMessageEventRecordNumber;
   final String profileHash;
 
