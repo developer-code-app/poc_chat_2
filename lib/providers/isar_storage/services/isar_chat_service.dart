@@ -232,7 +232,11 @@ class IsarChatService {
         case TextMessageForm():
           message
             ..type = MessageType.text
-            ..content = utf8.encode(form.text);
+            ..content = utf8.encode(json.encode(form.text));
+        case PhotoMessageForm():
+          message
+            ..type = MessageType.photo
+            ..content = utf8.encode(json.encode(form.urls));
         default:
           break;
       }
