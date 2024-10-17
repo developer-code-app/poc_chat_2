@@ -1,81 +1,16 @@
 part of 'chat_room_message_form_creator.dart';
 
 extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
-  Future<MessageForm> createMessageFormFromRecordedEvent({
-    required RecordedEvent recordedEvent,
-  }) async {
-    final event = recordedEvent.event;
-    final ownerMember = await _getChatRoomMemberByEventOwner(
-      chatRoomId: chatRoomId,
-      owner: event.owner,
-    );
-
-    if (event is CreateTextMessageEvent) {
-      return _createTextMessageFormFromEvent(
-        event,
-        member: ownerMember,
-        recordNumber: recordedEvent.recordNumber,
-        recordedAt: recordedEvent.recordedAt,
-      );
-    } else if (event is CreateTextReplyMessageEvent) {
-      return _createTextReplyMessageFormFromEvent(
-        event,
-        chatRoomId: chatRoomId,
-        member: ownerMember,
-        recordNumber: recordedEvent.recordNumber,
-        recordedAt: recordedEvent.recordedAt,
-      );
-    } else if (event is CreatePhotoMessageEvent) {
-      return _createPhotoMessageFormFromEvent(
-        event,
-        member: ownerMember,
-        recordNumber: recordedEvent.recordNumber,
-        recordedAt: recordedEvent.recordedAt,
-      );
-    } else if (event is CreateVideoMessageEvent) {
-      return _createVideoMessageFormFromEvent(
-        event,
-        member: ownerMember,
-        recordNumber: recordedEvent.recordNumber,
-        recordedAt: recordedEvent.recordedAt,
-      );
-    } else if (event is CreateFileMessageEvent) {
-      return _createFileMessageFormFromEvent(
-        event,
-        member: ownerMember,
-        recordNumber: recordedEvent.recordNumber,
-        recordedAt: recordedEvent.recordedAt,
-      );
-    } else if (event is CreateMiniAppMessageEvent) {
-      return _createMiniAppMessageFormFromEvent(
-        event,
-        member: ownerMember,
-        recordNumber: recordedEvent.recordNumber,
-        recordedAt: recordedEvent.recordedAt,
-      );
-    } else if (event is room_event.CreateRoomEvent) {
-      throw UnimplementedError();
-    } else if (event is room_event.InviteMemberEvent) {
-      throw UnimplementedError();
-    } else if (event is room_event.UpdateMemberRoleEvent) {
-      throw UnimplementedError();
-    } else if (event is room_event.UninviteMemberEvent) {
-      throw UnimplementedError();
-    }
-
-    throw UnprocessableEventError('Event is not a message event');
-  }
-
   TextMessageForm _createTextMessageFormFromEvent(
     CreateTextMessageEvent event, {
-    required ChatRoomMember member,
+    required ChatRoomMember owner,
     int? recordNumber,
     DateTime? recordedAt,
   }) {
     final text = event.text;
 
     return TextMessageForm(
-      owner: member,
+      owner: owner,
       createdAt: recordedAt ?? event.createdAt,
       createdByEventId: event.id,
       createdByEventRecordNumber: recordNumber,
@@ -86,7 +21,7 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
   Future<TextReplyMessageForm> _createTextReplyMessageFormFromEvent(
     CreateTextReplyMessageEvent event, {
     required String chatRoomId,
-    required ChatRoomMember member,
+    required ChatRoomMember owner,
     int? recordNumber,
     DateTime? recordedAt,
   }) async {
@@ -100,7 +35,7 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
     if (repliedMessage == null) throw Exception();
 
     return TextReplyMessageForm(
-      owner: member,
+      owner: owner,
       createdAt: recordedAt ?? event.createdAt,
       createdByEventId: event.id,
       repliedMessage: repliedMessage,
@@ -111,14 +46,14 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
 
   PhotoMessageForm _createPhotoMessageFormFromEvent(
     CreatePhotoMessageEvent event, {
-    required ChatRoomMember member,
+    required ChatRoomMember owner,
     int? recordNumber,
     DateTime? recordedAt,
   }) {
     final urls = event.urls;
 
     return PhotoMessageForm(
-      owner: member,
+      owner: owner,
       createdAt: recordedAt ?? event.createdAt,
       createdByEventId: event.id,
       createdByEventRecordNumber: recordNumber,
@@ -128,14 +63,14 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
 
   VideoMessageForm _createVideoMessageFormFromEvent(
     CreateVideoMessageEvent event, {
-    required ChatRoomMember member,
+    required ChatRoomMember owner,
     int? recordNumber,
     DateTime? recordedAt,
   }) {
     final url = event.url;
 
     return VideoMessageForm(
-      owner: member,
+      owner: owner,
       createdAt: recordedAt ?? event.createdAt,
       createdByEventId: event.id,
       createdByEventRecordNumber: recordNumber,
@@ -145,14 +80,14 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
 
   FileMessageForm _createFileMessageFormFromEvent(
     CreateFileMessageEvent event, {
-    required ChatRoomMember member,
+    required ChatRoomMember owner,
     int? recordNumber,
     DateTime? recordedAt,
   }) {
     final url = event.url;
 
     return FileMessageForm(
-      owner: member,
+      owner: owner,
       createdAt: recordedAt ?? event.createdAt,
       createdByEventId: event.id,
       createdByEventRecordNumber: recordNumber,
@@ -162,12 +97,12 @@ extension ChatRoomMemberMessageFormCreator on ChatRoomMessageFormCreator {
 
   MiniAppMessageForm _createMiniAppMessageFormFromEvent(
     CreateMiniAppMessageEvent event, {
-    required ChatRoomMember member,
+    required ChatRoomMember owner,
     int? recordNumber,
     DateTime? recordedAt,
   }) {
     return MiniAppMessageForm(
-      owner: member,
+      owner: owner,
       createdAt: recordedAt ?? event.createdAt,
       createdByEventId: event.id,
       createdByEventRecordNumber: recordNumber,

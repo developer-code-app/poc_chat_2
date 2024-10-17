@@ -108,7 +108,12 @@ int _isarConfirmedMessageEntityEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.content.length;
+  {
+    final value = object.content;
+    if (value != null) {
+      bytesCount += 3 + value.length;
+    }
+  }
   bytesCount += 3 + object.createdByEventId.length * 3;
   bytesCount += 3 + object.type.name.length * 3;
   return bytesCount;
@@ -137,7 +142,7 @@ IsarConfirmedMessageEntity _isarConfirmedMessageEntityDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = IsarConfirmedMessageEntity();
-  object.content = reader.readByteList(offsets[0]) ?? [];
+  object.content = reader.readByteList(offsets[0]);
   object.createdAt = reader.readDateTime(offsets[1]);
   object.createdByEventId = reader.readString(offsets[2]);
   object.createdByRecordNumber = reader.readLongOrNull(offsets[3]);
@@ -146,7 +151,7 @@ IsarConfirmedMessageEntity _isarConfirmedMessageEntityDeserialize(
   object.lastUpdatedByRecordNumber = reader.readLongOrNull(offsets[5]);
   object.type = _IsarConfirmedMessageEntitytypeValueEnumMap[
           reader.readStringOrNull(offsets[6])] ??
-      MessageType.text;
+      MessageType.memberText;
   object.updatedAt = reader.readDateTime(offsets[7]);
   return object;
 }
@@ -159,7 +164,7 @@ P _isarConfirmedMessageEntityDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readByteList(offset) ?? []) as P;
+      return (reader.readByteList(offset)) as P;
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
@@ -173,7 +178,7 @@ P _isarConfirmedMessageEntityDeserializeProp<P>(
     case 6:
       return (_IsarConfirmedMessageEntitytypeValueEnumMap[
               reader.readStringOrNull(offset)] ??
-          MessageType.text) as P;
+          MessageType.memberText) as P;
     case 7:
       return (reader.readDateTime(offset)) as P;
     default:
@@ -182,18 +187,30 @@ P _isarConfirmedMessageEntityDeserializeProp<P>(
 }
 
 const _IsarConfirmedMessageEntitytypeEnumValueMap = {
-  r'text': r'text',
-  r'photo': r'photo',
-  r'video': r'video',
-  r'file': r'file',
-  r'miniApp': r'miniApp',
+  r'memberText': r'memberText',
+  r'memberTextReply': r'memberTextReply',
+  r'memberPhoto': r'memberPhoto',
+  r'memberVideo': r'memberVideo',
+  r'memberFile': r'memberFile',
+  r'memberMiniApp': r'memberMiniApp',
+  r'activityLogCreateRoom': r'activityLogCreateRoom',
+  r'activityLogUpdateRoom': r'activityLogUpdateRoom',
+  r'activityLogInviteMember': r'activityLogInviteMember',
+  r'activityLogUpdateMemberRole': r'activityLogUpdateMemberRole',
+  r'activityLogUninviteMember': r'activityLogUninviteMember',
 };
 const _IsarConfirmedMessageEntitytypeValueEnumMap = {
-  r'text': MessageType.text,
-  r'photo': MessageType.photo,
-  r'video': MessageType.video,
-  r'file': MessageType.file,
-  r'miniApp': MessageType.miniApp,
+  r'memberText': MessageType.memberText,
+  r'memberTextReply': MessageType.memberTextReply,
+  r'memberPhoto': MessageType.memberPhoto,
+  r'memberVideo': MessageType.memberVideo,
+  r'memberFile': MessageType.memberFile,
+  r'memberMiniApp': MessageType.memberMiniApp,
+  r'activityLogCreateRoom': MessageType.activityLogCreateRoom,
+  r'activityLogUpdateRoom': MessageType.activityLogUpdateRoom,
+  r'activityLogInviteMember': MessageType.activityLogInviteMember,
+  r'activityLogUpdateMemberRole': MessageType.activityLogUpdateMemberRole,
+  r'activityLogUninviteMember': MessageType.activityLogUninviteMember,
 };
 
 Id _isarConfirmedMessageEntityGetId(IsarConfirmedMessageEntity object) {
@@ -406,6 +423,24 @@ extension IsarConfirmedMessageEntityQueryWhere on QueryBuilder<
 
 extension IsarConfirmedMessageEntityQueryFilter on QueryBuilder<
     IsarConfirmedMessageEntity, IsarConfirmedMessageEntity, QFilterCondition> {
+  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
+      QAfterFilterCondition> contentIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'content',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
+      QAfterFilterCondition> contentIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'content',
+      ));
+    });
+  }
+
   QueryBuilder<IsarConfirmedMessageEntity, IsarConfirmedMessageEntity,
       QAfterFilterCondition> contentElementEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
@@ -1536,7 +1571,7 @@ extension IsarConfirmedMessageEntityQueryProperty on QueryBuilder<
     });
   }
 
-  QueryBuilder<IsarConfirmedMessageEntity, List<int>, QQueryOperations>
+  QueryBuilder<IsarConfirmedMessageEntity, List<int>?, QQueryOperations>
       contentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'content');

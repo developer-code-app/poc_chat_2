@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +20,7 @@ import 'package:poc_chat_2/pages/chat_summary/topics_subpage/bloc/topics_subpage
 import 'package:poc_chat_2/pages/photo_view_gallery_page.dart';
 import 'package:poc_chat_2/widgets/link_preview_widget.dart';
 import 'package:poc_chat_2/widgets/linkify_widget.dart';
+import 'package:poc_chat_2/widgets/list_view/presenter/list_view_child.dart';
 import 'package:poc_chat_2/widgets/loading_with_blocking_widget.dart';
 import 'package:poc_chat_2/widgets/mini_app_widget.dart';
 import 'package:poc_chat_2/widgets/shimmer_loading_widget.dart';
@@ -36,22 +36,6 @@ class ChatRoomPage extends StatefulWidget {
 }
 
 class _ChatRoomPageState extends State<ChatRoomPage> {
-  bool _shouldShowUserAvatar({
-    required List<MessagePresenter> messages,
-    required MessagePresenter message,
-  }) {
-    final index = messages.indexOf(message);
-    final previousMessage = index > 0 ? messages[index - 1] : null;
-
-    if (previousMessage == null) return message is MemberMessagePresenter;
-
-    if (message is! MemberMessagePresenter) return false;
-
-    if (previousMessage is! MemberMessagePresenter) return true;
-
-    return previousMessage.owner.id != message.owner.id;
-  }
-
   MessageAlignment _messageAlignment({required MessagePresenter message}) {
     final bloc = context.read<ChatRoomPageBloc>();
 
@@ -138,6 +122,25 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     );
   }
 
+  Widget _buildListViewChild(
+    BuildContext context,
+    ListViewChild child,
+  ) {
+    if (child is ConfirmedMessage) {
+      return _buildConfirmedMessage(context, confirmedMessage: child);
+    } else if (child is FailedMessage) {
+      return _buildFailedMessages(context, failedMessage: child);
+    } else if (child is SendingMessage) {
+      return _buildSendingMessages(context, sendingMessage: child);
+    } else if (child is Date) {
+      return _buildDate(context, date: child);
+    } else if (child is ListViewSeparator) {
+      return SizedBox(height: child.height);
+    } else {
+      return Container();
+    }
+  }
+
   Widget _buildMessages(
     BuildContext context,
     LoadSuccessState state,
@@ -147,26 +150,38 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     return Expanded(
       child: Align(
         alignment: Alignment.topCenter,
-        child: ListView(
+        child: ListView.builder(
           controller: bloc.scrollController,
           shrinkWrap: true,
           reverse: true,
-          children: [
-            ...state.presenter.sendingMessages.reversed.map(
-                (message) => _buildSendingMessages(context, message: message)),
-            ...state.presenter.failedMessages.reversed.map(
-                (message) => _buildFailedMessages(context, message: message)),
-            ...state.presenter.confirmedMessages.reversed.mapIndexed(
-              (index, message) => _buildConfirmedMessage(
-                context,
-                message: message,
-                shouldShowUser: _shouldShowUserAvatar(
-                  messages: state.presenter.confirmedMessages.toList(),
-                  message: message,
-                ),
-              ),
-            ),
-          ].intersperse(const SizedBox(height: 8)).toList(),
+          itemCount: state.presenter.listViewChildren.length,
+          itemBuilder: (context, index) {
+            final listViewChildren =
+                state.presenter.listViewChildren.reversed.toList();
+
+            return _buildListViewChild(
+              context,
+              listViewChildren[index],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDate(
+    BuildContext context, {
+    required Date date,
+  }) {
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xffE3D4EE),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(date.title),
         ),
       ),
     );
@@ -318,14 +333,15 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildConfirmedMessage(
     BuildContext context, {
-    required MessagePresenter message,
-    required bool shouldShowUser,
+    required ConfirmedMessage confirmedMessage,
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
+    final shouldShowUserAvatar = confirmedMessage.shouldShowUserAvatar;
+    final message = confirmedMessage.message;
 
     return Column(
       children: [
-        if (shouldShowUser && message is MemberMessagePresenter)
+        if (shouldShowUserAvatar && message is MemberMessagePresenter)
           _buildUserAvatar(
             context,
             member: message.owner,
@@ -346,9 +362,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildFailedMessages(
     BuildContext context, {
-    required MessagePresenter message,
+    required FailedMessage failedMessage,
   }) {
     final bloc = context.read<ChatRoomPageBloc>();
+    final message = failedMessage.message;
 
     return _buildMessageAlignment(
       context,
@@ -374,8 +391,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildSendingMessages(
     BuildContext context, {
-    required MessagePresenter message,
+    required SendingMessage sendingMessage,
   }) {
+    final message = sendingMessage.message;
+
     return _buildMessageAlignment(
       context,
       messageAlignment: MessageAlignment.right,

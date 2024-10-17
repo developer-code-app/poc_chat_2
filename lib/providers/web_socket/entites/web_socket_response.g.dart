@@ -17,5 +17,5 @@ WebSocketResponse<T> _$WebSocketResponseFromJson<T extends Equatable>(
     );
 
 const _$TypeEnumMap = {
-  Type.event: 'event',
+  Type.event: 'EVENT',
 };

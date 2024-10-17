@@ -16,13 +16,27 @@ extension ChatRoomActivityLogMessageFormCreator on ChatRoomMessageFormCreator {
     );
   }
 
+  ActivityLogUpdateRoomMessageForm
+      _createActivityLogUpdateRoomMessageFormFromEvent(
+    room_event.UpdateRoomEvent event, {
+    required ChatRoomMember owner,
+    required int recordNumber,
+    required DateTime recordedAt,
+  }) {
+    return ActivityLogUpdateRoomMessageForm(
+      owner: owner,
+      createdAt: recordedAt,
+      createdByEventId: event.id,
+      createdByEventRecordNumber: recordNumber,
+    );
+  }
+
   Future<ActivityLogInviteMemberMessageForm>
       _createActivityLogInviteMemberMessageFormFromEvent(
     room_event.InviteMemberEvent event, {
     required ChatRoomMember owner,
     required int recordNumber,
     required DateTime recordedAt,
-    required ChatRoomMember invitedMember,
   }) async {
     final invitedMember = await _getChatRoomMemberByRoomEventChatRoomMember(
       chatRoomId: chatRoomId,
@@ -38,46 +52,46 @@ extension ChatRoomActivityLogMessageFormCreator on ChatRoomMessageFormCreator {
     );
   }
 
-  Future<ActivityLogEditMemberRoleMessageForm>
-      _createActivityLogEditMembeRoleMessageFormFromEvent(
+  Future<ActivityLogUpdateMemberRoleMessageForm>
+      _createActivityLogEditMemberRoleMessageFormFromEvent(
     room_event.UpdateMemberRoleEvent event, {
     required ChatRoomMember owner,
     required int recordNumber,
     required DateTime recordedAt,
   }) async {
-    final editedMember = await _getChatRoomMemberByRoomEventChatRoomMember(
+    final updatedMember = await _getChatRoomMemberByRoomEventChatRoomMember(
       chatRoomId: chatRoomId,
       member: event.updatedMember,
     );
 
-    return ActivityLogEditMemberRoleMessageForm(
+    return ActivityLogUpdateMemberRoleMessageForm(
       owner: owner,
       createdAt: recordedAt,
       createdByEventId: event.id,
       createdByEventRecordNumber: recordNumber,
-      editedMember: editedMember,
+      updatedMember: updatedMember,
       newRole: event.updatedMember.role,
     );
   }
 
-  Future<ActivityLogRemoveMemberMessageForm>
-      _createActivityLogRemoveMemberMessageFormFromEvent(
+  Future<ActivityLogUninviteMemberMessageForm>
+      _createActivityLogUninviteMemberMessageFormFromEvent(
     room_event.UninviteMemberEvent event, {
     required ChatRoomMember owner,
     required int recordNumber,
     required DateTime recordedAt,
   }) async {
-    final removedMember = await _getChatRoomMemberByRoomEventChatRoomMember(
+    final uninvitedMember = await _getChatRoomMemberByRoomEventChatRoomMember(
       chatRoomId: chatRoomId,
       member: event.uninvitedMember,
     );
 
-    return ActivityLogRemoveMemberMessageForm(
+    return ActivityLogUninviteMemberMessageForm(
       owner: owner,
       createdAt: recordedAt,
       createdByEventId: event.id,
       createdByEventRecordNumber: recordNumber,
-      removedMember: removedMember,
+      uninvitedMember: uninvitedMember,
     );
   }
 

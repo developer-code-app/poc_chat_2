@@ -132,7 +132,7 @@ IsarFailedMessageEntity _isarFailedMessageEntityDeserialize(
   object.id = id;
   object.type = _IsarFailedMessageEntitytypeValueEnumMap[
           reader.readStringOrNull(offsets[4])] ??
-      MessageType.text;
+      MessageType.memberText;
   object.updatedAt = reader.readDateTime(offsets[5]);
   return object;
 }
@@ -155,7 +155,7 @@ P _isarFailedMessageEntityDeserializeProp<P>(
     case 4:
       return (_IsarFailedMessageEntitytypeValueEnumMap[
               reader.readStringOrNull(offset)] ??
-          MessageType.text) as P;
+          MessageType.memberText) as P;
     case 5:
       return (reader.readDateTime(offset)) as P;
     default:
@@ -164,18 +164,30 @@ P _isarFailedMessageEntityDeserializeProp<P>(
 }
 
 const _IsarFailedMessageEntitytypeEnumValueMap = {
-  r'text': r'text',
-  r'photo': r'photo',
-  r'video': r'video',
-  r'file': r'file',
-  r'miniApp': r'miniApp',
+  r'memberText': r'memberText',
+  r'memberTextReply': r'memberTextReply',
+  r'memberPhoto': r'memberPhoto',
+  r'memberVideo': r'memberVideo',
+  r'memberFile': r'memberFile',
+  r'memberMiniApp': r'memberMiniApp',
+  r'activityLogCreateRoom': r'activityLogCreateRoom',
+  r'activityLogUpdateRoom': r'activityLogUpdateRoom',
+  r'activityLogInviteMember': r'activityLogInviteMember',
+  r'activityLogUpdateMemberRole': r'activityLogUpdateMemberRole',
+  r'activityLogUninviteMember': r'activityLogUninviteMember',
 };
 const _IsarFailedMessageEntitytypeValueEnumMap = {
-  r'text': MessageType.text,
-  r'photo': MessageType.photo,
-  r'video': MessageType.video,
-  r'file': MessageType.file,
-  r'miniApp': MessageType.miniApp,
+  r'memberText': MessageType.memberText,
+  r'memberTextReply': MessageType.memberTextReply,
+  r'memberPhoto': MessageType.memberPhoto,
+  r'memberVideo': MessageType.memberVideo,
+  r'memberFile': MessageType.memberFile,
+  r'memberMiniApp': MessageType.memberMiniApp,
+  r'activityLogCreateRoom': MessageType.activityLogCreateRoom,
+  r'activityLogUpdateRoom': MessageType.activityLogUpdateRoom,
+  r'activityLogInviteMember': MessageType.activityLogInviteMember,
+  r'activityLogUpdateMemberRole': MessageType.activityLogUpdateMemberRole,
+  r'activityLogUninviteMember': MessageType.activityLogUninviteMember,
 };
 
 Id _isarFailedMessageEntityGetId(IsarFailedMessageEntity object) {

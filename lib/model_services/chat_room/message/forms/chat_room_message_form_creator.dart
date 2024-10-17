@@ -31,7 +31,7 @@ class ChatRoomMessageFormCreator {
   Future<MessageForm> createMessageFormFromUnrecordedEvent({
     required Event event,
   }) async {
-    final member = await _getChatRoomMemberByEventOwner(
+    final owner = await _getChatRoomMemberByEventOwner(
       chatRoomId: chatRoomId,
       owner: event.owner,
     );
@@ -39,33 +39,33 @@ class ChatRoomMessageFormCreator {
     if (event is CreateTextMessageEvent) {
       return _createTextMessageFormFromEvent(
         event,
-        member: member,
+        owner: owner,
       );
     } else if (event is CreateTextReplyMessageEvent) {
       return _createTextReplyMessageFormFromEvent(
         event,
         chatRoomId: chatRoomId,
-        member: member,
+        owner: owner,
       );
     } else if (event is CreatePhotoMessageEvent) {
       return _createPhotoMessageFormFromEvent(
         event,
-        member: member,
+        owner: owner,
       );
     } else if (event is CreateVideoMessageEvent) {
       return _createVideoMessageFormFromEvent(
         event,
-        member: member,
+        owner: owner,
       );
     } else if (event is CreateFileMessageEvent) {
       return _createFileMessageFormFromEvent(
         event,
-        member: member,
+        owner: owner,
       );
     } else if (event is CreateMiniAppMessageEvent) {
       return _createMiniAppMessageFormFromEvent(
         event,
-        member: member,
+        owner: owner,
       );
     }
 
@@ -76,7 +76,7 @@ class ChatRoomMessageFormCreator {
     required RecordedEvent recordedEvent,
   }) async {
     final event = recordedEvent.event;
-    final member = await _getChatRoomMemberByEventOwner(
+    final owner = await _getChatRoomMemberByEventOwner(
       chatRoomId: chatRoomId,
       owner: event.owner,
     );
@@ -86,7 +86,7 @@ class ChatRoomMessageFormCreator {
     if (event is CreateTextMessageEvent) {
       return _createTextMessageFormFromEvent(
         event,
-        member: member,
+        owner: owner,
         recordNumber: recordNumber,
         recordedAt: recordedAt,
       );
@@ -94,35 +94,70 @@ class ChatRoomMessageFormCreator {
       return _createTextReplyMessageFormFromEvent(
         event,
         chatRoomId: chatRoomId,
-        member: member,
+        owner: owner,
         recordNumber: recordNumber,
         recordedAt: recordedAt,
       );
     } else if (event is CreatePhotoMessageEvent) {
       return _createPhotoMessageFormFromEvent(
         event,
-        member: member,
+        owner: owner,
         recordNumber: recordNumber,
         recordedAt: recordedAt,
       );
     } else if (event is CreateVideoMessageEvent) {
       return _createVideoMessageFormFromEvent(
         event,
-        member: member,
+        owner: owner,
         recordNumber: recordNumber,
         recordedAt: recordedAt,
       );
     } else if (event is CreateFileMessageEvent) {
       return _createFileMessageFormFromEvent(
         event,
-        member: member,
+        owner: owner,
         recordNumber: recordNumber,
         recordedAt: recordedAt,
       );
     } else if (event is CreateMiniAppMessageEvent) {
       return _createMiniAppMessageFormFromEvent(
         event,
-        member: member,
+        owner: owner,
+        recordNumber: recordNumber,
+        recordedAt: recordedAt,
+      );
+    } else if (event is room_event.CreateRoomEvent) {
+      return _createActivityLogCreateRoomMessageFormFromEvent(
+        event,
+        owner: owner,
+        recordNumber: recordNumber,
+        recordedAt: recordedAt,
+      );
+    } else if (event is room_event.UpdateRoomEvent) {
+      return _createActivityLogUpdateRoomMessageFormFromEvent(
+        event,
+        owner: owner,
+        recordNumber: recordNumber,
+        recordedAt: recordedAt,
+      );
+    } else if (event is room_event.InviteMemberEvent) {
+      return _createActivityLogInviteMemberMessageFormFromEvent(
+        event,
+        owner: owner,
+        recordNumber: recordNumber,
+        recordedAt: recordedAt,
+      );
+    } else if (event is room_event.UpdateMemberRoleEvent) {
+      return _createActivityLogEditMemberRoleMessageFormFromEvent(
+        event,
+        owner: owner,
+        recordNumber: recordNumber,
+        recordedAt: recordedAt,
+      );
+    } else if (event is room_event.UninviteMemberEvent) {
+      return _createActivityLogUninviteMemberMessageFormFromEvent(
+        event,
+        owner: owner,
         recordNumber: recordNumber,
         recordedAt: recordedAt,
       );

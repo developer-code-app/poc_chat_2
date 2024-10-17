@@ -24,7 +24,7 @@ class ChatRoomRecordedEventAction {
     if (event is MessageEvent) {
       processMessageEvent();
     } else if (event is RoomEvent) {
-      processRoomManagementEvent();
+      processRoomEvent();
     } else if (event is ReadMessageEvent) {
       processReadMessageEvent();
     } else {
@@ -69,7 +69,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
 
     final event = recordedEvent.event;
 
-    if (event is CreateMessageEvent) {
+    if (event is CreateMessageEvent || event is RoomEvent) {
       final form = await _getChatRoomMessageFormCreator(chatRoomId: chatRoomId)
           .createMessageFormFromRecordedEvent(recordedEvent: recordedEvent);
 
@@ -103,6 +103,8 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
     } else if (event is DeleteMessageEvent) {
       final messageId = await localChatRepository.deleteConfirmedMessage(
         targetCreatedByEventId: event.id,
+        targetChatRoomId: chatRoomId,
+        eventRecordNumber: recordedEvent.recordNumber,
       );
 
       Broadcaster.instance.add(
@@ -158,7 +160,9 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
     required String chatRoomId,
     required RecordedEvent recordedEvent,
   }) async {
-    return (recordedEvent.event is MessageEvent) &&
+    final event = recordedEvent.event;
+
+    return (event is MessageEvent || event is RoomEvent) &&
         await _isEventFirstSuccessorOfLastSyncedMessageEvent(
           chatRoomId: chatRoomId,
           recordedEvent: recordedEvent,
@@ -175,7 +179,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
       chatRoomId: chatRoomId,
     );
 
-    return recordNumber == lastSyncedMessageEventFirstSuccessorRecordNumber;
+    return recordNumber == lastSyncedMessageEventFirstSuccessorRecordNumber + 1;
   }
 
   Future<int> _getFirstSuccessorOfLastSyncedMessageEventRecordNumber({
@@ -188,65 +192,15 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
 }
 
 extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
-  Future<void> processRoomManagementEvent() async {
-    if (!await _canEventUpdateChatRoom(
+  Future<void> processRoomEvent() async {
+    if (recordedEvent.event is! RoomEvent) {
+      throw UnprocessableEventError('Event is not a message event');
+    }
+
+    _updateChatRoomPersistentMessage(
       chatRoomId: chatRoomId,
       recordedEvent: recordedEvent,
-    )) return;
-
-    final event = recordedEvent.event;
-
-    if (event is! RoomEvent) {
-      throw UnprocessableEventError('Event is not a room management event');
-    }
-
-    switch (event) {
-      case CreateRoomEvent():
-      // TODO: Handle this case.
-      case UpdateRoomEvent():
-      // TODO: Handle this case.
-      case InviteMemberEvent():
-      // TODO: Handle this case.
-      case UpdateMemberRoleEvent():
-      // TODO: Handle this case.
-      case UninviteMemberEvent():
-      // TODO: Handle this case.
-    }
-  }
-
-  Future<bool> _canEventUpdateChatRoom({
-    required String chatRoomId,
-    required RecordedEvent recordedEvent,
-  }) async {
-    return (recordedEvent.event is RoomEvent) &&
-        await _isEventFirstSuccessorOfLastSyncedRoomManagementEvent(
-          chatRoomId: chatRoomId,
-          recordedEvent: recordedEvent,
-        );
-  }
-
-  Future<bool> _isEventFirstSuccessorOfLastSyncedRoomManagementEvent({
-    required String chatRoomId,
-    required RecordedEvent recordedEvent,
-  }) async {
-    final recordNumber = recordedEvent.recordNumber;
-    final firstSuccessorOfLastSyncedRoomManagementEventRecordNumber =
-        await _getFirstSuccessorOfLastSyncedRoomManagementEventRecordNumber(
-      chatRoomId: chatRoomId,
     );
-
-    return recordNumber ==
-        firstSuccessorOfLastSyncedRoomManagementEventRecordNumber;
-  }
-
-  Future<int> _getFirstSuccessorOfLastSyncedRoomManagementEventRecordNumber({
-    required String chatRoomId,
-  }) async {
-    return await localChatRepository
-            .getLastSyncedRoomManagementEventRecordNumber(
-          chatRoomId: chatRoomId,
-        ) +
-        1;
   }
 }
 

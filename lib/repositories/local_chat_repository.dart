@@ -270,10 +270,14 @@ extension LocalChatRoomConfirmedMessageRepository on LocalChatRepository {
 
   Future<int> deleteConfirmedMessage({
     required String targetCreatedByEventId,
+    required String targetChatRoomId,
+    required int eventRecordNumber,
   }) async {
     return provider.chat
         .deleteConfirmedMessage(
           targetCreatedByEventId: targetCreatedByEventId,
+          targetChatRoomId: targetChatRoomId,
+          eventRecordNumber: eventRecordNumber,
         )
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }

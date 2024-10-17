@@ -63,11 +63,10 @@ const IsarChatRoomMemberEntitySchema = CollectionSchema(
       single: true,
     ),
     r'room': LinkSchema(
-      id: -263052131625526532,
+      id: -7522219357351002365,
       name: r'room',
       target: r'ChatRoom',
       single: true,
-      linkName: r'failedMessages',
     )
   },
   embeddedSchemas: {},

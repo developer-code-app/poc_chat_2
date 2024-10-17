@@ -132,7 +132,7 @@ IsarSendingMessageEntity _isarSendingMessageEntityDeserialize(
   object.id = id;
   object.type = _IsarSendingMessageEntitytypeValueEnumMap[
           reader.readStringOrNull(offsets[4])] ??
-      MessageType.text;
+      MessageType.memberText;
   object.updatedAt = reader.readDateTime(offsets[5]);
   return object;
 }
@@ -155,7 +155,7 @@ P _isarSendingMessageEntityDeserializeProp<P>(
     case 4:
       return (_IsarSendingMessageEntitytypeValueEnumMap[
               reader.readStringOrNull(offset)] ??
-          MessageType.text) as P;
+          MessageType.memberText) as P;
     case 5:
       return (reader.readDateTime(offset)) as P;
     default:
@@ -164,18 +164,30 @@ P _isarSendingMessageEntityDeserializeProp<P>(
 }
 
 const _IsarSendingMessageEntitytypeEnumValueMap = {
-  r'text': r'text',
-  r'photo': r'photo',
-  r'video': r'video',
-  r'file': r'file',
-  r'miniApp': r'miniApp',
+  r'memberText': r'memberText',
+  r'memberTextReply': r'memberTextReply',
+  r'memberPhoto': r'memberPhoto',
+  r'memberVideo': r'memberVideo',
+  r'memberFile': r'memberFile',
+  r'memberMiniApp': r'memberMiniApp',
+  r'activityLogCreateRoom': r'activityLogCreateRoom',
+  r'activityLogUpdateRoom': r'activityLogUpdateRoom',
+  r'activityLogInviteMember': r'activityLogInviteMember',
+  r'activityLogUpdateMemberRole': r'activityLogUpdateMemberRole',
+  r'activityLogUninviteMember': r'activityLogUninviteMember',
 };
 const _IsarSendingMessageEntitytypeValueEnumMap = {
-  r'text': MessageType.text,
-  r'photo': MessageType.photo,
-  r'video': MessageType.video,
-  r'file': MessageType.file,
-  r'miniApp': MessageType.miniApp,
+  r'memberText': MessageType.memberText,
+  r'memberTextReply': MessageType.memberTextReply,
+  r'memberPhoto': MessageType.memberPhoto,
+  r'memberVideo': MessageType.memberVideo,
+  r'memberFile': MessageType.memberFile,
+  r'memberMiniApp': MessageType.memberMiniApp,
+  r'activityLogCreateRoom': MessageType.activityLogCreateRoom,
+  r'activityLogUpdateRoom': MessageType.activityLogUpdateRoom,
+  r'activityLogInviteMember': MessageType.activityLogInviteMember,
+  r'activityLogUpdateMemberRole': MessageType.activityLogUpdateMemberRole,
+  r'activityLogUninviteMember': MessageType.activityLogUninviteMember,
 };
 
 Id _isarSendingMessageEntityGetId(IsarSendingMessageEntity object) {

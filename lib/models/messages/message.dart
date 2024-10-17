@@ -117,12 +117,14 @@ sealed class Message extends _BaseMessage {
   factory Message._fromBaseMessage({
     required _BaseMessage baseMessage,
     required MessageType type,
-    required List<int> content,
+    List<int>? content,
   }) {
-    final jsonValue = json.decode(utf8.decode(content)) as Map<String, dynamic>;
+    final jsonValue = content?.let(
+      (content) => json.decode(utf8.decode(content)) as Map<String, dynamic>,
+    );
 
     switch (type) {
-      case MessageType.text:
+      case MessageType.memberText:
         return MemberTextMessage(
           id: baseMessage.id,
           owner: baseMessage.owner,
@@ -131,9 +133,9 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          text: jsonValue['text'],
+          text: jsonValue?['text'],
         );
-      case MessageType.photo:
+      case MessageType.memberPhoto:
         return MemberPhotoMessage(
           id: baseMessage.id,
           owner: baseMessage.owner,
@@ -142,9 +144,9 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          urls: jsonValue['urls'],
+          urls: jsonValue?['urls'],
         );
-      case MessageType.video:
+      case MessageType.memberVideo:
         return MemberVideoMessage(
           id: baseMessage.id,
           owner: baseMessage.owner,
@@ -153,9 +155,9 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          url: jsonValue['url'],
+          url: jsonValue?['url'],
         );
-      case MessageType.file:
+      case MessageType.memberFile:
         return MemberFileMessage(
           id: baseMessage.id,
           owner: baseMessage.owner,
@@ -164,9 +166,9 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          url: jsonValue['url'],
+          url: jsonValue?['url'],
         );
-      case MessageType.miniApp:
+      case MessageType.memberMiniApp:
         return MemberMiniAppMessage(
           id: baseMessage.id,
           owner: baseMessage.owner,
@@ -177,6 +179,31 @@ sealed class Message extends _BaseMessage {
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
           miniApp: null,
         );
+      case MessageType.memberTextReply:
+        // TODO: Handle this case.
+        throw Exception();
+      case MessageType.activityLogCreateRoom:
+        return ActivityLogCreateRoomMessage(
+          id: baseMessage.id,
+          owner: baseMessage.owner,
+          createdAt: baseMessage.createdAt,
+          updatedAt: baseMessage.updatedAt,
+          deletedAt: baseMessage.deletedAt,
+          addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
+          updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
+        );
+      case MessageType.activityLogUpdateRoom:
+        // TODO: Handle this case.
+        throw Exception();
+      case MessageType.activityLogInviteMember:
+        // TODO: Handle this case.
+        throw Exception();
+      case MessageType.activityLogUpdateMemberRole:
+        // TODO: Handle this case.
+        throw Exception();
+      case MessageType.activityLogUninviteMember:
+        // TODO: Handle this case.
+        throw Exception();
     }
   }
 

@@ -27,4 +27,7 @@ class WebSocketResponse<T extends Equatable> extends Equatable {
   List<Object> get props => [type, chatRoomId, payload];
 }
 
-enum Type { event }
+enum Type {
+  @JsonValue('EVENT')
+  event;
+}
