@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_entity.dart';
 import 'package:poc_chat_2/providers/ruejai_chat/entities/rue_jai_chat_room_state_entity.dart';
 
@@ -26,12 +28,12 @@ class ChatRoomSyncState {
     return chatRoomState.id;
   }
 
-  void chatRoomProfileSyncState({
-    Function()? onSynced,
-    Function()? onUnsynced,
-    Function()? onCorrupted,
-  }) {
-    _updateChatRoomState(
+  Future chatRoomProfileSyncState({
+    Future Function()? onSynced,
+    Future Function(ChatRoomState)? onUnsynced,
+    Future Function()? onCorrupted,
+  }) async {
+    await _updateChatRoomState(
       currentSyncState: _profileSyncState,
       onSynced: onSynced,
       onUnsynced: onUnsynced,
@@ -39,17 +41,15 @@ class ChatRoomSyncState {
     );
   }
 
-  void roomAndMessageEventSyncState({
-    Function()? onSynced,
-    Function(int)? onUnsynced,
-    Function()? onCorrupted,
-  }) {
+  Future roomAndMessageEventSyncState({
+    Future Function()? onSynced,
+    Future Function(ChatRoomState)? onUnsynced,
+    Future Function()? onCorrupted,
+  }) async {
     _updateChatRoomState(
       currentSyncState: _roomAndMessageEventSyncState,
       onSynced: onSynced,
-      onUnsynced: onUnsynced?.call(
-        chatRoomState.latestRoomAndMessageEventRecordNumber,
-      ),
+      onUnsynced: onUnsynced,
       onCorrupted: onCorrupted,
     );
   }
@@ -75,22 +75,19 @@ class ChatRoomSyncState {
     }
   }
 
-  void _updateChatRoomState({
+  Future _updateChatRoomState({
     required SyncState currentSyncState,
-    Function()? onSynced,
-    Function()? onUnsynced,
-    Function()? onCorrupted,
+    Future Function()? onSynced,
+    Future Function(ChatRoomState)? onUnsynced,
+    Future Function()? onCorrupted,
   }) async {
     switch (currentSyncState) {
       case SyncState.synced:
-        onSynced?.call();
-        break;
+        return onSynced?.call();
       case SyncState.unsynced:
-        onUnsynced?.call();
-        break;
+        return onUnsynced?.call(chatRoomState);
       case SyncState.corrupted:
-        onCorrupted?.call();
-        break;
+        return onCorrupted?.call();
     }
   }
 }
@@ -125,7 +122,7 @@ class ServerChatRoomState {
 
   factory ServerChatRoomState.fromEntity(RueJaiChatRoomStateEntity entity) {
     return ServerChatRoomState(
-      id: entity.id,
+      id: entity.id.toString(),
       profileHash: entity.profileHash,
       latestRoomAndMessageEventRecordNumber:
           entity.latestRoomAndMessageEventRecordNumber,

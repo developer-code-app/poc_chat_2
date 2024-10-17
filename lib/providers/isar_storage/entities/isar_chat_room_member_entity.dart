@@ -19,7 +19,5 @@ class IsarChatRoomMemberEntity {
   late ChatRoomMemberRole role;
 
   final rueJaiUser = IsarLink<IsarRueJaiUserEntity>();
-
-  @Backlink(to: 'failedMessages')
   final room = IsarLink<IsarChatRoomEntity>();
 }

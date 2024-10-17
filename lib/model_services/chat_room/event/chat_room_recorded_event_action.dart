@@ -103,6 +103,8 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
     } else if (event is DeleteMessageEvent) {
       final messageId = await localChatRepository.deleteConfirmedMessage(
         targetCreatedByEventId: event.id,
+        targetChatRoomId: chatRoomId,
+        eventRecordNumber: recordedEvent.recordNumber,
       );
 
       Broadcaster.instance.add(
@@ -158,7 +160,9 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
     required String chatRoomId,
     required RecordedEvent recordedEvent,
   }) async {
-    return (recordedEvent.event is MessageEvent) &&
+    final event = recordedEvent.event;
+
+    return (event is MessageEvent || event is RoomEvent) &&
         await _isEventFirstSuccessorOfLastSyncedMessageEvent(
           chatRoomId: chatRoomId,
           recordedEvent: recordedEvent,
@@ -175,7 +179,7 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
       chatRoomId: chatRoomId,
     );
 
-    return recordNumber == lastSyncedMessageEventFirstSuccessorRecordNumber;
+    return recordNumber == lastSyncedMessageEventFirstSuccessorRecordNumber + 1;
   }
 
   Future<int> _getFirstSuccessorOfLastSyncedMessageEventRecordNumber({

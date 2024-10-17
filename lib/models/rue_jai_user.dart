@@ -13,9 +13,13 @@ enum RueJaiUserType {
 }
 
 enum RueJaiUserRole {
+  @JsonValue('HOME_OWNER')
   homeOwner,
+  @JsonValue('RESIDENT')
   resident,
+  @JsonValue('RENTER')
   renter,
+  @JsonValue('CUSTOMER_SERVICE')
   customerService,
 }
 

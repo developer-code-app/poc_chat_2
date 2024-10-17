@@ -46,16 +46,17 @@ class ChatRoomAction {
   Future<void> updateChatRoom({
     required ChatRoomSyncState chatRoomSyncState,
   }) async {
-    chatRoomSyncState.chatRoomProfileSyncState(
-      onUnsynced: () => _syncChatRoomProfile(),
+    await chatRoomSyncState.chatRoomProfileSyncState(
+      onUnsynced: (_) => _syncChatRoomProfile(),
     );
-    chatRoomSyncState.roomAndMessageEventSyncState(
-      onUnsynced: (lastSyncedEventRecordNumber) => _syncChatRoomEvent(
-        lastSyncedEventRecordNumber: lastSyncedEventRecordNumber,
+    await chatRoomSyncState.roomAndMessageEventSyncState(
+      onUnsynced: (chatRoomState) => _syncChatRoomEvent(
+        lastSyncedEventRecordNumber:
+            chatRoomState.latestRoomAndMessageEventRecordNumber,
       ),
     );
 
-    _syncChatRoomReadEvent();
+    await _syncChatRoomReadEvent();
   }
 
   Future<void> _syncChatRoomProfile() async {
@@ -78,7 +79,7 @@ class ChatRoomAction {
     );
 
     for (var event in events) {
-      processRecordedEvent(recordedEvent: event);
+      await processRecordedEvent(recordedEvent: event);
     }
   }
 

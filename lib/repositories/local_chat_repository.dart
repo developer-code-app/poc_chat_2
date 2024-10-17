@@ -156,7 +156,10 @@ extension LocalChatRoomRepository on LocalChatRepository {
   Future<List<ChatRoomMember>> getMembers({
     required String chatRoomId,
   }) async {
-    return List.empty();
+    return provider.chat
+        .getMembers(chatRoomId: chatRoomId)
+        .then((members) => members.map(ChatRoomMember.fromIsarEntity).toList())
+        .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
   Future<void> createMember({
@@ -267,10 +270,14 @@ extension LocalChatRoomConfirmedMessageRepository on LocalChatRepository {
 
   Future<int> deleteConfirmedMessage({
     required String targetCreatedByEventId,
+    required String targetChatRoomId,
+    required int eventRecordNumber,
   }) async {
     return provider.chat
         .deleteConfirmedMessage(
           targetCreatedByEventId: targetCreatedByEventId,
+          targetChatRoomId: targetChatRoomId,
+          eventRecordNumber: eventRecordNumber,
         )
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }

@@ -47,18 +47,7 @@ class IsarChatService {
 
   Future<List<IsarChatRoomEntity>> getChatRooms() async {
     return isar.then(
-      (isar) async {
-        final rueJaiUser = await findRueJaiUser();
-
-        return isar.isarChatRoomEntitys
-            .filter()
-            .members(
-              (query) => query.rueJaiUser(
-                (query) => query.rueJaiUserIdEqualTo(rueJaiUser.rueJaiUserId),
-              ),
-            )
-            .findAll();
-      },
+      (isar) async => isar.isarChatRoomEntitys.where().findAll(),
     );
   }
 
@@ -71,6 +60,19 @@ class IsarChatService {
             .filter()
             .roomIdEqualTo(chatRoomId)
             .findFirst();
+      },
+    );
+  }
+
+  Future<List<IsarChatRoomMemberEntity>> getMembers({
+    required String chatRoomId,
+  }) {
+    return isar.then(
+      (isar) async {
+        return isar.isarChatRoomMemberEntitys
+            .filter()
+            .room((query) => query.roomIdEqualTo(chatRoomId))
+            .findAll();
       },
     );
   }
@@ -102,6 +104,7 @@ class IsarChatService {
           .where((member) =>
               !request.members.map((e) => e.id).contains(member.memberId))
           .toList();
+      final removeMemberIds = removeMembers.map((member) => member.id).toList();
       final members = await Future.wait(request.members.map((member) async {
         final existingMember = existingMembers.firstWhereOrNull(
           (existingMember) => existingMember.memberId == member.id,
@@ -114,34 +117,36 @@ class IsarChatService {
           return existingMember
             ..role = member.role
             ..lastReadMessageRecordNumber = member.lastReadMessageRecordNumber
-            ..rueJaiUser.value = rueJaiUser;
+            ..rueJaiUser.value = rueJaiUser
+            ..room.value = room;
         } else {
           return IsarChatRoomMemberEntity()
             ..memberId = member.id
             ..role = member.role
             ..lastReadMessageRecordNumber = member.lastReadMessageRecordNumber
-            ..rueJaiUser.value = rueJaiUser;
+            ..rueJaiUser.value = rueJaiUser
+            ..room.value = room;
         }
       }));
 
       await isar.writeTxn(() async {
+        await isar.isarChatRoomMemberEntitys.deleteAll(removeMemberIds);
+        await isar.isarChatRoomMemberEntitys.putAll(members);
+        await Future.wait(
+          members.expand(
+            (member) => [
+              member.room.save(),
+              member.rueJaiUser.save(),
+            ],
+          ),
+        );
+
         room.name = request.name;
         room.thumbnailUrl = request.thumbnailUrl;
         room.profileHash = request.profileHash;
 
-        if (members.isNotEmpty) {
-          await isar.isarChatRoomMemberEntitys.putAll(members);
-
-          room.members.addAll(members);
-        }
-
-        if (removeMembers.isNotEmpty) {
-          room.members.removeAll(removeMembers);
-
-          await isar.isarChatRoomMemberEntitys.deleteAll(
-            removeMembers.map((e) => e.id).toList(),
-          );
-        }
+        room.members.addAll(members);
+        room.members.removeAll(removeMembers);
 
         await room.members.save();
         await isar.isarChatRoomEntitys.put(room);
@@ -239,7 +244,7 @@ class IsarChatService {
         case TextMessageForm():
           message
             ..type = MessageType.memberText
-            ..content = utf8.encode(form.text);
+            ..content = utf8.encode(json.encode({'text': form.text}));
         case TextReplyMessageForm():
         // TODO: Handle this case.
         case PhotoMessageForm():
@@ -330,56 +335,77 @@ class IsarChatService {
     return isar.then((isar) async {
       final room = await getChatRoom(chatRoomId: targetChatRoomId);
 
-      if (room == null) throw Exception('Room not found');
+      if (room == null) throw Exception('Room not found.');
 
       final member = await getMemberByRueJaiUser(
         chatRoomId: targetChatRoomId,
         rueJaiUserId: form.owner.rueJaiUser.rueJaiUserId,
       );
 
-      if (member == null) throw Exception('Member not found');
+      if (member == null) throw Exception('Member not found.');
 
       final message = IsarConfirmedMessageEntity()
         ..createdAt = form.createdAt
         ..updatedAt = form.createdAt
         ..createdByEventId = form.createdByEventId
         ..createdByRecordNumber = form.createdByEventRecordNumber
-        ..owner.value = member.getOrThrow(errorMessage: 'Member not found')
-        ..room.value = room.getOrThrow(errorMessage: 'Room not found');
+        ..owner.value = member
+        ..room.value = room;
+
+      room.lastSyncedRoomAndMessageEventRecordNumber =
+          form.createdByEventRecordNumber ??
+              room.lastSyncedRoomAndMessageEventRecordNumber;
 
       if (form is MemberMessageForm) {
         switch (form) {
           case TextMessageForm():
             message
               ..type = MessageType.memberText
-              ..content = utf8.encode(form.text);
+              ..content = utf8.encode(json.encode({'text': form.text}));
           case TextReplyMessageForm():
-          // TODO: Handle this case.
+            message
+              ..type = MessageType.memberTextReply
+              ..content = utf8.encode(json.encode({'text': form.text}));
           case PhotoMessageForm():
-          // TODO: Handle this case.
+            message
+              ..type = MessageType.memberPhoto
+              ..content = utf8.encode(json.encode({'urls': form.urls}));
           case VideoMessageForm():
-          // TODO: Handle this case.
+            message
+              ..type = MessageType.memberVideo
+              ..content = utf8.encode(json.encode({'url': form.url}));
           case FileMessageForm():
-          // TODO: Handle this case.
+            message
+              ..type = MessageType.memberFile
+              ..content = utf8.encode(json.encode({'url': form.url}));
           case MiniAppMessageForm():
-          // TODO: Handle this case.
+            message.type = MessageType.memberMiniApp;
         }
       } else if (form is ActivityLogMessageForm) {
         switch (form) {
           case ActivityLogCreateRoomMessageForm():
-          // TODO: Handle this case.
+            message.type = MessageType.activityLogCreateRoom;
           case ActivityLogUpdateRoomMessageForm():
-          // TODO: Handle this case.
+            message.type = MessageType.activityLogUpdateRoom;
           case ActivityLogInviteMemberMessageForm():
-          // TODO: Handle this case.
+            message
+              ..type = MessageType.activityLogInviteMember
+              ..content =
+                  utf8.encode(json.encode({'member': form.invitedMember}));
           case ActivityLogUpdateMemberRoleMessageForm():
-          // TODO: Handle this case.
+            message
+              ..type = MessageType.activityLogUpdateMemberRole
+              ..content = utf8.encode(json.encode({'role': form.newRole}));
           case ActivityLogUninviteMemberMessageForm():
-          // TODO: Handle this case.
+            message
+              ..type = MessageType.activityLogUninviteMember
+              ..content =
+                  utf8.encode(json.encode({'member': form.uninvitedMember}));
         }
       }
 
       await isar.writeTxn(() async {
+        await isar.isarChatRoomEntitys.put(room);
         await isar.isarConfirmedMessageEntitys.put(message);
 
         await message.owner.save();
@@ -392,18 +418,25 @@ class IsarChatService {
 
   Future<int> deleteConfirmedMessage({
     required String targetCreatedByEventId,
+    required String targetChatRoomId,
+    required int eventRecordNumber,
   }) async {
     return isar.then(
       (isar) async {
+        final room = await getChatRoom(chatRoomId: targetChatRoomId);
         final message = await isar.isarConfirmedMessageEntitys
             .filter()
             .createdByEventIdEqualTo(targetCreatedByEventId)
             .findFirst();
 
+        if (room == null) throw Exception('Room not found.');
         if (message == null) throw Exception('Message not found');
+
+        room.lastSyncedRoomAndMessageEventRecordNumber = eventRecordNumber;
 
         await isar.writeTxn(() async {
           await isar.isarConfirmedMessageEntitys.delete(message.id);
+          await isar.isarChatRoomEntitys.put(room);
         });
 
         return message.id;
@@ -502,7 +535,7 @@ class IsarChatService {
         case TextMessageForm():
           message
             ..type = MessageType.memberText
-            ..content = utf8.encode(form.text);
+            ..content = utf8.encode(json.encode({'text': form.text}));
         case TextReplyMessageForm():
         // TODO: Handle this case.
         case PhotoMessageForm():
@@ -549,6 +582,9 @@ class IsarChatService {
     IsarUpdateConfirmedTextMessageRequest request,
   ) async {
     return isar.then((isar) async {
+      final room = await getChatRoom(
+        chatRoomId: request.targetMessageChatRoomId,
+      );
       final confirmedMessage = await isar.isarConfirmedMessageEntitys
           .filter()
           .room((query) => query.roomIdEqualTo(request.targetMessageChatRoomId))
@@ -558,12 +594,23 @@ class IsarChatService {
           )
           .findFirst();
 
+      if (room == null) throw Exception('Room not found');
       if (confirmedMessage == null) throw Exception('Message not found');
 
-      return confirmedMessage
+      room.lastSyncedRoomAndMessageEventRecordNumber =
+          request.newLastUpdatedByRecordNumber;
+
+      confirmedMessage
         ..updatedAt = request.newUpdatedAt
         ..lastUpdatedByRecordNumber = request.newLastUpdatedByRecordNumber
         ..content = utf8.encode(request.newText);
+
+      await isar.writeTxn(() async {
+        await isar.isarConfirmedMessageEntitys.put(confirmedMessage);
+        await isar.isarChatRoomEntitys.put(room);
+      });
+
+      return confirmedMessage;
     });
   }
 }

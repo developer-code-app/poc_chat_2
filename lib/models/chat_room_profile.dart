@@ -12,7 +12,7 @@ class ChatRoomProfile {
 
   factory ChatRoomProfile.fromEntity(RueJaiChatRoomProfileEntity entity) {
     return ChatRoomProfile(
-      id: entity.id,
+      id: entity.id.toString(),
       name: entity.name,
       thumbnailUrl: entity.thumbnailUrl,
       members: entity.members.map(ChatRoomMember.fromEntity).toList(),
