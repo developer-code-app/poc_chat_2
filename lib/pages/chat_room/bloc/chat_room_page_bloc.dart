@@ -301,14 +301,6 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
 
     if (state is LoadSuccessState) {
       final confirmedMessages = state.chatRoom.confirmedMessages;
-      final sendingMessages = state.chatRoom.sendingMessages;
-      final message = sendingMessages
-          .where((message) => message.id == event.message.id)
-          .firstOrNull;
-
-      if (message != null) {
-        sendingMessages.remove(message);
-      }
 
       confirmedMessages.add(event.message);
 

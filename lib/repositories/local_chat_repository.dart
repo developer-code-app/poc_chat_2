@@ -323,35 +323,45 @@ extension LocalChatRoomTemporaryMessageRepository on LocalChatRepository {
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
-  Future<int> deleteUnconfirmedMessage({
+  Future<int> deleteTemporaryMessage({
     required String targetCreatedByEventId,
   }) async {
     return provider.chat
-        .deleteUnconfirmedMessage(
+        .deleteTemporaryMessage(
           targetCreatedByEventId: targetCreatedByEventId,
         )
         .onError<Error>((error, _) => throw Exception(error.toString()));
   }
 
-  Future<int> deleteSendingMessage({
-    required String targetCreatedByEventId,
-  }) async {
-    return provider.chat
-        .deleteSendingMessage(
-          targetCreatedByEventId: targetCreatedByEventId,
-        )
-        .onError<Error>((error, _) => throw Exception(error.toString()));
-  }
+  // Future<int> deleteUnconfirmedMessage({
+  //   required String targetCreatedByEventId,
+  // }) async {
+  //   return provider.chat
+  //       .deleteUnconfirmedMessage(
+  //         targetCreatedByEventId: targetCreatedByEventId,
+  //       )
+  //       .onError<Error>((error, _) => throw Exception(error.toString()));
+  // }
 
-  Future<int> deleteFailedMessage({
-    required String targetCreatedByEventId,
-  }) async {
-    return provider.chat
-        .deleteFailedMessage(
-          targetCreatedByEventId: targetCreatedByEventId,
-        )
-        .onError<Error>((error, _) => throw Exception(error.toString()));
-  }
+  // Future<int> deleteSendingMessage({
+  //   required String targetCreatedByEventId,
+  // }) async {
+  //   return provider.chat
+  //       .deleteSendingMessage(
+  //         targetCreatedByEventId: targetCreatedByEventId,
+  //       )
+  //       .onError<Error>((error, _) => throw Exception(error.toString()));
+  // }
+
+  // Future<int> deleteFailedMessage({
+  //   required String targetCreatedByEventId,
+  // }) async {
+  //   return provider.chat
+  //       .deleteFailedMessage(
+  //         targetCreatedByEventId: targetCreatedByEventId,
+  //       )
+  //       .onError<Error>((error, _) => throw Exception(error.toString()));
+  // }
 
   Future<Message> resendMessage({required int messageId}) async {
     return provider.chat

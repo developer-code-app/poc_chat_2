@@ -196,8 +196,16 @@ sealed class Message extends _BaseMessage {
         // TODO: Handle this case.
         throw Exception();
       case MessageType.activityLogInviteMember:
-        // TODO: Handle this case.
-        throw Exception();
+        return ActivityLogInviteMemberMessage(
+          id: baseMessage.id,
+          owner: baseMessage.owner,
+          createdAt: baseMessage.createdAt,
+          updatedAt: baseMessage.updatedAt,
+          deletedAt: baseMessage.deletedAt,
+          addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
+          updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
+          member: jsonValue?['member'],
+        );
       case MessageType.activityLogUpdateMemberRole:
         // TODO: Handle this case.
         throw Exception();

@@ -390,8 +390,9 @@ class IsarChatService {
           case ActivityLogInviteMemberMessageForm():
             message
               ..type = MessageType.activityLogInviteMember
-              ..content =
-                  utf8.encode(json.encode({'member': form.invitedMember}));
+              ..content = utf8.encode(json.encode({
+                'member': form.invitedMember,
+              }));
           case ActivityLogUpdateMemberRoleMessageForm():
             message
               ..type = MessageType.activityLogUpdateMemberRole
@@ -444,65 +445,46 @@ class IsarChatService {
     );
   }
 
-  Future<int> deleteUnconfirmedMessage({
+  Future<int> deleteTemporaryMessage({
     required String targetCreatedByEventId,
   }) async {
     return isar.then(
       (isar) async {
         final message = await isar.isarUnconfirmedMessageEntitys
-            .filter()
-            .createdByEventIdEqualTo(targetCreatedByEventId)
-            .findFirst();
+                .filter()
+                .createdByEventIdEqualTo(targetCreatedByEventId)
+                .findFirst() ??
+            await isar.isarSendingMessageEntitys
+                .filter()
+                .createdByEventIdEqualTo(targetCreatedByEventId)
+                .findFirst() ??
+            await isar.isarFailedMessageEntitys
+                .filter()
+                .createdByEventIdEqualTo(targetCreatedByEventId)
+                .findFirst();
 
-        if (message == null) throw Exception('Message not found');
+        switch (message) {
+          case IsarUnconfirmedMessageEntity():
+            await isar.writeTxn(() async {
+              await isar.isarUnconfirmedMessageEntitys.delete(message.id);
+            });
 
-        await isar.writeTxn(() async {
-          await isar.isarUnconfirmedMessageEntitys.delete(message.id);
-        });
+            return message.id;
+          case IsarSendingMessageEntity():
+            await isar.writeTxn(() async {
+              await isar.isarSendingMessageEntitys.delete(message.id);
+            });
 
-        return message.id;
-      },
-    );
-  }
+            return message.id;
+          case IsarFailedMessageEntity():
+            await isar.writeTxn(() async {
+              await isar.isarFailedMessageEntitys.delete(message.id);
+            });
 
-  Future<int> deleteSendingMessage({
-    required String targetCreatedByEventId,
-  }) async {
-    return isar.then(
-      (isar) async {
-        final message = await isar.isarSendingMessageEntitys
-            .filter()
-            .createdByEventIdEqualTo(targetCreatedByEventId)
-            .findFirst();
-
-        if (message == null) throw Exception('Message not found');
-
-        await isar.writeTxn(() async {
-          await isar.isarSendingMessageEntitys.delete(message.id);
-        });
-
-        return message.id;
-      },
-    );
-  }
-
-  Future<int> deleteFailedMessage({
-    required String targetCreatedByEventId,
-  }) async {
-    return isar.then(
-      (isar) async {
-        final message = await isar.isarFailedMessageEntitys
-            .filter()
-            .createdByEventIdEqualTo(targetCreatedByEventId)
-            .findFirst();
-
-        if (message == null) throw Exception('Message not found');
-
-        await isar.writeTxn(() async {
-          await isar.isarFailedMessageEntitys.delete(message.id);
-        });
-
-        return message.id;
+            return message.id;
+          default:
+            throw Exception('Message not found');
+        }
       },
     );
   }
