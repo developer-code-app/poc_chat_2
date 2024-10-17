@@ -121,37 +121,25 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
     required RecordedEvent recordedEvent,
   }) async {
     final event = recordedEvent.event;
+    final shouldCreateUnconfirmedMessage =
+        !await _isEventFirstSuccessorOfLastSyncedMessageEvent(
+              chatRoomId: chatRoomId,
+              recordedEvent: recordedEvent,
+            ) &&
+            event is CreateMessageEvent;
 
-    if (await _isEventFirstSuccessorOfLastSyncedMessageEvent(
-      chatRoomId: chatRoomId,
-      recordedEvent: recordedEvent,
-    )) {
-      localChatRepository.deleteUnconfirmedMessage(
-        targetCreatedByEventId: recordedEvent.event.id,
-      );
-      localChatRepository.deleteSendingMessage(
-        targetCreatedByEventId: recordedEvent.event.id,
-      );
-      localChatRepository.deleteFailedMessage(
-        targetCreatedByEventId: recordedEvent.event.id,
-      );
-    } else {
-      if (event is CreateMessageEvent) {
-        final form = await _getChatRoomMessageFormCreator(
-                chatRoomId: chatRoomId)
-            .createMessageFormFromRecordedEvent(recordedEvent: recordedEvent);
+    await localChatRepository.deleteTemporaryMessage(
+      targetCreatedByEventId: recordedEvent.event.id,
+    );
 
-        localChatRepository.createUnconfirmedMessage(
-          targetChatRoomId: chatRoomId,
-          form: form,
-        );
-      }
+    if (shouldCreateUnconfirmedMessage) {
+      final form = await _getChatRoomMessageFormCreator(
+        chatRoomId: chatRoomId,
+      ).createMessageFormFromRecordedEvent(recordedEvent: recordedEvent);
 
-      localChatRepository.deleteSendingMessage(
-        targetCreatedByEventId: recordedEvent.event.id,
-      );
-      localChatRepository.deleteFailedMessage(
-        targetCreatedByEventId: recordedEvent.event.id,
+      await localChatRepository.createUnconfirmedMessage(
+        targetChatRoomId: chatRoomId,
+        form: form,
       );
     }
   }

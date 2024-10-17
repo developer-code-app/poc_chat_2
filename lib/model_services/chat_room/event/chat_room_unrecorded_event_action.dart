@@ -76,6 +76,7 @@ extension _UnrecordedMessageEventAction on ChatRoomUnrecordedEventAction {
         WebSocketMessageSent(
           chatRoomId: chatRoomId,
           message: message,
+          createdByEventId: messageForm.createdByEventId,
         ),
       );
     }

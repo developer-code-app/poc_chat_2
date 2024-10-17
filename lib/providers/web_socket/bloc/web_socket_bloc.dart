@@ -59,10 +59,7 @@ class WebSocketBloc extends Bloc<_Event, _State> {
   }
 
   void _onWebSocketMessageSent(broadcaster.WebSocketMessageSent message) {
-    final request = WebSocketSendingMessageAddedRequest.fromModel(
-      chatRoomId: message.chatRoomId,
-      message: message.message,
-    );
+    final request = WebSocketSendingMessageAddedRequest.fromModel(message);
 
     _webSocket?.add(json.encode(request.toJson()));
   }

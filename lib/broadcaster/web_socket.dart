@@ -18,8 +18,10 @@ class WebSocketMessageSent extends WebSocket {
   WebSocketMessageSent({
     required this.chatRoomId,
     required this.message,
+    required this.createdByEventId,
   });
 
   final String chatRoomId;
   final Message message;
+  final String createdByEventId;
 }

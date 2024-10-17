@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:poc_chat_2/broadcaster/broadcaster.dart';
 import 'package:poc_chat_2/models/event_type.dart';
 import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/models/web_socket_type.dart';
@@ -14,16 +15,20 @@ class WebSocketSendingMessageAddedRequest {
     required this.payload,
   });
 
-  factory WebSocketSendingMessageAddedRequest.fromModel({
-    required String chatRoomId,
-    required Message message,
-  }) {
+  factory WebSocketSendingMessageAddedRequest.fromModel(
+    WebSocketMessageSent socketMessage,
+  ) {
+    final message = socketMessage.message;
+
     switch (message) {
       case MemberTextMessage():
         return WebSocketSendingMessageAddedRequest(
-          chatRoomId: chatRoomId,
+          chatRoomId: socketMessage.chatRoomId,
           type: WebSocketType.event,
-          payload: WebSocketSendingTextMessagePayload.fromModel(message),
+          payload: WebSocketSendingTextMessagePayload.fromModel(
+            createdByEventId: socketMessage.createdByEventId,
+            message: message,
+          ),
         );
       default:
         throw UnimplementedError('Unimplemented');
@@ -76,11 +81,12 @@ class WebSocketSendingTextMessagePayload
     required this.text,
   });
 
-  factory WebSocketSendingTextMessagePayload.fromModel(
-    MemberTextMessage message,
-  ) {
+  factory WebSocketSendingTextMessagePayload.fromModel({
+    required String createdByEventId,
+    required MemberTextMessage message,
+  }) {
     return WebSocketSendingTextMessagePayload(
-      id: message.id.toString(),
+      id: createdByEventId,
       owner: OwnerRequest(
         rueJaiUserId: message.owner.rueJaiUser.rueJaiUserId,
         rueJaiUserType: message.owner.rueJaiUser.rueJaiUserType,
