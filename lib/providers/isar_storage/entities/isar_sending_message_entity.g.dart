@@ -98,7 +98,12 @@ int _isarSendingMessageEntityEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.content.length;
+  {
+    final value = object.content;
+    if (value != null) {
+      bytesCount += 3 + value.length;
+    }
+  }
   bytesCount += 3 + object.createdByEventId.length * 3;
   bytesCount += 3 + object.type.name.length * 3;
   return bytesCount;
@@ -125,7 +130,7 @@ IsarSendingMessageEntity _isarSendingMessageEntityDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = IsarSendingMessageEntity();
-  object.content = reader.readByteList(offsets[0]) ?? [];
+  object.content = reader.readByteList(offsets[0]);
   object.createdAt = reader.readDateTime(offsets[1]);
   object.createdByEventId = reader.readString(offsets[2]);
   object.deletedAt = reader.readDateTimeOrNull(offsets[3]);
@@ -145,7 +150,7 @@ P _isarSendingMessageEntityDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readByteList(offset) ?? []) as P;
+      return (reader.readByteList(offset)) as P;
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
@@ -398,6 +403,24 @@ extension IsarSendingMessageEntityQueryWhere on QueryBuilder<
 
 extension IsarSendingMessageEntityQueryFilter on QueryBuilder<
     IsarSendingMessageEntity, IsarSendingMessageEntity, QFilterCondition> {
+  QueryBuilder<IsarSendingMessageEntity, IsarSendingMessageEntity,
+      QAfterFilterCondition> contentIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'content',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarSendingMessageEntity, IsarSendingMessageEntity,
+      QAfterFilterCondition> contentIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'content',
+      ));
+    });
+  }
+
   QueryBuilder<IsarSendingMessageEntity, IsarSendingMessageEntity,
       QAfterFilterCondition> contentElementEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
@@ -1310,7 +1333,7 @@ extension IsarSendingMessageEntityQueryProperty on QueryBuilder<
     });
   }
 
-  QueryBuilder<IsarSendingMessageEntity, List<int>, QQueryOperations>
+  QueryBuilder<IsarSendingMessageEntity, List<int>?, QQueryOperations>
       contentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'content');

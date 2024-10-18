@@ -4,6 +4,7 @@ import 'package:dfunc/dfunc.dart';
 import 'package:poc_chat_2/extensions/extended_nullable.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
+import 'package:poc_chat_2/models/message_content.dart';
 import 'package:poc_chat_2/models/messages/message_type.dart';
 import 'package:poc_chat_2/models/mini_app.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_confirmed_message_entity.dart';
@@ -133,7 +134,7 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          text: jsonValue?['text'],
+          text: jsonValue?.let(TextMessageContent.fromJson).text,
         );
       case MessageType.memberPhoto:
         return MemberPhotoMessage(
@@ -144,7 +145,7 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          urls: jsonValue?['urls'],
+          urls: jsonValue?.let(PhotoMessageContent.fromJson).urls,
         );
       case MessageType.memberVideo:
         return MemberVideoMessage(
@@ -155,7 +156,7 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          url: jsonValue?['url'],
+          url: jsonValue?.let(VideoMessageContent.fromJson).url,
         );
       case MessageType.memberFile:
         return MemberFileMessage(
@@ -166,22 +167,14 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          url: jsonValue?['url'],
+          url: jsonValue?.let(FileMessageContent.fromJson).url,
         );
       case MessageType.memberMiniApp:
-        return MemberMiniAppMessage(
-          id: baseMessage.id,
-          owner: baseMessage.owner,
-          createdAt: baseMessage.createdAt,
-          updatedAt: baseMessage.updatedAt,
-          deletedAt: baseMessage.deletedAt,
-          addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
-          updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          miniApp: null,
-        );
+        // TODO: Handle this case.
+        throw Exception('not implement');
       case MessageType.memberTextReply:
         // TODO: Handle this case.
-        throw Exception();
+        throw Exception('not implement');
       case MessageType.activityLogCreateRoom:
         return ActivityLogCreateRoomMessage(
           id: baseMessage.id,
@@ -194,9 +187,23 @@ sealed class Message extends _BaseMessage {
         );
       case MessageType.activityLogUpdateRoom:
         // TODO: Handle this case.
-        throw Exception();
+        throw Exception('not implement');
       case MessageType.activityLogInviteMember:
-        return ActivityLogInviteMemberMessage(
+        // TODO: Handle this case.
+        throw Exception('not implement');
+      // return ActivityLogInviteMemberMessage(
+      //   id: baseMessage.id,
+      //   owner: baseMessage.owner,
+      //   createdAt: baseMessage.createdAt,
+      //   updatedAt: baseMessage.updatedAt,
+      //   deletedAt: baseMessage.deletedAt,
+      //   addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
+      //   updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
+      //   member:
+      //       jsonValue?.let(InviteMemberMessageContent.fromJson).invitedMember,
+      // );
+      case MessageType.activityLogUpdateMemberRole:
+        return ActivityLogEditMemberRoleMessage(
           id: baseMessage.id,
           owner: baseMessage.owner,
           createdAt: baseMessage.createdAt,
@@ -204,14 +211,20 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          member: jsonValue?['member'],
+          member: jsonValue?['updated_member'],
+          newRole: jsonValue?['new_role'],
         );
-      case MessageType.activityLogUpdateMemberRole:
-        // TODO: Handle this case.
-        throw Exception();
       case MessageType.activityLogUninviteMember:
-        // TODO: Handle this case.
-        throw Exception();
+        return ActivityLogRemoveMemberMessage(
+          id: baseMessage.id,
+          owner: baseMessage.owner,
+          createdAt: baseMessage.createdAt,
+          updatedAt: baseMessage.updatedAt,
+          deletedAt: baseMessage.deletedAt,
+          addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
+          updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
+          member: jsonValue?['uninvited_member'],
+        );
     }
   }
 

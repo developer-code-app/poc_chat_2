@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
+import 'package:dfunc/dfunc.dart';
 import 'package:poc_chat_2/extensions/extended_nullable.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/forms/message/activity_log_message_form.dart';
 import 'package:poc_chat_2/models/forms/message/member_message_form.dart';
 import 'package:poc_chat_2/models/forms/message/message_form.dart';
+import 'package:poc_chat_2/models/message_content.dart';
 import 'package:poc_chat_2/models/messages/message_type.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_entity.dart';
@@ -237,25 +239,10 @@ class IsarChatService {
         ..createdAt = form.createdAt
         ..updatedAt = form.createdAt
         ..createdByEventId = form.createdByEventId
+        ..type = _getMessageType(form)
+        ..content = _getContent(form)
         ..owner.value = member.getOrThrow(errorMessage: 'Member not found')
         ..room.value = room.getOrThrow(errorMessage: 'Room not found');
-
-      switch (form) {
-        case TextMessageForm():
-          message
-            ..type = MessageType.memberText
-            ..content = utf8.encode(json.encode({'text': form.text}));
-        case TextReplyMessageForm():
-        // TODO: Handle this case.
-        case PhotoMessageForm():
-        // TODO: Handle this case.
-        case VideoMessageForm():
-        // TODO: Handle this case.
-        case FileMessageForm():
-        // TODO: Handle this case.
-        case MiniAppMessageForm():
-        // TODO: Handle this case.
-      }
 
       await isar.writeTxn(() async {
         await isar.isarSendingMessageEntitys.put(message);
@@ -349,61 +336,14 @@ class IsarChatService {
         ..updatedAt = form.createdAt
         ..createdByEventId = form.createdByEventId
         ..createdByRecordNumber = form.createdByEventRecordNumber
+        ..type = _getMessageType(form)
+        ..content = _getContent(form)
         ..owner.value = member
         ..room.value = room;
 
       room.lastSyncedRoomAndMessageEventRecordNumber =
           form.createdByEventRecordNumber ??
               room.lastSyncedRoomAndMessageEventRecordNumber;
-
-      if (form is MemberMessageForm) {
-        switch (form) {
-          case TextMessageForm():
-            message
-              ..type = MessageType.memberText
-              ..content = utf8.encode(json.encode({'text': form.text}));
-          case TextReplyMessageForm():
-            message
-              ..type = MessageType.memberTextReply
-              ..content = utf8.encode(json.encode({'text': form.text}));
-          case PhotoMessageForm():
-            message
-              ..type = MessageType.memberPhoto
-              ..content = utf8.encode(json.encode({'urls': form.urls}));
-          case VideoMessageForm():
-            message
-              ..type = MessageType.memberVideo
-              ..content = utf8.encode(json.encode({'url': form.url}));
-          case FileMessageForm():
-            message
-              ..type = MessageType.memberFile
-              ..content = utf8.encode(json.encode({'url': form.url}));
-          case MiniAppMessageForm():
-            message.type = MessageType.memberMiniApp;
-        }
-      } else if (form is ActivityLogMessageForm) {
-        switch (form) {
-          case ActivityLogCreateRoomMessageForm():
-            message.type = MessageType.activityLogCreateRoom;
-          case ActivityLogUpdateRoomMessageForm():
-            message.type = MessageType.activityLogUpdateRoom;
-          case ActivityLogInviteMemberMessageForm():
-            message
-              ..type = MessageType.activityLogInviteMember
-              ..content = utf8.encode(json.encode({
-                'member': form.invitedMember,
-              }));
-          case ActivityLogUpdateMemberRoleMessageForm():
-            message
-              ..type = MessageType.activityLogUpdateMemberRole
-              ..content = utf8.encode(json.encode({'role': form.newRole}));
-          case ActivityLogUninviteMemberMessageForm():
-            message
-              ..type = MessageType.activityLogUninviteMember
-              ..content =
-                  utf8.encode(json.encode({'member': form.uninvitedMember}));
-        }
-      }
 
       await isar.writeTxn(() async {
         await isar.isarChatRoomEntitys.put(room);
@@ -510,25 +450,10 @@ class IsarChatService {
         ..updatedAt = form.createdAt
         ..createdByEventId = form.createdByEventId
         ..createdByRecordNumber = form.createdByEventRecordNumber
+        ..type = _getMessageType(form)
+        ..content = _getContent(form)
         ..owner.value = member.getOrThrow(errorMessage: 'Member not found')
         ..room.value = room.getOrThrow(errorMessage: 'Room not found');
-
-      switch (form) {
-        case TextMessageForm():
-          message
-            ..type = MessageType.memberText
-            ..content = utf8.encode(json.encode({'text': form.text}));
-        case TextReplyMessageForm():
-        // TODO: Handle this case.
-        case PhotoMessageForm():
-        // TODO: Handle this case.
-        case VideoMessageForm():
-        // TODO: Handle this case.
-        case FileMessageForm():
-        // TODO: Handle this case.
-        case MiniAppMessageForm():
-        // TODO: Handle this case.
-      }
 
       await isar.writeTxn(() async {
         await isar.isarUnconfirmedMessageEntitys.put(message);
@@ -585,7 +510,11 @@ class IsarChatService {
       confirmedMessage
         ..updatedAt = request.newUpdatedAt
         ..lastUpdatedByRecordNumber = request.newLastUpdatedByRecordNumber
-        ..content = utf8.encode(request.newText);
+        ..content = utf8.encode(
+          json.encode(
+            TextMessageContent(text: request.newText).toJson(),
+          ),
+        );
 
       await isar.writeTxn(() async {
         await isar.isarConfirmedMessageEntitys.put(confirmedMessage);
@@ -594,5 +523,63 @@ class IsarChatService {
 
       return confirmedMessage;
     });
+  }
+
+  MessageType _getMessageType(MessageForm form) {
+    switch (form) {
+      case TextMessageForm():
+        return MessageType.memberText;
+      case TextReplyMessageForm():
+        return MessageType.memberTextReply;
+      case PhotoMessageForm():
+        return MessageType.memberPhoto;
+      case VideoMessageForm():
+        return MessageType.memberVideo;
+      case FileMessageForm():
+        return MessageType.memberFile;
+      case MiniAppMessageForm():
+        return MessageType.memberMiniApp;
+      case ActivityLogCreateRoomMessageForm():
+        return MessageType.activityLogCreateRoom;
+      case ActivityLogUpdateRoomMessageForm():
+        return MessageType.activityLogUpdateRoom;
+      case ActivityLogInviteMemberMessageForm():
+        return MessageType.activityLogInviteMember;
+      case ActivityLogUpdateMemberRoleMessageForm():
+        return MessageType.activityLogUpdateMemberRole;
+      case ActivityLogUninviteMemberMessageForm():
+        return MessageType.activityLogUninviteMember;
+      default:
+        throw Exception('Unsupported form ${form.runtimeType}');
+    }
+  }
+
+  List<int>? _getContent(MessageForm form) {
+    Map<String, dynamic>? content;
+
+    switch (form) {
+      case TextMessageForm():
+        content = TextMessageContent(text: form.text).toJson();
+      case PhotoMessageForm():
+        content = PhotoMessageContent(urls: form.urls).toJson();
+      case VideoMessageForm():
+        content = VideoMessageContent(url: form.url).toJson();
+      case FileMessageForm():
+        content = FileMessageContent(url: form.url).toJson();
+      case ActivityLogInviteMemberMessageForm():
+        content =
+            InviteMemberMessageContent.fromModel(form.invitedMember).toJson();
+      case ActivityLogUpdateMemberRoleMessageForm():
+        content = {
+          'updated_member': form.updatedMember,
+          'new_role': form.newRole,
+        };
+      case ActivityLogUninviteMemberMessageForm():
+        content = {
+          'uninvited_member': form.uninvitedMember,
+        };
+    }
+
+    return content?.let((content) => utf8.encode(json.encode(content)));
   }
 }
