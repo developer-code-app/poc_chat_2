@@ -46,7 +46,7 @@ class ChatRoomSyncState {
     Future Function(ChatRoomState)? onUnsynced,
     Future Function()? onCorrupted,
   }) async {
-    _updateChatRoomState(
+    await _updateChatRoomState(
       currentSyncState: _roomAndMessageEventSyncState,
       onSynced: onSynced,
       onUnsynced: onUnsynced,

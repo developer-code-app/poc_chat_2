@@ -70,6 +70,8 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         _onChatRoomSendingMessageTimeOutEvent);
     on<ChatRoomFailedMessageRetriedEvent>(_onChatRoomFailedMessageRetriedEvent);
     on<ChatRoomFailedMessageRemovedEvent>(_onChatRoomFailedMessageRemovedEvent);
+    on<ChatRoomTemporaryMessageRemovedEvent>(
+        _onChatRoomTemporaryMessageRemovedEvent);
     on<UpdateSendingMessageToFailedMessageEvent>(
         _onUpdateSendingMessageToFailedMessageEvent);
     on<AssetsPickerRequestedEvent>(_onAssetsPickerRequestedEvent);
@@ -457,6 +459,30 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         LoadSuccessState(
           chatRoom: state.chatRoom.copyWith(
             failedMessages: failedMessages,
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onChatRoomTemporaryMessageRemovedEvent(
+    ChatRoomTemporaryMessageRemovedEvent event,
+    Emitter<_State> emit,
+  ) async {
+    final state = this.state;
+
+    if (state is LoadSuccessState) {
+      final failedMessages = state.chatRoom.failedMessages;
+      final sendingMessages = state.chatRoom.sendingMessages;
+
+      failedMessages.removeWhere((message) => message.id == event.messageId);
+      sendingMessages.removeWhere((message) => message.id == event.messageId);
+
+      emit(
+        LoadSuccessState(
+          chatRoom: state.chatRoom.copyWith(
+            failedMessages: failedMessages,
+            sendingMessages: sendingMessages,
           ),
         ),
       );
@@ -896,6 +922,11 @@ class ChatRoomPageBloc extends Bloc<ChatRoomPageEvent, ChatRoomPageState> {
         ));
       case broadcaster.ChatRoomFailedMessageRemoved():
         add(ChatRoomFailedMessageRemovedEvent(
+          chatRoomId: message.chatRoomId,
+          messageId: message.messageId,
+        ));
+      case broadcaster.ChatRoomTemporaryMessageRemoved():
+        add(ChatRoomTemporaryMessageRemovedEvent(
           chatRoomId: message.chatRoomId,
           messageId: message.messageId,
         ));

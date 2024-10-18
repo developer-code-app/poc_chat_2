@@ -22,11 +22,11 @@ class ChatRoomRecordedEventAction {
     final event = recordedEvent.event;
 
     if (event is MessageEvent) {
-      processMessageEvent();
+      await processMessageEvent();
     } else if (event is RoomEvent) {
-      processRoomEvent();
+      await processRoomEvent();
     } else if (event is ReadMessageEvent) {
-      processReadMessageEvent();
+      await processReadMessageEvent();
     } else {
       throw UnprocessableEventError('Event is not support');
     }
@@ -48,11 +48,11 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
       throw UnprocessableEventError('Event is not a message event');
     }
 
-    _updateChatRoomPersistentMessage(
+    await _updateChatRoomTemporaryMessage(
       chatRoomId: chatRoomId,
       recordedEvent: recordedEvent,
     );
-    _updateChatRoomTemporaryMessage(
+    await _updateChatRoomPersistentMessage(
       chatRoomId: chatRoomId,
       recordedEvent: recordedEvent,
     );
@@ -128,16 +128,23 @@ extension RecordedMessageEventAction on ChatRoomRecordedEventAction {
             ) &&
             event is CreateMessageEvent;
 
-    await localChatRepository.deleteTemporaryMessage(
-      targetCreatedByEventId: recordedEvent.event.id,
-    );
+    localChatRepository
+        .deleteTemporaryMessage(targetCreatedByEventId: recordedEvent.event.id)
+        .then(
+          (messageId) => Broadcaster.instance.add(
+            ChatRoomTemporaryMessageRemoved(
+              chatRoomId: chatRoomId,
+              messageId: messageId,
+            ),
+          ),
+        );
 
     if (shouldCreateUnconfirmedMessage) {
       final form = await _getChatRoomMessageFormCreator(
         chatRoomId: chatRoomId,
       ).createMessageFormFromRecordedEvent(recordedEvent: recordedEvent);
 
-      await localChatRepository.createUnconfirmedMessage(
+      localChatRepository.createUnconfirmedMessage(
         targetChatRoomId: chatRoomId,
         form: form,
       );
@@ -185,7 +192,7 @@ extension RecordedRoomManagementEventAction on ChatRoomRecordedEventAction {
       throw UnprocessableEventError('Event is not a message event');
     }
 
-    _updateChatRoomPersistentMessage(
+    await _updateChatRoomPersistentMessage(
       chatRoomId: chatRoomId,
       recordedEvent: recordedEvent,
     );

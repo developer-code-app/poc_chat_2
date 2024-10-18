@@ -148,6 +148,16 @@ class ChatRoomFailedMessageRemovedEvent extends _Event {
   final int messageId;
 }
 
+class ChatRoomTemporaryMessageRemovedEvent extends _Event {
+  ChatRoomTemporaryMessageRemovedEvent({
+    required this.chatRoomId,
+    required this.messageId,
+  });
+
+  final String chatRoomId;
+  final int messageId;
+}
+
 class UpdateSendingMessageToFailedMessageEvent extends _Event {}
 
 class AssetsPickerRequestedEvent extends _Event {
