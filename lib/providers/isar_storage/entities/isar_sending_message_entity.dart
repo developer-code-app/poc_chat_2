@@ -13,7 +13,7 @@ class IsarSendingMessageEntity {
   @Enumerated(EnumType.name)
   late MessageType type;
 
-  late List<byte> content;
+  List<byte>? content;
 
   @Index(unique: true)
   late String createdByEventId;

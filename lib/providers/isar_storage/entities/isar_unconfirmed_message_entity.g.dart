@@ -121,7 +121,12 @@ int _isarUnconfirmedMessageEntityEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.content.length;
+  {
+    final value = object.content;
+    if (value != null) {
+      bytesCount += 3 + value.length;
+    }
+  }
   bytesCount += 3 + object.createdByEventId.length * 3;
   bytesCount += 3 + object.type.name.length * 3;
   return bytesCount;
@@ -150,7 +155,7 @@ IsarUnconfirmedMessageEntity _isarUnconfirmedMessageEntityDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = IsarUnconfirmedMessageEntity();
-  object.content = reader.readByteList(offsets[0]) ?? [];
+  object.content = reader.readByteList(offsets[0]);
   object.createdAt = reader.readDateTime(offsets[1]);
   object.createdByEventId = reader.readString(offsets[2]);
   object.createdByRecordNumber = reader.readLongOrNull(offsets[3]);
@@ -172,7 +177,7 @@ P _isarUnconfirmedMessageEntityDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readByteList(offset) ?? []) as P;
+      return (reader.readByteList(offset)) as P;
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
@@ -623,6 +628,24 @@ extension IsarUnconfirmedMessageEntityQueryFilter on QueryBuilder<
     IsarUnconfirmedMessageEntity,
     IsarUnconfirmedMessageEntity,
     QFilterCondition> {
+  QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
+      QAfterFilterCondition> contentIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'content',
+      ));
+    });
+  }
+
+  QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
+      QAfterFilterCondition> contentIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'content',
+      ));
+    });
+  }
+
   QueryBuilder<IsarUnconfirmedMessageEntity, IsarUnconfirmedMessageEntity,
       QAfterFilterCondition> contentElementEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
@@ -1760,7 +1783,7 @@ extension IsarUnconfirmedMessageEntityQueryProperty on QueryBuilder<
     });
   }
 
-  QueryBuilder<IsarUnconfirmedMessageEntity, List<int>, QQueryOperations>
+  QueryBuilder<IsarUnconfirmedMessageEntity, List<int>?, QQueryOperations>
       contentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'content');
