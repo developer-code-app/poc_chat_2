@@ -98,7 +98,9 @@ class SystemService {
     await Future.wait(
       [
         ...removeRoomIds.map(
-          (roomId) => _getChatRoomAction(chatRoomId: roomId).removeChatRoom(),
+          (roomId) async => await _getChatRoomAction(
+            chatRoomId: roomId,
+          ).removeChatRoom(),
         ),
         ...serverChatRoomStates.map((serverChatRoomState) async {
           final chatRoomSyncState = existingChatRoomStates
@@ -116,7 +118,8 @@ class SystemService {
             await syncChatRoom(chatRoomSyncState: chatRoomSyncState);
           } else {
             await _createAndSyncNewChatRoom(
-                serverChatRoomState: serverChatRoomState);
+              serverChatRoomState: serverChatRoomState,
+            );
           }
         })
       ],

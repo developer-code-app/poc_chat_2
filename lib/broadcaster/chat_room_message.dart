@@ -66,3 +66,12 @@ class ChatRoomFailedMessageRemoved extends ChatRoomMessage {
 
   final int messageId;
 }
+
+class ChatRoomTemporaryMessageRemoved extends ChatRoomMessage {
+  ChatRoomTemporaryMessageRemoved({
+    required super.chatRoomId,
+    required this.messageId,
+  });
+
+  final int messageId;
+}
