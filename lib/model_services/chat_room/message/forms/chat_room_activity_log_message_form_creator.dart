@@ -38,17 +38,16 @@ extension ChatRoomActivityLogMessageFormCreator on ChatRoomMessageFormCreator {
     required int recordNumber,
     required DateTime recordedAt,
   }) async {
-    final invitedMember = await _getChatRoomMemberByRoomEventChatRoomMember(
-      chatRoomId: chatRoomId,
-      member: event.invitedMember,
-    );
-
     return ActivityLogInviteMemberMessageForm(
       owner: owner,
       createdAt: recordedAt,
       createdByEventId: event.id,
       createdByEventRecordNumber: recordNumber,
-      invitedMember: invitedMember,
+      invitedMember: ActivityLogMember(
+        role: event.invitedMember.role,
+        rueJaiUserId: event.invitedMember.rueJaiUserId,
+        rueJaiUserType: event.invitedMember.rueJaiUserType,
+      ),
     );
   }
 
@@ -59,17 +58,16 @@ extension ChatRoomActivityLogMessageFormCreator on ChatRoomMessageFormCreator {
     required int recordNumber,
     required DateTime recordedAt,
   }) async {
-    final updatedMember = await _getChatRoomMemberByRoomEventChatRoomMember(
-      chatRoomId: chatRoomId,
-      member: event.updatedMember,
-    );
-
     return ActivityLogUpdateMemberRoleMessageForm(
       owner: owner,
       createdAt: recordedAt,
       createdByEventId: event.id,
       createdByEventRecordNumber: recordNumber,
-      updatedMember: updatedMember,
+      updatedMember: ActivityLogMember(
+        role: event.updatedMember.role,
+        rueJaiUserId: event.updatedMember.rueJaiUserId,
+        rueJaiUserType: event.updatedMember.rueJaiUserType,
+      ),
       newRole: event.updatedMember.role,
     );
   }
@@ -81,27 +79,16 @@ extension ChatRoomActivityLogMessageFormCreator on ChatRoomMessageFormCreator {
     required int recordNumber,
     required DateTime recordedAt,
   }) async {
-    final uninvitedMember = await _getChatRoomMemberByRoomEventChatRoomMember(
-      chatRoomId: chatRoomId,
-      member: event.uninvitedMember,
-    );
-
     return ActivityLogUninviteMemberMessageForm(
       owner: owner,
       createdAt: recordedAt,
       createdByEventId: event.id,
       createdByEventRecordNumber: recordNumber,
-      uninvitedMember: uninvitedMember,
-    );
-  }
-
-  Future<ChatRoomMember> _getChatRoomMemberByRoomEventChatRoomMember({
-    required String chatRoomId,
-    required room_event.ChatRoomMember member,
-  }) async {
-    return _chatRoomInquiry.getMemberByRueJaiUser(
-      rueJaiUserId: member.rueJaiUserId,
-      rueJaiUserType: member.rueJaiUserType,
+      uninvitedMember: ActivityLogMember(
+        role: event.uninvitedMember.role,
+        rueJaiUserId: event.uninvitedMember.rueJaiUserId,
+        rueJaiUserType: event.uninvitedMember.rueJaiUserType,
+      ),
     );
   }
 }

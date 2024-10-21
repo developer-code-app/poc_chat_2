@@ -265,20 +265,22 @@ class ActivityLogMessagePresenter extends MessagePresenter {
       case ActivityLogInviteMemberMessage():
         return ActivityLogMessagePresenter(
           id: message.id,
-          log: '${message.owner.name} added ${message.member.name}',
+          log:
+              '${message.owner.name} added ${message.member?.let((p0) => p0.rueJaiUserId)}',
           createdAt: message.createdAt,
         );
       case ActivityLogEditMemberRoleMessage():
         return ActivityLogMessagePresenter(
           id: message.id,
           log:
-              '${message.owner.name} updated ${message.member.name} to ${message.newRole}',
+              '${message.owner.name} updated ${message.member?.let((p0) => p0.rueJaiUserId)} to ${message.newRole}',
           createdAt: message.createdAt,
         );
       case ActivityLogRemoveMemberMessage():
         return ActivityLogMessagePresenter(
           id: message.id,
-          log: '${message.owner.name} removed ${message.member.name}',
+          log:
+              '${message.owner.name} removed ${message.member?.let((p0) => p0.rueJaiUserId)}',
           createdAt: message.createdAt,
         );
     }

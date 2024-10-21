@@ -30,13 +30,13 @@ class ActivityLogInviteMemberMessage extends ActivityLogMessage {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
-    required this.member,
+    this.member,
     super.deletedAt,
     super.addedByEventRecordNumber,
     super.updatedByEventRecordNumber,
   });
 
-  final ChatRoomMember member;
+  final ActivityLogMember? member;
 }
 
 class ActivityLogEditMemberRoleMessage extends ActivityLogMessage {
@@ -45,15 +45,15 @@ class ActivityLogEditMemberRoleMessage extends ActivityLogMessage {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
-    required this.member,
-    required this.newRole,
+    this.member,
+    this.newRole,
     super.deletedAt,
     super.addedByEventRecordNumber,
     super.updatedByEventRecordNumber,
   });
 
-  final ChatRoomMember member;
-  final ChatRoomMemberRole newRole;
+  final ActivityLogMember? member;
+  final ChatRoomMemberRole? newRole;
 }
 
 class ActivityLogRemoveMemberMessage extends ActivityLogMessage {
@@ -62,11 +62,31 @@ class ActivityLogRemoveMemberMessage extends ActivityLogMessage {
     required super.owner,
     required super.createdAt,
     required super.updatedAt,
-    required this.member,
+    this.member,
     super.deletedAt,
     super.addedByEventRecordNumber,
     super.updatedByEventRecordNumber,
   });
 
-  final ChatRoomMember member;
+  final ActivityLogMember? member;
+}
+
+class ActivityLogMember {
+  ActivityLogMember({
+    required this.role,
+    required this.rueJaiUserId,
+    required this.rueJaiUserType,
+  });
+
+  factory ActivityLogMember.fromIsarModel(IsarChatRoomMember member) {
+    return ActivityLogMember(
+      role: member.role,
+      rueJaiUserId: member.rueJaiUserId,
+      rueJaiUserType: member.rueJaiUserType,
+    );
+  }
+
+  final ChatRoomMemberRole role;
+  final String rueJaiUserId;
+  final RueJaiUserType rueJaiUserType;
 }

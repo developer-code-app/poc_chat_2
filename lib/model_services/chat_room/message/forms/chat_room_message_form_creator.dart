@@ -8,6 +8,7 @@ import 'package:poc_chat_2/models/events/room_event.dart' as room_event;
 import 'package:poc_chat_2/models/forms/message/activity_log_message_form.dart';
 import 'package:poc_chat_2/models/forms/message/member_message_form.dart';
 import 'package:poc_chat_2/models/forms/message/message_form.dart';
+import 'package:poc_chat_2/models/messages/message.dart';
 import 'package:poc_chat_2/models/mini_app.dart';
 import 'package:poc_chat_2/repositories/local_chat_repository.dart';
 

@@ -1,5 +1,6 @@
 import 'package:poc_chat_2/models/chat_room_member.dart';
 import 'package:poc_chat_2/models/forms/message/message_form.dart';
+import 'package:poc_chat_2/models/messages/message.dart';
 
 sealed class ActivityLogMessageForm extends MessageForm {
   ActivityLogMessageForm({
@@ -37,7 +38,7 @@ class ActivityLogInviteMemberMessageForm extends ActivityLogMessageForm {
     required this.invitedMember,
   });
 
-  final ChatRoomMember invitedMember;
+  final ActivityLogMember invitedMember;
 }
 
 class ActivityLogUpdateMemberRoleMessageForm extends ActivityLogMessageForm {
@@ -50,7 +51,7 @@ class ActivityLogUpdateMemberRoleMessageForm extends ActivityLogMessageForm {
     required this.newRole,
   });
 
-  final ChatRoomMember updatedMember;
+  final ActivityLogMember updatedMember;
   final ChatRoomMemberRole newRole;
 }
 
@@ -63,5 +64,5 @@ class ActivityLogUninviteMemberMessageForm extends ActivityLogMessageForm {
     required this.uninvitedMember,
   });
 
-  final ChatRoomMember uninvitedMember;
+  final ActivityLogMember uninvitedMember;
 }
