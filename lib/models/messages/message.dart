@@ -4,9 +4,10 @@ import 'package:dfunc/dfunc.dart';
 import 'package:poc_chat_2/extensions/extended_nullable.dart';
 import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/chat_room_member.dart';
-import 'package:poc_chat_2/models/message_content.dart';
+import 'package:poc_chat_2/providers/isar_storage/entities/isar_message_content.dart';
 import 'package:poc_chat_2/models/messages/message_type.dart';
 import 'package:poc_chat_2/models/mini_app.dart';
+import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_confirmed_message_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_failed_message_entity.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_sending_message_entity.dart';
@@ -134,7 +135,7 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          text: jsonValue?.let(TextMessageContent.fromJson).text,
+          text: jsonValue?.let(IsarTextMessageContentMapper.fromJson).text,
         );
       case MessageType.memberPhoto:
         return MemberPhotoMessage(
@@ -145,7 +146,7 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          urls: jsonValue?.let(PhotoMessageContent.fromJson).urls,
+          urls: jsonValue?.let(IsarPhotoMessageContentMapper.fromJson).urls,
         );
       case MessageType.memberVideo:
         return MemberVideoMessage(
@@ -156,7 +157,7 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          url: jsonValue?.let(VideoMessageContent.fromJson).url,
+          url: jsonValue?.let(IsarVideoMessageContentMapper.fromJson).url,
         );
       case MessageType.memberFile:
         return MemberFileMessage(
@@ -167,7 +168,7 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          url: jsonValue?.let(FileMessageContent.fromJson).url,
+          url: jsonValue?.let(IsarFileMessageContentMapper.fromJson).url,
         );
       case MessageType.memberMiniApp:
         // TODO: Handle this case.
@@ -189,19 +190,19 @@ sealed class Message extends _BaseMessage {
         // TODO: Handle this case.
         throw Exception('not implement');
       case MessageType.activityLogInviteMember:
-        // TODO: Handle this case.
-        throw Exception('not implement');
-      // return ActivityLogInviteMemberMessage(
-      //   id: baseMessage.id,
-      //   owner: baseMessage.owner,
-      //   createdAt: baseMessage.createdAt,
-      //   updatedAt: baseMessage.updatedAt,
-      //   deletedAt: baseMessage.deletedAt,
-      //   addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
-      //   updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-      //   member:
-      //       jsonValue?.let(InviteMemberMessageContent.fromJson).invitedMember,
-      // );
+        return ActivityLogInviteMemberMessage(
+          id: baseMessage.id,
+          owner: baseMessage.owner,
+          createdAt: baseMessage.createdAt,
+          updatedAt: baseMessage.updatedAt,
+          deletedAt: baseMessage.deletedAt,
+          addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
+          updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
+          member: jsonValue
+              ?.let(IsarInviteMemberMessageContentMapper.fromJson)
+              .let((mapper) => mapper.invitedMember)
+              .let(ActivityLogMember.fromIsarModel),
+        );
       case MessageType.activityLogUpdateMemberRole:
         return ActivityLogEditMemberRoleMessage(
           id: baseMessage.id,
@@ -223,7 +224,10 @@ sealed class Message extends _BaseMessage {
           deletedAt: baseMessage.deletedAt,
           addedByEventRecordNumber: baseMessage.addedByEventRecordNumber,
           updatedByEventRecordNumber: baseMessage.updatedByEventRecordNumber,
-          member: jsonValue?['uninvited_member'],
+          member: jsonValue
+              ?.let(IsarUninviteMemberMessageContentMapper.fromJson)
+              .let((mapper) => mapper.uninvitedMember)
+              .let(ActivityLogMember.fromIsarModel),
         );
     }
   }

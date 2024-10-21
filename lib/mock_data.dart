@@ -124,6 +124,11 @@ class MockData {
     lastReadMessageRecordNumber: 5,
   );
 
+  static final siteEngineerMember = ActivityLogMember(
+    role: ChatRoomMemberRole.member,
+    rueJaiUserId: '4',
+    rueJaiUserType: RueJaiUserType.rueJaiAdmin,
+  );
   static final siteEngineer = ChatRoomMember(
     id: '4',
     role: ChatRoomMemberRole.member,
@@ -253,7 +258,7 @@ class MockData {
         owner: chatRoomAdmin,
         createdAt: DateTime.now().add(const Duration(days: -15)),
         updatedAt: DateTime.now().add(const Duration(days: -15)),
-        member: siteEngineer,
+        member: siteEngineerMember,
       ),
       MemberTextMessage(
         id: 9,
@@ -310,7 +315,7 @@ class MockData {
         owner: chatRoomAdmin,
         createdAt: DateTime.now().add(const Duration(days: -13)),
         updatedAt: DateTime.now().add(const Duration(days: -13)),
-        member: siteEngineer,
+        member: siteEngineerMember,
       ),
       MemberPhotoMessage(
         id: 14,

@@ -8,7 +8,7 @@ import 'package:poc_chat_2/mock_data.dart';
 import 'package:poc_chat_2/models/forms/message/activity_log_message_form.dart';
 import 'package:poc_chat_2/models/forms/message/member_message_form.dart';
 import 'package:poc_chat_2/models/forms/message/message_form.dart';
-import 'package:poc_chat_2/models/message_content.dart';
+import 'package:poc_chat_2/providers/isar_storage/entities/isar_message_content.dart';
 import 'package:poc_chat_2/models/messages/message_type.dart';
 import 'package:poc_chat_2/models/rue_jai_user.dart';
 import 'package:poc_chat_2/providers/isar_storage/entities/isar_chat_room_entity.dart';
@@ -512,7 +512,7 @@ class IsarChatService {
         ..lastUpdatedByRecordNumber = request.newLastUpdatedByRecordNumber
         ..content = utf8.encode(
           json.encode(
-            TextMessageContent(text: request.newText).toJson(),
+            IsarTextMessageContentMapper(text: request.newText).toJson(),
           ),
         );
 
@@ -555,31 +555,32 @@ class IsarChatService {
   }
 
   List<int>? _getContent(MessageForm form) {
-    Map<String, dynamic>? content;
+    Map<String, dynamic>? jsonMapper;
 
     switch (form) {
       case TextMessageForm():
-        content = TextMessageContent(text: form.text).toJson();
+        jsonMapper = IsarTextMessageContentMapper(text: form.text).toJson();
       case PhotoMessageForm():
-        content = PhotoMessageContent(urls: form.urls).toJson();
+        jsonMapper = IsarPhotoMessageContentMapper(urls: form.urls).toJson();
       case VideoMessageForm():
-        content = VideoMessageContent(url: form.url).toJson();
+        jsonMapper = IsarVideoMessageContentMapper(url: form.url).toJson();
       case FileMessageForm():
-        content = FileMessageContent(url: form.url).toJson();
+        jsonMapper = IsarFileMessageContentMapper(url: form.url).toJson();
       case ActivityLogInviteMemberMessageForm():
-        content =
-            InviteMemberMessageContent.fromModel(form.invitedMember).toJson();
+        jsonMapper =
+            IsarInviteMemberMessageContentMapper.fromModel(form.invitedMember)
+                .toJson();
       case ActivityLogUpdateMemberRoleMessageForm():
-        content = {
+        jsonMapper = {
           'updated_member': form.updatedMember,
           'new_role': form.newRole,
         };
       case ActivityLogUninviteMemberMessageForm():
-        content = {
-          'uninvited_member': form.uninvitedMember,
-        };
+        jsonMapper = IsarUninviteMemberMessageContentMapper.fromModel(
+                form.uninvitedMember)
+            .toJson();
     }
 
-    return content?.let((content) => utf8.encode(json.encode(content)));
+    return jsonMapper?.let((mapper) => utf8.encode(json.encode(mapper)));
   }
 }
